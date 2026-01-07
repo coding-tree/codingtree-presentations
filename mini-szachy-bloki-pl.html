@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Szachy - Prezentacja Scratch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #3498db;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        /* Scratch Block Styles - More Realistic */
+        .blocks-container {
+            background: #e8e8e8;
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 95%;
+        }
+
+        .block-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        /* Base block styles */
+        .block {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 6px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            position: relative;
+            min-height: 32px;
+            border-radius: 4px;
+            margin-top: -1px;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        /* Notch at top */
+        .block::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 12px;
+            width: 12px;
+            height: 4px;
+            background: inherit;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* Bump at bottom */
+        .block::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 12px;
+            width: 12px;
+            height: 4px;
+            background: inherit;
+            border-radius: 0 0 4px 4px;
+            z-index: 1;
+        }
+
+        /* Hat blocks (no notch at top) */
+        .block.hat {
+            border-radius: 16px 16px 4px 4px;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .block.hat::before {
+            display: none;
+        }
+
+        /* Cap blocks (no bump at bottom) */
+        .block.cap::after {
+            display: none;
+        }
+
+        /* Block Categories - Scratch Colors */
+        .block-motion {
+            background: #4C97FF;
+            border-top: 1px solid #4280D7;
+        }
+
+        .block-looks {
+            background: #9966FF;
+            border-top: 1px solid #855CD6;
+        }
+
+        .block-sound {
+            background: #CF63CF;
+            border-top: 1px solid #BD42BD;
+        }
+
+        .block-events {
+            background: #FFBF00;
+            border-top: 1px solid #E6AC00;
+            color: #000;
+            text-shadow: none;
+        }
+
+        .block-control {
+            background: #FFAB19;
+            border-top: 1px solid #EC9C13;
+        }
+
+        .block-sensing {
+            background: #5CB1D6;
+            border-top: 1px solid #47A8D1;
+        }
+
+        .block-operators {
+            background: #59C059;
+            border-top: 1px solid #46B946;
+        }
+
+        .block-variables {
+            background: #FF8C1A;
+            border-top: 1px solid #E67700;
+        }
+
+        .block-my-blocks {
+            background: #FF6680;
+            border-top: 1px solid #FF3355;
+        }
+
+        /* Input fields */
+        .input {
+            background: #fff;
+            color: #575E75;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin: 0 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            min-width: 24px;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .input.number {
+            border-radius: 10px;
+            min-width: 28px;
+        }
+
+        .input.dropdown {
+            padding-right: 16px;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .input.dropdown::after {
+            content: '▾';
+            font-size: 10px;
+            position: absolute;
+            right: 4px;
+            color: #575E75;
+        }
+
+        /* Variable reporters */
+        .reporter {
+            background: #FF8C1A;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin: 0 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            border: 1px solid #E67700;
+        }
+
+        .reporter.sensing {
+            background: #5CB1D6;
+            border-color: #47A8D1;
+        }
+
+        .reporter.operators {
+            background: #59C059;
+            border-color: #46B946;
+        }
+
+        /* Boolean diamond shape */
+        .boolean {
+            background: #59C059;
+            color: #fff;
+            padding: 3px 10px;
+            margin: 0 4px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0% 50%);
+            min-height: 20px;
+        }
+
+        .boolean.sensing {
+            background: #5CB1D6;
+        }
+
+        /* C-blocks */
+        .c-block {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 4px;
+        }
+
+        .c-block > .c-header {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+        }
+
+        .c-block > .c-body {
+            margin-left: 16px;
+            padding: 8px 4px 4px 8px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 0 0 0 4px;
+            min-height: 36px;
+            position: relative;
+        }
+
+        .c-block > .c-body::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 0;
+            bottom: 0;
+            width: 16px;
+            background: inherit;
+        }
+
+        .c-block > .c-footer {
+            height: 20px;
+            margin-top: -1px;
+        }
+
+        .c-block::after {
+            bottom: -4px;
+        }
+
+        /* Else block styling */
+        .else-bar {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            margin-top: -1px;
+            font-weight: 600;
+        }
+
+        /* Chess board */
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(5, 55px);
+            grid-template-rows: repeat(5, 55px);
+            gap: 0;
+            background: #333;
+            padding: 8px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+        }
+
+        .light { background: #F0D9B5; }
+        .dark { background: #B58863; }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FFAB19, #FF6680);
+            transition: width 0.3s ease;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            max-width: 1100px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 600px;
+        }
+
+        .icon-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .icon-item .emoji {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+        }
+
+        .movement-demo {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 3px;
+            background: #333;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .move-square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .move-square.can-move { background: rgba(46, 204, 113, 0.6); }
+        .move-square.piece-square { background: rgba(52, 152, 219, 0.6); }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-width: 800px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #FFAB19, #FF6680);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .big-emoji {
+            font-size: 7rem;
+            margin-bottom: 25px;
+        }
+
+        ul {
+            font-size: 1.25rem;
+            line-height: 2;
+        }
+
+        li { margin: 8px 0; }
+
+        .scratch-cat {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #FFAB19, #FF8C1A);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 24px rgba(255,171,25,0.4);
+        }
+
+        .info-text {
+            color: #bdc3c7;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        kbd {
+            background: #444;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <div class="presentation" id="presentation">
+        <!-- Slajd 1: Tytuł -->
+        <div class="slide active">
+            <div class="big-emoji">&#9819;</div>
+            <h1>Mini Szachy</h1>
+            <p class="subtitle">Pionki kontra Król - Projekt w Scratchu</p>
+            <p style="margin-top: 40px; color: #7f8c8d;">Naciśnij <kbd>&#8594;</kbd> lub kliknij Dalej</p>
+        </div>
+
+        <!-- Slajd 2: Co zbudujemy -->
+        <div class="slide">
+            <h2>Co Zbudujemy?</h2>
+            <div class="chess-board" id="board1"></div>
+            <ul>
+                <li>Szachownica 5x5 (mniejsza niż normalna!)</li>
+                <li>Biały zespół: 1 Król + 4 Pionki</li>
+                <li>Czarny zespół: 1 Król + 4 Pionki</li>
+            </ul>
+        </div>
+
+        <!-- Slajd 3: Zasady gry -->
+        <div class="slide">
+            <h2>Zasady Gry</h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <div class="emoji">&#9812;</div>
+                    <p>Król rusza się o 1 pole w dowolnym kierunku</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#9817;</div>
+                    <p>Pionek idzie do przodu, bije po skosie</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#127942;</div>
+                    <p>Zbij wrogiego Króla aby wygrać!</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#128260;</div>
+                    <p>Gracze grają na zmianę</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 4: Ruch Króla -->
+        <div class="slide">
+            <h2>Jak Porusza Się Król?</h2>
+            <div class="two-columns">
+                <div style="display: flex; justify-content: center;">
+                    <div class="movement-demo">
+                        <div class="move-square can-move">&#8598;</div>
+                        <div class="move-square can-move">&#8593;</div>
+                        <div class="move-square can-move">&#8599;</div>
+                        <div class="move-square can-move">&#8592;</div>
+                        <div class="move-square piece-square">&#9812;</div>
+                        <div class="move-square can-move">&#8594;</div>
+                        <div class="move-square can-move">&#8601;</div>
+                        <div class="move-square can-move">&#8595;</div>
+                        <div class="move-square can-move">&#8600;</div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>8 możliwych kierunków</li>
+                        <li>Tylko 1 pole na raz</li>
+                        <li>Może zbić każdą figurę wroga</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 5: Ruch Pionka -->
+        <div class="slide">
+            <h2>Jak Porusza Się Pionek?</h2>
+            <div class="two-columns">
+                <div style="text-align: center;">
+                    <p style="margin-bottom: 20px; font-size: 1.2rem;">Biały Pionek</p>
+                    <div class="movement-demo" style="margin: 0 auto;">
+                        <div class="move-square can-move" style="font-size: 1rem;">bicie</div>
+                        <div class="move-square can-move">&#8593;</div>
+                        <div class="move-square can-move" style="font-size: 1rem;">bicie</div>
+                        <div class="move-square"></div>
+                        <div class="move-square piece-square">&#9817;</div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>Ruch o 1 pole do przodu</li>
+                        <li>Bicie tylko po skosie!</li>
+                        <li>Białe idą w górę &#8593;</li>
+                        <li>Czarne idą w dół &#8595;</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 6: Rysowanie planszy -->
+        <div class="slide">
+            <h2>Część 1: Rysujemy Planszę</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">&#9873; kiedy kliknięto zieloną flagę</div>
+                    <div class="block block-variables">ustaw <span class="reporter">wiersz</span> na <span class="input number">0</span></div>
+                    <div class="block block-control c-block">
+                        <div class="c-header">powtórz <span class="input number">5</span> razy</div>
+                        <div class="c-body">
+                            <div class="block-stack">
+                                <div class="block block-variables">ustaw <span class="reporter">kolumna</span> na <span class="input number">0</span></div>
+                                <div class="block block-control c-block">
+                                    <div class="c-header">powtórz <span class="input number">5</span> razy</div>
+                                    <div class="c-body">
+                                        <div class="block-stack">
+                                            <div class="block block-control c-block">
+                                                <div class="c-header">jeżeli <span class="boolean">((wiersz + kolumna) mod 2) = 0</span> to</div>
+                                                <div class="c-body">
+                                                    <div class="block block-looks">ustaw kolor pisaka na <span class="input">#F0D9B5</span></div>
+                                                </div>
+                                                <div class="else-bar block-control">w przeciwnym razie</div>
+                                                <div class="c-body">
+                                                    <div class="block block-looks">ustaw kolor pisaka na <span class="input">#B58863</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="block block-my-blocks">rysuj kwadrat</div>
+                                            <div class="block block-variables">zmień <span class="reporter">kolumna</span> o <span class="input number">1</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="block block-variables">zmień <span class="reporter">wiersz</span> o <span class="input number">1</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 7: Tworzenie figur -->
+        <div class="slide">
+            <h2>Część 2: Ustawiamy Figury</h2>
+            <div class="two-columns">
+                <div class="blocks-container">
+                    <div class="block-stack">
+                        <div class="block block-events hat">&#9873; kiedy kliknięto zieloną flagę</div>
+                        <div class="block block-variables">ustaw <span class="reporter">czyŻyje</span> na <span class="input number">1</span></div>
+                        <div class="block block-variables">ustaw <span class="reporter">czyWybrana</span> na <span class="input number">0</span></div>
+                        <div class="block block-looks">pokaż</div>
+                        <div class="block block-my-blocks">idźNaPole <span class="input number">1</span> <span class="input number">3</span></div>
+                    </div>
+                    <p style="color: #666; margin-top: 15px; font-size: 13px;">Biały Król startuje: wiersz 1, kolumna 3</p>
+                </div>
+                <div>
+                    <div style="font-size: 3.5rem; margin-bottom: 25px; text-align: center;">
+                        &#9812; &#9817; &#9817; &#9817; &#9817;
+                    </div>
+                    <ul>
+                        <li>Każda figura to duszek</li>
+                        <li>Zapamiętuje swój wiersz i kolumnę</li>
+                        <li>czyŻyje = czy jest w grze</li>
+                        <li>czyWybrana = czy kliknięta</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 8: Blok pozycji -->
+        <div class="slide">
+            <h2>Część 2: Blok Pozycji</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-my-blocks hat">definiuj idźNaPole <span class="input">wiersz</span> <span class="input">kolumna</span></div>
+                    <div class="block block-variables">ustaw <span class="reporter">mójWiersz</span> na <span class="input dropdown">wiersz</span></div>
+                    <div class="block block-variables">ustaw <span class="reporter">mojaKolumna</span> na <span class="input dropdown">kolumna</span></div>
+                    <div class="block block-motion">idź do x: <span class="input">-125 + ((kolumna-1) * 50) + 25</span> y: <span class="input">125 - ((wiersz-1) * 50) - 25</span></div>
+                </div>
+            </div>
+            <p class="info-text">Ten własny blok zamienia pozycję na planszy na współrzędne ekranu!</p>
+        </div>
+
+        <!-- Slajd 9: Wybieranie figury -->
+        <div class="slide">
+            <h2>Część 3: Kliknij aby Wybrać</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">kiedy ten duszek kliknięty</div>
+                    <div class="block block-control c-block">
+                        <div class="c-header">jeżeli <span class="boolean">aktualnyGracz = biały</span> to</div>
+                        <div class="c-body">
+                            <div class="block-stack">
+                                <div class="block block-control c-block">
+                                    <div class="c-header">jeżeli <span class="boolean">czyŻyje = 1</span> to</div>
+                                    <div class="c-body">
+                                        <div class="block-stack">
+                                            <div class="block block-events">nadaj <span class="input dropdown">odznaczBiałe</span></div>
+                                            <div class="block block-variables">ustaw <span class="reporter">czyWybrana</span> na <span class="input number">1</span></div>
+                                            <div class="block block-variables">ustaw <span class="reporter">wybranaFigura</span> na <span class="input dropdown">moja nazwa</span></div>
+                                            <div class="block block-looks">zmień kostium na <span class="input dropdown">wybrana</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 10: Odznaczanie -->
+        <div class="slide">
+            <h2>Część 3: Odznacz Inne</h2>
+            <div class="two-columns">
+                <div class="blocks-container">
+                    <div class="block-stack">
+                        <div class="block block-events hat">kiedy otrzymam <span class="input dropdown">odznaczBiałe</span></div>
+                        <div class="block block-variables">ustaw <span class="reporter">czyWybrana</span> na <span class="input number">0</span></div>
+                        <div class="block block-looks">zmień kostium na <span class="input dropdown">normalna</span></div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>Wszystkie białe figury nasłuchują</li>
+                        <li>Gdy otrzymają komunikat - odznaczają się</li>
+                        <li>Tylko jedna figura wybrana naraz!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 11: Wykrywanie kliknięcia -->
+        <div class="slide">
+            <h2>Część 4: Gdzie Kliknięto?</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">kiedy scena kliknięta</div>
+                    <div class="block block-variables">ustaw <span class="reporter">klikKolumna</span> na <span class="input">zaokrąglij ((<span class="reporter sensing">x myszy</span> + 125) / 50) + 1</span></div>
+                    <div class="block block-variables">ustaw <span class="reporter">klikWiersz</span> na <span class="input">zaokrąglij ((125 - <span class="reporter sensing">y myszy</span>) / 50) + 1</span></div>
+                    <div class="block block-control c-block">
+                        <div class="c-header">jeżeli <span class="boolean">klikWiersz > 0 i klikWiersz < 6</span> to</div>
+                        <div class="c-body">
+                            <div class="block-stack">
+                                <div class="block block-control c-block">
+                                    <div class="c-header">jeżeli <span class="boolean">klikKolumna > 0 i klikKolumna < 6</span> to</div>
+                                    <div class="c-body">
+                                        <div class="block block-events">nadaj <span class="input dropdown">klikniętoNaPole</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 12: Ruch Króla -->
+        <div class="slide">
+            <h2>Część 4: Ruch Króla</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">kiedy otrzymam <span class="input dropdown">klikniętoNaPole</span></div>
+                    <div class="block block-control c-block">
+                        <div class="c-header">jeżeli <span class="boolean">czyWybrana = 1</span> to</div>
+                        <div class="c-body">
+                            <div class="block-stack">
+                                <div class="block block-variables">ustaw <span class="reporter">różnicaW</span> na <span class="input"><span class="reporter operators">moduł</span> (klikWiersz - mójWiersz)</span></div>
+                                <div class="block block-variables">ustaw <span class="reporter">różnicaK</span> na <span class="input"><span class="reporter operators">moduł</span> (klikKolumna - mojaKolumna)</span></div>
+                                <div class="block block-control c-block">
+                                    <div class="c-header">jeżeli <span class="boolean">różnicaW < 2 i różnicaK < 2</span> to</div>
+                                    <div class="c-body">
+                                        <div class="block block-my-blocks">próbujRuch <span class="input">klikWiersz</span> <span class="input">klikKolumna</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="info-text">Król może się ruszyć jeśli odległość jest mniejsza niż 2!</p>
+        </div>
+
+        <!-- Slajd 13: Bicie -->
+        <div class="slide">
+            <h2>Część 5: Bicie Figur</h2>
+            <div class="two-columns">
+                <div class="blocks-container">
+                    <div class="block-stack">
+                        <div class="block block-events hat">kiedy otrzymam <span class="input dropdown">biciaNaPolu</span></div>
+                        <div class="block block-control c-block">
+                            <div class="c-header">jeżeli <span class="boolean">czyŻyje = 1</span> to</div>
+                            <div class="c-body">
+                                <div class="block-stack">
+                                    <div class="block block-control c-block">
+                                        <div class="c-header">jeżeli <span class="boolean">mójWiersz = klikWiersz i mojaKolumna = klikKolumna</span> to</div>
+                                        <div class="c-body">
+                                            <div class="block-stack">
+                                                <div class="block block-variables">ustaw <span class="reporter">czyŻyje</span> na <span class="input number">0</span></div>
+                                                <div class="block block-looks">ukryj</div>
+                                                <div class="block block-control c-block">
+                                                    <div class="c-header">jeżeli <span class="boolean">jestem Królem</span> to</div>
+                                                    <div class="c-body">
+                                                        <div class="block block-events">nadaj <span class="input dropdown">królZbity</span></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 5rem;">&#9818; &#10060;</div>
+                    <p style="margin-top: 20px; font-size: 1.3rem;">Zbij Króla = Wygrana!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 14: Koniec gry -->
+        <div class="slide">
+            <h2>Część 5: Koniec Gry</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">kiedy otrzymam <span class="input dropdown">królZbity</span></div>
+                    <div class="block block-variables">ustaw <span class="reporter">koniecGry</span> na <span class="input number">1</span></div>
+                    <div class="block block-control c-block">
+                        <div class="c-header">jeżeli <span class="boolean">aktualnyGracz = biały</span> to</div>
+                        <div class="c-body">
+                            <div class="block block-looks">powiedz <span class="input">Białe Wygrywają!</span> przez <span class="input number">5</span> sekund</div>
+                        </div>
+                        <div class="else-bar block-control">w przeciwnym razie</div>
+                        <div class="c-body">
+                            <div class="block block-looks">powiedz <span class="input">Czarne Wygrywają!</span> przez <span class="input number">5</span> sekund</div>
+                        </div>
+                    </div>
+                    <div class="block block-events">nadaj <span class="input dropdown">koniecGry</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slajd 15: Umiejętności -->
+        <div class="slide">
+            <h2>Czego Się Nauczysz?</h2>
+            <div class="skills-list">
+                <span class="skill-tag">Zagnieżdżone Pętle</span>
+                <span class="skill-tag">Współrzędne X/Y</span>
+                <span class="skill-tag">Zmienne</span>
+                <span class="skill-tag">Warunki</span>
+                <span class="skill-tag">Komunikaty</span>
+                <span class="skill-tag">Własne Bloki</span>
+                <span class="skill-tag">Logika Gry</span>
+                <span class="skill-tag">Gra Turowa</span>
+            </div>
+        </div>
+
+        <!-- Slajd 16: Zaczynamy! -->
+        <div class="slide">
+            <div class="scratch-cat">&#128049;</div>
+            <h1>Zaczynamy Kodować!</h1>
+            <p class="subtitle">Otwórz Scratcha i do dzieła!</p>
+            <p style="margin-top: 30px; font-size: 1.5rem; color: #FFAB19;">scratch.mit.edu</p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">&#8592; Wstecz</button>
+        <button class="nav-btn" onclick="nextSlide()">Dalej &#8594;</button>
+    </div>
+
+    <div class="slide-counter" id="counter">1 / 16</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        const counter = document.getElementById('counter');
+        let currentSlide = 0;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+
+            const progressWidth = ((currentSlide + 1) / slides.length) * 100;
+            progress.style.width = progressWidth + '%';
+            counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Tworzenie szachownicy
+        function createBoard() {
+            const board = document.getElementById('board1');
+            const pieces = [
+                ['&#9823;', '&#9823;', '&#9818;', '&#9823;', '&#9823;'],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['&#9817;', '&#9817;', '&#9812;', '&#9817;', '&#9817;']
+            ];
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.innerHTML = `<span>${pieces[row][col]}</span>`;
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Tree - Prezentacje</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #FFAB19, #FF6680);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            color: #bdc3c7;
+            margin-bottom: 50px;
+            font-size: 1.2rem;
+        }
+        .presentations {
+            display: grid;
+            gap: 25px;
+            max-width: 800px;
+            width: 100%;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .card p {
+            color: #bdc3c7;
+            font-size: 1rem;
+        }
+        .emoji {
+            font-size: 2.5rem;
+        }
+        .tag {
+            display: inline-block;
+            background: rgba(255,171,25,0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+        footer {
+            margin-top: 60px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coding Tree</h1>
+    <p class="subtitle">Prezentacje dla szkoly programowania</p>
+
+    <div class="presentations">
+        <a href="mini-szachy-bloki-pl.html" class="card">
+            <h2><span class="emoji">&#9819;</span> Mini Szachy - Bloki Scratch (PL)</h2>
+            <p>Prezentacja po polsku z wizualnymi blokami Scratch. Idealna do nauki!</p>
+            <span class="tag">Polski</span>
+            <span class="tag">Bloki wizualne</span>
+        </a>
+
+        <a href="mini-chess-blocks-presentation.html" class="card">
+            <h2><span class="emoji">&#9819;</span> Mini Chess - Scratch Blocks (EN)</h2>
+            <p>English presentation with visual Scratch blocks.</p>
+            <span class="tag">English</span>
+            <span class="tag">Visual blocks</span>
+        </a>
+
+        <a href="mini-chess-presentation.html" class="card">
+            <h2><span class="emoji">&#9819;</span> Mini Chess - Code (EN)</h2>
+            <p>English presentation with code snippets instead of visual blocks.</p>
+            <span class="tag">English</span>
+            <span class="tag">Code</span>
+        </a>
+    </div>
+
+    <footer>Coding Tree - Szkola Programowania dla Dzieci</footer>
+</body>
+</html>

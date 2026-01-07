@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Chess - Scratch Blocks Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #3498db;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        /* Scratch Block Styles */
+        .blocks-container {
+            background: #f0f0f0;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .block {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 3px 0;
+            position: relative;
+            min-height: 36px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .block-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* Block Categories */
+        .block-events { background: #ffbf00; color: #000; }
+        .block-control { background: #ffab19; }
+        .block-motion { background: #4c97ff; }
+        .block-looks { background: #9966ff; }
+        .block-sensing { background: #5cb1d6; }
+        .block-operators { background: #59c059; }
+        .block-variables { background: #ff8c1a; }
+        .block-my-blocks { background: #ff6680; }
+
+        /* Block notch styling */
+        .block::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: -4px;
+            width: 15px;
+            height: 4px;
+            background: inherit;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .block.hat::before {
+            display: none;
+        }
+
+        .block.hat {
+            border-radius: 20px 20px 8px 8px;
+            padding-top: 12px;
+        }
+
+        /* Input slots */
+        .input {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 15px;
+            margin: 0 5px;
+            font-size: 0.95rem;
+            display: inline-block;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .input.dropdown {
+            background: rgba(255,255,255,0.9);
+            padding-right: 20px;
+            position: relative;
+        }
+
+        .input.dropdown::after {
+            content: '▼';
+            font-size: 0.6rem;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Boolean slots */
+        .boolean {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 4px 12px;
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            margin: 0 5px;
+            font-size: 0.9rem;
+        }
+
+        /* C-shaped blocks */
+        .c-block {
+            padding: 8px 12px 8px 12px;
+            position: relative;
+        }
+
+        .c-block .inner-stack {
+            margin: 10px 0 10px 25px;
+            padding-left: 5px;
+            border-left: 3px solid rgba(0,0,0,0.1);
+        }
+
+        /* Reporter blocks */
+        .reporter {
+            border-radius: 15px;
+            padding: 5px 12px;
+        }
+
+        /* Chess board */
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+        }
+
+        .light { background: #EEEED2; }
+        .dark { background: #769656; }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            transition: width 0.3s ease;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            max-width: 1100px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 600px;
+        }
+
+        .icon-item {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .icon-item .emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .movement-demo {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 3px;
+            background: #333;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .move-square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .move-square.can-move { background: rgba(46, 204, 113, 0.5); }
+        .move-square.piece-square { background: rgba(52, 152, 219, 0.5); }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-width: 800px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+        }
+
+        .big-emoji {
+            font-size: 8rem;
+            margin-bottom: 30px;
+        }
+
+        ul {
+            font-size: 1.3rem;
+            line-height: 2;
+        }
+
+        li { margin: 8px 0; }
+
+        .scratch-logo {
+            width: 80px;
+            height: 80px;
+            background: #ff9800;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .block-label {
+            color: #333;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .indent-1 { margin-left: 25px; }
+        .indent-2 { margin-left: 50px; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <div class="presentation" id="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="big-emoji">&#9819;</div>
+            <h1>Mini Chess</h1>
+            <p class="subtitle">Pawns vs King - A Scratch Project</p>
+            <p style="margin-top: 40px; color: #7f8c8d;">Press <kbd style="background: #444; padding: 5px 15px; border-radius: 5px;">&#8594;</kbd> or click Next to begin</p>
+        </div>
+
+        <!-- Slide 2: What We'll Build -->
+        <div class="slide">
+            <h2>What We'll Build</h2>
+            <div class="chess-board" id="board1"></div>
+            <ul>
+                <li>5x5 chess board (smaller than normal!)</li>
+                <li>White team: 1 King + 4 Pawns</li>
+                <li>Black team: 1 King + 4 Pawns</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Game Rules -->
+        <div class="slide">
+            <h2>Game Rules</h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <div class="emoji">&#9812;</div>
+                    <p>King moves 1 square any direction</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#9817;</div>
+                    <p>Pawn moves forward, captures diagonal</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#127942;</div>
+                    <p>Capture the enemy King to win!</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#128260;</div>
+                    <p>Players take turns</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: King Movement -->
+        <div class="slide">
+            <h2>How the King Moves</h2>
+            <div class="two-columns">
+                <div>
+                    <div class="movement-demo">
+                        <div class="move-square can-move">&#8598;</div>
+                        <div class="move-square can-move">&#8593;</div>
+                        <div class="move-square can-move">&#8599;</div>
+                        <div class="move-square can-move">&#8592;</div>
+                        <div class="move-square piece-square">&#9812;</div>
+                        <div class="move-square can-move">&#8594;</div>
+                        <div class="move-square can-move">&#8601;</div>
+                        <div class="move-square can-move">&#8595;</div>
+                        <div class="move-square can-move">&#8600;</div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>8 possible directions</li>
+                        <li>Only 1 square at a time</li>
+                        <li>Can capture any enemy piece</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Pawn Movement -->
+        <div class="slide">
+            <h2>How the Pawn Moves</h2>
+            <div class="two-columns">
+                <div style="text-align: center;">
+                    <p style="margin-bottom: 20px;">White Pawn</p>
+                    <div class="movement-demo">
+                        <div class="move-square can-move">&#8598;</div>
+                        <div class="move-square can-move">&#8593;</div>
+                        <div class="move-square can-move">&#8599;</div>
+                        <div class="move-square"></div>
+                        <div class="move-square piece-square">&#9817;</div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #7f8c8d;">Diagonal = capture only</p>
+                </div>
+                <div>
+                    <ul>
+                        <li>Move forward 1 square</li>
+                        <li>Capture diagonally only</li>
+                        <li>White goes up &#8593;</li>
+                        <li>Black goes down &#8595;</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Part 1 - Draw Board Blocks -->
+        <div class="slide">
+            <h2>Part 1: Draw the Board</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">&#9873; when green flag clicked</div>
+                    <div class="block block-variables">set <span class="input">row</span> to <span class="input">0</span></div>
+                    <div class="block block-control c-block">repeat <span class="input">5</span>
+                        <div class="inner-stack">
+                            <div class="block block-variables">set <span class="input">col</span> to <span class="input">0</span></div>
+                            <div class="block block-control c-block">repeat <span class="input">5</span>
+                                <div class="inner-stack">
+                                    <div class="block block-control c-block">if <span class="boolean">((row + col) mod 2) = 0</span> then
+                                        <div class="inner-stack">
+                                            <div class="block block-looks">set pen color to <span class="input">#EEEED2</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="block block-control">else</div>
+                                    <div class="block block-looks indent-1">set pen color to <span class="input">#769656</span></div>
+                                    <div class="block block-my-blocks">draw square</div>
+                                    <div class="block block-variables">change <span class="input">col</span> by <span class="input">1</span></div>
+                                </div>
+                            </div>
+                            <div class="block block-variables">change <span class="input">row</span> by <span class="input">1</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Part 2 - Create Pieces -->
+        <div class="slide">
+            <h2>Part 2: Setup Each Piece</h2>
+            <div class="two-columns">
+                <div class="blocks-container">
+                    <div class="block-stack">
+                        <div class="block block-events hat">&#9873; when green flag clicked</div>
+                        <div class="block block-variables">set <span class="input">isAlive</span> to <span class="input">1</span></div>
+                        <div class="block block-variables">set <span class="input">isSelected</span> to <span class="input">0</span></div>
+                        <div class="block block-looks">show</div>
+                        <div class="block block-my-blocks">goToSquare <span class="input">1</span> <span class="input">3</span></div>
+                    </div>
+                    <p class="block-label">White King starts at row 1, column 3</p>
+                </div>
+                <div>
+                    <div style="font-size: 4rem; margin-bottom: 30px; text-align: center;">
+                        &#9812; &#9817; &#9817; &#9817; &#9817;
+                    </div>
+                    <ul>
+                        <li>Each piece is a sprite</li>
+                        <li>Track row & column</li>
+                        <li>isAlive = in the game</li>
+                        <li>isSelected = clicked</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Part 2b - Position Block -->
+        <div class="slide">
+            <h2>Part 2: Position Block</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-my-blocks hat">define goToSquare <span class="input">row</span> <span class="input">col</span></div>
+                    <div class="block block-variables">set <span class="input">myRow</span> to <span class="input">row</span></div>
+                    <div class="block block-variables">set <span class="input">myCol</span> to <span class="input">col</span></div>
+                    <div class="block block-motion">go to x: <span class="input">-125 + ((col-1) * 50) + 25</span> y: <span class="input">125 - ((row-1) * 50) - 25</span></div>
+                </div>
+            </div>
+            <p style="color: #bdc3c7; margin-top: 20px;">This custom block converts board position to screen position!</p>
+        </div>
+
+        <!-- Slide 9: Part 3 - Selection -->
+        <div class="slide">
+            <h2>Part 3: Click to Select</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">when this sprite clicked</div>
+                    <div class="block block-control c-block">if <span class="boolean">currentTurn = white</span> then
+                        <div class="inner-stack">
+                            <div class="block block-control c-block">if <span class="boolean">isAlive = 1</span> then
+                                <div class="inner-stack">
+                                    <div class="block block-events">broadcast <span class="input dropdown">deselectWhite</span></div>
+                                    <div class="block block-variables">set <span class="input">isSelected</span> to <span class="input">1</span></div>
+                                    <div class="block block-variables">set <span class="input">selectedPiece</span> to <span class="input dropdown">my name</span></div>
+                                    <div class="block block-looks">switch costume to <span class="input dropdown">selected</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Part 3b - Deselect -->
+        <div class="slide">
+            <h2>Part 3: Deselect Others</h2>
+            <div class="two-columns">
+                <div class="blocks-container">
+                    <div class="block-stack">
+                        <div class="block block-events hat">when I receive <span class="input dropdown">deselectWhite</span></div>
+                        <div class="block block-variables">set <span class="input">isSelected</span> to <span class="input">0</span></div>
+                        <div class="block block-looks">switch costume to <span class="input dropdown">normal</span></div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>All white pieces listen for this message</li>
+                        <li>When received, they deselect themselves</li>
+                        <li>Only one piece selected at a time!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Part 4 - Movement Detection -->
+        <div class="slide">
+            <h2>Part 4: Detect Click Position</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">when stage clicked</div>
+                    <div class="block block-variables">set <span class="input">clickCol</span> to <span class="input">round ((mouse x + 125) / 50) + 1</span></div>
+                    <div class="block block-variables">set <span class="input">clickRow</span> to <span class="input">round ((125 - mouse y) / 50) + 1</span></div>
+                    <div class="block block-control c-block">if <span class="boolean">clickRow > 0 and clickRow < 6</span> then
+                        <div class="inner-stack">
+                            <div class="block block-control c-block">if <span class="boolean">clickCol > 0 and clickCol < 6</span> then
+                                <div class="inner-stack">
+                                    <div class="block block-events">broadcast <span class="input dropdown">squareClicked</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Part 4b - King Move -->
+        <div class="slide">
+            <h2>Part 4: King Movement</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">when I receive <span class="input dropdown">squareClicked</span></div>
+                    <div class="block block-control c-block">if <span class="boolean">isSelected = 1</span> then
+                        <div class="inner-stack">
+                            <div class="block block-variables">set <span class="input">rowDiff</span> to <span class="input">abs(clickRow - myRow)</span></div>
+                            <div class="block block-variables">set <span class="input">colDiff</span> to <span class="input">abs(clickCol - myCol)</span></div>
+                            <div class="block block-control c-block">if <span class="boolean">rowDiff < 2 and colDiff < 2</span> then
+                                <div class="inner-stack">
+                                    <div class="block block-my-blocks">tryMove <span class="input">clickRow</span> <span class="input">clickCol</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p style="color: #bdc3c7; margin-top: 15px;">King can move if distance is less than 2 squares!</p>
+        </div>
+
+        <!-- Slide 13: Part 5 - Capture -->
+        <div class="slide">
+            <h2>Part 5: Capture Pieces</h2>
+            <div class="two-columns">
+                <div class="blocks-container">
+                    <div class="block-stack">
+                        <div class="block block-events hat">when I receive <span class="input dropdown">captureOnSquare</span></div>
+                        <div class="block block-control c-block">if <span class="boolean">isAlive = 1</span> then
+                            <div class="inner-stack">
+                                <div class="block block-control c-block">if <span class="boolean">myRow = clickRow and myCol = clickCol</span> then
+                                    <div class="inner-stack">
+                                        <div class="block block-variables">set <span class="input">isAlive</span> to <span class="input">0</span></div>
+                                        <div class="block block-looks">hide</div>
+                                        <div class="block block-control c-block">if <span class="boolean">I am a King</span> then
+                                            <div class="inner-stack">
+                                                <div class="block block-events">broadcast <span class="input dropdown">kingCaptured</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 5rem;">&#9818; &#10060;</div>
+                    <p style="margin-top: 20px; font-size: 1.2rem;">Capture the King to Win!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Part 5b - Win -->
+        <div class="slide">
+            <h2>Part 5: Game Over</h2>
+            <div class="blocks-container">
+                <div class="block-stack">
+                    <div class="block block-events hat">when I receive <span class="input dropdown">kingCaptured</span></div>
+                    <div class="block block-variables">set <span class="input">gameOver</span> to <span class="input">1</span></div>
+                    <div class="block block-control c-block">if <span class="boolean">currentTurn = white</span> then
+                        <div class="inner-stack">
+                            <div class="block block-looks">say <span class="input">White Wins!</span> for <span class="input">5</span> seconds</div>
+                        </div>
+                    </div>
+                    <div class="block block-control">else</div>
+                    <div class="block block-looks indent-1">say <span class="input">Black Wins!</span> for <span class="input">5</span> seconds</div>
+                    <div class="block block-events">broadcast <span class="input dropdown">gameEnd</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Skills Learned -->
+        <div class="slide">
+            <h2>Skills You'll Learn</h2>
+            <div class="skills-list">
+                <span class="skill-tag">Nested Loops</span>
+                <span class="skill-tag">X/Y Coordinates</span>
+                <span class="skill-tag">Variables</span>
+                <span class="skill-tag">Conditionals</span>
+                <span class="skill-tag">Broadcasts</span>
+                <span class="skill-tag">Custom Blocks</span>
+                <span class="skill-tag">Game Logic</span>
+                <span class="skill-tag">Turn-based Systems</span>
+            </div>
+        </div>
+
+        <!-- Slide 16: Let's Code! -->
+        <div class="slide">
+            <div class="scratch-logo">&#128049;</div>
+            <h1>Let's Build It!</h1>
+            <p class="subtitle">Open Scratch and start coding!</p>
+            <p style="margin-top: 30px; font-size: 1.5rem; color: #ff9800;">scratch.mit.edu</p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">&#8592; Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next &#8594;</button>
+    </div>
+
+    <div class="slide-counter" id="counter">1 / 16</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        const counter = document.getElementById('counter');
+        let currentSlide = 0;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+
+            const progressWidth = ((currentSlide + 1) / slides.length) * 100;
+            progress.style.width = progressWidth + '%';
+            counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Create chess board
+        function createBoard() {
+            const board = document.getElementById('board1');
+            const pieces = [
+                ['&#9823;', '&#9823;', '&#9818;', '&#9823;', '&#9823;'],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['&#9817;', '&#9817;', '&#9812;', '&#9817;', '&#9817;']
+            ];
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.innerHTML = `<span>${pieces[row][col]}</span>`;
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Chess - Scratch Project Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #3498db;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            font-size: 1.4rem;
+            line-height: 2.2;
+            max-width: 800px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 2px;
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+        }
+
+        .light { background: #EEEED2; }
+        .dark { background: #769656; }
+
+        .piece {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 25px;
+            font-family: 'Consolas', monospace;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .highlight { color: #f39c12; }
+        .keyword { color: #e74c3c; }
+        .string { color: #2ecc71; }
+        .comment { color: #7f8c8d; }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            transition: width 0.3s ease;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            max-width: 1000px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 600px;
+        }
+
+        .icon-item {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .icon-item .emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .movement-demo {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 3px;
+            background: #333;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .move-square {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .move-square.can-move {
+            background: rgba(46, 204, 113, 0.5);
+        }
+
+        .move-square.piece-square {
+            background: rgba(52, 152, 219, 0.5);
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-width: 800px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+        }
+
+        .big-emoji {
+            font-size: 8rem;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <div class="presentation" id="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="big-emoji">&#9819;</div>
+            <h1>Mini Chess</h1>
+            <p class="subtitle">Pawns vs King - A Scratch Project</p>
+            <p style="margin-top: 40px; color: #7f8c8d;">Press <kbd style="background: #444; padding: 5px 15px; border-radius: 5px;">&#8594;</kbd> or click Next to begin</p>
+        </div>
+
+        <!-- Slide 2: What We'll Build -->
+        <div class="slide">
+            <h2>What We'll Build</h2>
+            <div class="chess-board" id="board1"></div>
+            <ul>
+                <li>5x5 chess board (smaller than normal!)</li>
+                <li>White team: 1 King + 4 Pawns</li>
+                <li>Black team: 1 King + 4 Pawns</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Game Rules -->
+        <div class="slide">
+            <h2>Game Rules</h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <div class="emoji">&#9812;</div>
+                    <p>King moves 1 square any direction</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#9817;</div>
+                    <p>Pawn moves forward, captures diagonal</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#127942;</div>
+                    <p>Capture the enemy King to win!</p>
+                </div>
+                <div class="icon-item">
+                    <div class="emoji">&#128260;</div>
+                    <p>Players take turns</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: King Movement -->
+        <div class="slide">
+            <h2>How the King Moves</h2>
+            <div class="two-columns">
+                <div>
+                    <div class="movement-demo">
+                        <div class="move-square can-move">&#8598;</div>
+                        <div class="move-square can-move">&#8593;</div>
+                        <div class="move-square can-move">&#8599;</div>
+                        <div class="move-square can-move">&#8592;</div>
+                        <div class="move-square piece-square">&#9812;</div>
+                        <div class="move-square can-move">&#8594;</div>
+                        <div class="move-square can-move">&#8601;</div>
+                        <div class="move-square can-move">&#8595;</div>
+                        <div class="move-square can-move">&#8600;</div>
+                    </div>
+                </div>
+                <div>
+                    <ul>
+                        <li>8 possible directions</li>
+                        <li>Only 1 square at a time</li>
+                        <li>Can capture any enemy piece</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Pawn Movement -->
+        <div class="slide">
+            <h2>How the Pawn Moves</h2>
+            <div class="two-columns">
+                <div style="text-align: center;">
+                    <p style="margin-bottom: 20px;">White Pawn</p>
+                    <div class="movement-demo">
+                        <div class="move-square can-move">&#8598;</div>
+                        <div class="move-square can-move">&#8593;</div>
+                        <div class="move-square can-move">&#8599;</div>
+                        <div class="move-square"></div>
+                        <div class="move-square piece-square">&#9817;</div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                        <div class="move-square"></div>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #7f8c8d;">Diagonal = capture only</p>
+                </div>
+                <div>
+                    <ul>
+                        <li>Move forward 1 square</li>
+                        <li>Capture diagonally only</li>
+                        <li>White goes up &#8593;</li>
+                        <li>Black goes down &#8595;</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Part 1 - Draw Board -->
+        <div class="slide">
+            <h2>Part 1: Draw the Board</h2>
+            <div class="code-block">
+                <span class="keyword">repeat</span> <span class="highlight">5</span> <span class="comment">// rows</span><br>
+                &nbsp;&nbsp;<span class="keyword">repeat</span> <span class="highlight">5</span> <span class="comment">// columns</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (row + col) is even <span class="keyword">then</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color = <span class="string">light</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;color = <span class="string">dark</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;draw square
+            </div>
+            <p style="color: #bdc3c7; margin-top: 20px;">Nested loops create the checkerboard pattern!</p>
+        </div>
+
+        <!-- Slide 7: Part 2 - Create Pieces -->
+        <div class="slide">
+            <h2>Part 2: Create the Pieces</h2>
+            <div style="font-size: 4rem; margin: 30px 0;">
+                &#9812; &#9817; &#9817; &#9817; &#9817;
+                <span style="margin: 0 20px;">vs</span>
+                &#9818; &#9823; &#9823; &#9823; &#9823;
+            </div>
+            <ul>
+                <li>Create 10 sprites total</li>
+                <li>Each piece tracks its row & column</li>
+                <li>Use costumes for selection highlight</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Part 3 - Selection -->
+        <div class="slide">
+            <h2>Part 3: Click to Select</h2>
+            <div class="code-block">
+                <span class="keyword">when this sprite clicked</span><br>
+                &nbsp;&nbsp;<span class="keyword">if</span> currentTurn = <span class="string">"white"</span> <span class="keyword">then</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">broadcast</span> <span class="highlight">[deselectAll]</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;set <span class="highlight">isSelected</span> to 1<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;switch costume to <span class="string">[selected]</span>
+            </div>
+            <p style="color: #bdc3c7; margin-top: 20px;">Only select pieces on your turn!</p>
+        </div>
+
+        <!-- Slide 9: Part 4 - Movement -->
+        <div class="slide">
+            <h2>Part 4: Move the Pieces</h2>
+            <div class="code-block">
+                <span class="comment">// Convert click to board position</span><br>
+                clickCol = (mouse x + 125) / 50<br>
+                clickRow = (125 - mouse y) / 50<br><br>
+                <span class="comment">// Check if move is valid</span><br>
+                <span class="keyword">if</span> distance &lt;= 1 <span class="keyword">then</span><br>
+                &nbsp;&nbsp;move piece to new square
+            </div>
+        </div>
+
+        <!-- Slide 10: Part 5 - Winning -->
+        <div class="slide">
+            <h2>Part 5: Capture & Win!</h2>
+            <div class="two-columns">
+                <div style="text-align: center;">
+                    <div style="font-size: 6rem;">&#9818; &#10060;</div>
+                    <p style="margin-top: 20px;">Capture the King = Victory!</p>
+                </div>
+                <div>
+                    <div class="code-block" style="font-size: 1rem;">
+                        <span class="keyword">when I receive</span> <span class="highlight">[captureOnSquare]</span><br>
+                        <span class="keyword">if</span> myRow = clickRow <span class="keyword">and</span><br>
+                        &nbsp;&nbsp;&nbsp;myCol = clickCol <span class="keyword">then</span><br>
+                        &nbsp;&nbsp;hide<br>
+                        &nbsp;&nbsp;<span class="keyword">if</span> I am King <span class="keyword">then</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">broadcast</span> <span class="string">[gameOver]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Skills Learned -->
+        <div class="slide">
+            <h2>Skills You'll Learn</h2>
+            <div class="skills-list">
+                <span class="skill-tag">Nested Loops</span>
+                <span class="skill-tag">X/Y Coordinates</span>
+                <span class="skill-tag">Variables</span>
+                <span class="skill-tag">Conditionals</span>
+                <span class="skill-tag">Broadcasts</span>
+                <span class="skill-tag">Cloning</span>
+                <span class="skill-tag">Game Logic</span>
+                <span class="skill-tag">Turn-based Systems</span>
+            </div>
+        </div>
+
+        <!-- Slide 12: Let's Code! -->
+        <div class="slide">
+            <div class="big-emoji">&#128187;</div>
+            <h1>Let's Build It!</h1>
+            <p class="subtitle">Open Scratch and start coding!</p>
+            <p style="margin-top: 30px; font-size: 1.2rem; color: #3498db;">scratch.mit.edu</p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="prevSlide()">&#8592; Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next &#8594;</button>
+    </div>
+
+    <div class="slide-counter" id="counter">1 / 12</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        const counter = document.getElementById('counter');
+        let currentSlide = 0;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+
+            // Update progress bar
+            const progressWidth = ((currentSlide + 1) / slides.length) * 100;
+            progress.style.width = progressWidth + '%';
+
+            // Update counter
+            counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Create chess board for slide 2
+        function createBoard() {
+            const board = document.getElementById('board1');
+            const pieces = [
+                ['&#9823;', '&#9823;', '&#9818;', '&#9823;', '&#9823;'],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['&#9817;', '&#9817;', '&#9812;', '&#9817;', '&#9817;']
+            ];
+
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    const square = document.createElement('div');
+                    const isLight = (row + col) % 2 === 0;
+                    square.className = `square ${isLight ? 'light' : 'dark'}`;
+                    square.innerHTML = `<span class="piece">${pieces[row][col]}</span>`;
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
