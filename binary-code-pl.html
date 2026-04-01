@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kod Binarny - Język Komputerów!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #0b0e2d;
+            --bg-mid: #131847;
+            --neon-green: #39ff14;
+            --neon-blue: #00d4ff;
+            --neon-pink: #ff2eaa;
+            --neon-yellow: #ffe600;
+            --neon-orange: #ff6b2b;
+            --soft-white: #e8eaff;
+            --glass: rgba(255,255,255,0.06);
+            --glass-border: rgba(255,255,255,0.12);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-deep);
+            color: var(--soft-white);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === BACKGROUND EFFECTS === */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(57,255,20,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(57,255,20,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow.g1 { background: var(--neon-blue); top: -200px; left: -100px; }
+        .bg-glow.g2 { background: var(--neon-pink); bottom: -200px; right: -100px; }
+        .bg-glow.g3 { background: var(--neon-green); top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.07; }
+
+        /* floating binary rain */
+        .binary-rain {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .binary-rain span {
+            position: absolute;
+            top: -40px;
+            font-family: 'Baloo 2', monospace;
+            font-size: 1.1rem;
+            color: var(--neon-green);
+            opacity: 0.08;
+            animation: rain linear infinite;
+        }
+
+        @keyframes rain {
+            to { transform: translateY(110vh); }
+        }
+
+        /* === PRESENTATION === */
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 60px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* === TYPOGRAPHY === */
+        h1 {
+            font-family: 'Baloo 2', cursive;
+            font-weight: 800;
+            font-size: 3.8rem;
+            text-align: center;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            font-size: 2.6rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-pink {
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-yellow {
+            background: linear-gradient(135deg, var(--neon-yellow), var(--neon-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p, li {
+            font-size: 1.35rem;
+            line-height: 1.8;
+        }
+
+        .big-text {
+            font-size: 1.6rem;
+            text-align: center;
+            max-width: 800px;
+            line-height: 1.9;
+        }
+
+        .emoji-big {
+            font-size: 4rem;
+            margin: 10px 0;
+        }
+
+        /* === GLASS CARD === */
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* === LIGHT SWITCH EXERCISE === */
+        .switches-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .light-switch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .light-switch:hover {
+            transform: scale(1.05);
+        }
+
+        .bulb {
+            width: 80px;
+            height: 100px;
+            border-radius: 50% 50% 30% 30%;
+            background: #1a1e3a;
+            border: 3px solid #333;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .bulb.on {
+            background: radial-gradient(circle, #fff7a0 0%, #ffe100 40%, #ffb800 100%);
+            border-color: #ffcc00;
+            box-shadow: 0 0 40px rgba(255,230,0,0.5), 0 0 80px rgba(255,200,0,0.2);
+        }
+
+        .bulb-label {
+            font-family: 'Baloo 2', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            min-width: 30px;
+            text-align: center;
+            transition: color 0.3s;
+        }
+
+        .bulb-label.on { color: var(--neon-green); }
+        .bulb-label.off { color: #555; }
+
+        /* === BINARY COUNTER === */
+        .counter-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bits-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .bit-box {
+            width: 90px;
+            height: 90px;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: 'Baloo 2', monospace;
+            font-weight: 800;
+            font-size: 2.4rem;
+            transition: all 0.25s ease;
+            border: 3px solid var(--glass-border);
+            background: var(--glass);
+            user-select: none;
+        }
+
+        .bit-box:hover {
+            transform: scale(1.08);
+        }
+
+        .bit-box.active {
+            background: linear-gradient(135deg, rgba(57,255,20,0.2), rgba(0,212,255,0.2));
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(57,255,20,0.15);
+        }
+
+        .bit-box .bit-value-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            opacity: 0.5;
+            margin-top: 2px;
+        }
+
+        .counter-result {
+            font-family: 'Baloo 2', monospace;
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .counter-equals {
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+
+        /* === DECODE EXERCISE === */
+        .decode-challenge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .decode-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .decode-letter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .decode-bits {
+            font-family: 'Baloo 2', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--neon-green);
+            letter-spacing: 3px;
+        }
+
+        .decode-input {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            border: 3px solid var(--glass-border);
+            background: var(--glass);
+            color: var(--soft-white);
+            font-family: 'Baloo 2', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .decode-input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0,212,255,0.2);
+        }
+
+        .decode-input.correct {
+            border-color: var(--neon-green);
+            background: rgba(57,255,20,0.12);
+            color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(57,255,20,0.2);
+        }
+
+        .decode-input.wrong {
+            border-color: var(--neon-pink);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .decode-hint {
+            font-size: 1.1rem;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+        .decode-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 8px;
+            max-width: 700px;
+            margin: 10px 0;
+        }
+
+        .decode-table-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 6px 8px;
+            text-align: center;
+            font-family: 'Baloo 2', monospace;
+            font-size: 0.9rem;
+        }
+
+        .decode-table-item .letter {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--neon-yellow);
+        }
+
+        .decode-table-item .code {
+            color: var(--neon-green);
+            font-size: 0.8rem;
+        }
+
+        /* === FINGER COUNTING === */
+        .fingers-demo {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hand-display {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .finger {
+            width: 36px;
+            height: 60px;
+            border-radius: 18px 18px 6px 6px;
+            background: #2a2e5a;
+            border: 2px solid #444;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .finger.up {
+            height: 80px;
+            background: linear-gradient(to top, #ffb347, #ffcc33);
+            border-color: #ffaa00;
+            box-shadow: 0 0 15px rgba(255,180,0,0.3);
+        }
+
+        .finger-label {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Baloo 2', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .finger-number {
+            font-family: 'Baloo 2', monospace;
+            font-size: 3rem;
+            font-weight: 800;
+        }
+
+        .finger-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .finger-btn {
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass);
+            color: var(--soft-white);
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .finger-btn:hover {
+            border-color: var(--neon-blue);
+            background: rgba(0,212,255,0.1);
+        }
+
+        /* === DRAW BINARY ART === */
+        .pixel-grid {
+            display: grid;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .pixel-grid.g8 { grid-template-columns: repeat(8, 45px); }
+
+        .pixel {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background: #1a1e3a;
+            border: 2px solid #2a2e5a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .pixel:hover { border-color: var(--neon-blue); }
+
+        .pixel.on {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(57,255,20,0.3);
+        }
+
+        .pixel-hint {
+            font-size: 1rem;
+            opacity: 0.5;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* === QUIZ === */
+        .quiz-options {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .quiz-btn {
+            padding: 16px 32px;
+            border-radius: 16px;
+            border: 3px solid var(--glass-border);
+            background: var(--glass);
+            color: var(--soft-white);
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            min-width: 100px;
+        }
+
+        .quiz-btn:hover {
+            border-color: var(--neon-blue);
+            transform: scale(1.05);
+        }
+
+        .quiz-btn.correct {
+            border-color: var(--neon-green);
+            background: rgba(57,255,20,0.15);
+            color: var(--neon-green);
+            box-shadow: 0 0 25px rgba(57,255,20,0.2);
+        }
+
+        .quiz-btn.wrong {
+            border-color: var(--neon-pink);
+            background: rgba(255,46,170,0.1);
+            opacity: 0.5;
+        }
+
+        .quiz-feedback {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            min-height: 50px;
+        }
+
+        /* === SUCCESS ANIMATION === */
+        .success-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            animation: confettiFall 1.2s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translateY(200px) rotate(720deg) scale(0); opacity: 0; }
+        }
+
+        /* === NAVIGATION === */
+        .nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            z-index: 50;
+            background: rgba(11,14,45,0.85);
+            backdrop-filter: blur(12px);
+            padding: 12px 24px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .nav-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass);
+            color: var(--soft-white);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            border-color: var(--neon-blue);
+            background: rgba(0,212,255,0.1);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .slide-counter {
+            font-family: 'Baloo 2', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            opacity: 0.6;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+            transition: width 0.4s ease;
+            z-index: 50;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .slide { padding: 30px 20px 100px; }
+            h1 { font-size: 2.4rem; }
+            h2 { font-size: 1.8rem; }
+            p, li { font-size: 1.1rem; }
+            .big-text { font-size: 1.2rem; }
+            .bulb { width: 60px; height: 75px; }
+            .bit-box { width: 65px; height: 65px; font-size: 1.8rem; }
+            .pixel { width: 32px; height: 32px; }
+            .glass-card { padding: 24px; }
+        }
+
+        /* list styling */
+        .styled-list {
+            list-style: none;
+            max-width: 700px;
+        }
+
+        .styled-list li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .styled-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            background: var(--neon-green);
+            box-shadow: 0 0 8px rgba(57,255,20,0.3);
+        }
+
+        .two-col {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .two-col > * { flex: 1; }
+
+        @media (max-width: 768px) {
+            .two-col { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="bg-glow g3"></div>
+<div class="binary-rain" id="binaryRain"></div>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation" id="presentation">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active" data-slide="0">
+        <div class="emoji-big">💻</div>
+        <h1><span class="gradient-text">Kod Binarny</span></h1>
+        <h2 style="font-size:2rem; color: var(--neon-pink);">Tajny Język Komputerów!</h2>
+        <p class="big-text" style="margin-top: 20px; opacity: 0.7;">
+            Czy wiesz, że komputer rozumie tylko dwie cyfry?<br>Dzisiaj poznamy jego sekretny język!
+        </p>
+    </div>
+
+    <!-- SLIDE 2: What is binary? -->
+    <div class="slide" data-slide="1">
+        <h2><span class="gradient-text">Czym jest kod binarny?</span></h2>
+        <div class="two-col">
+            <div>
+                <p class="big-text" style="text-align: left;">
+                    My, ludzie, używamy <strong style="color:var(--neon-yellow)">10 cyfr</strong>:<br>
+                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+                </p>
+                <br>
+                <p class="big-text" style="text-align: left;">
+                    Komputer zna tylko <strong style="color:var(--neon-green)">2 cyfry</strong>:<br>
+                    <span style="font-family:'Baloo 2'; font-size: 3rem; font-weight:800; color:var(--neon-green)">0</span>
+                    &nbsp;i&nbsp;
+                    <span style="font-family:'Baloo 2'; font-size: 3rem; font-weight:800; color:var(--neon-green)">1</span>
+                </p>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 6rem; line-height: 1;">🤖</div>
+                <p style="font-size: 1.1rem; opacity: 0.5; margin-top: 10px;">
+                    "Znam tylko 0 i 1!"
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: On / Off -->
+    <div class="slide" data-slide="2">
+        <h2><span class="gradient-pink">0 i 1 to jak włącznik!</span></h2>
+        <p class="big-text" style="margin-bottom: 20px;">
+            <strong style="color:var(--neon-green)">1</strong> = włączone &nbsp;💡&nbsp;
+            <strong style="color:#555">0</strong> = wyłączone &nbsp;🌑
+        </p>
+        <p style="opacity:0.6; margin-bottom: 15px;">Kliknij żarówki, żeby je włączać i wyłączać!</p>
+        <div class="switches-row" id="switchesDemo">
+            <div class="light-switch" onclick="toggleBulb(this)">
+                <div class="bulb">🌑</div>
+                <div class="bulb-label off">0</div>
+            </div>
+            <div class="light-switch" onclick="toggleBulb(this)">
+                <div class="bulb on">💡</div>
+                <div class="bulb-label on">1</div>
+            </div>
+            <div class="light-switch" onclick="toggleBulb(this)">
+                <div class="bulb">🌑</div>
+                <div class="bulb-label off">0</div>
+            </div>
+            <div class="light-switch" onclick="toggleBulb(this)">
+                <div class="bulb on">💡</div>
+                <div class="bulb-label on">1</div>
+            </div>
+            <div class="light-switch" onclick="toggleBulb(this)">
+                <div class="bulb">🌑</div>
+                <div class="bulb-label off">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: Binary counting intro -->
+    <div class="slide" data-slide="3">
+        <h2><span class="gradient-yellow">Liczenie binarne</span></h2>
+        <p class="big-text" style="margin-bottom: 10px;">
+            Każda pozycja ma swoją wartość - jak w naszych liczbach!
+        </p>
+        <div class="glass-card" style="text-align: center;">
+            <p style="font-size: 1.2rem; margin-bottom: 16px; opacity: 0.7;">Każdy bit (cyfra binarna) ma wartość:</p>
+            <div class="bits-row" style="justify-content: center; margin-bottom: 20px;">
+                <div class="bit-box active" style="cursor:default;">
+                    <span>8</span>
+                </div>
+                <div class="bit-box active" style="cursor:default;">
+                    <span>4</span>
+                </div>
+                <div class="bit-box active" style="cursor:default;">
+                    <span>2</span>
+                </div>
+                <div class="bit-box active" style="cursor:default;">
+                    <span>1</span>
+                </div>
+            </div>
+            <p style="font-size: 1.3rem;">
+                Jeśli bit jest <strong style="color:var(--neon-green)">włączony (1)</strong> - dodajemy jego wartość<br>
+                Jeśli jest <strong style="color:#555">wyłączony (0)</strong> - nie dodajemy
+            </p>
+            <br>
+            <p style="font-size: 1.2rem; opacity: 0.7;">
+                Na przykład: <span style="color:var(--neon-green); font-family:'Baloo 2'; font-weight:700;">0101</span>
+                = 0 + <strong style="color:var(--neon-yellow)">4</strong> + 0 + <strong style="color:var(--neon-yellow)">1</strong>
+                = <strong style="color:var(--neon-blue); font-size:1.5rem;">5</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: Interactive binary counter -->
+    <div class="slide" data-slide="4">
+        <h2><span class="gradient-text">Kliknij bity, żeby tworzyć liczby!</span></h2>
+        <div class="counter-area">
+            <div class="bits-row">
+                <div class="bit-box" data-bitval="8" onclick="toggleBit(this)">
+                    <span class="bit-digit">0</span>
+                    <span class="bit-value-label">= 8</span>
+                </div>
+                <div class="bit-box" data-bitval="4" onclick="toggleBit(this)">
+                    <span class="bit-digit">0</span>
+                    <span class="bit-value-label">= 4</span>
+                </div>
+                <div class="bit-box" data-bitval="2" onclick="toggleBit(this)">
+                    <span class="bit-digit">0</span>
+                    <span class="bit-value-label">= 2</span>
+                </div>
+                <div class="bit-box" data-bitval="1" onclick="toggleBit(this)">
+                    <span class="bit-digit">0</span>
+                    <span class="bit-value-label">= 1</span>
+                </div>
+            </div>
+            <div class="counter-equals">=</div>
+            <div class="counter-result" id="counterResult">
+                <span class="gradient-text">0</span>
+            </div>
+            <p style="opacity:0.5; font-size:1rem;">Spróbuj ułożyć liczby: 3, 7, 10, 15!</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: Finger counting -->
+    <div class="slide" data-slide="5">
+        <h2><span class="gradient-pink">Licznie binarne na palcach!</span></h2>
+        <p class="big-text" style="margin-bottom: 10px;">
+            Na 3 palcach możemy policzyć od 0 do 7!
+        </p>
+        <div class="glass-card">
+            <div class="fingers-demo">
+                <div style="text-align:center;">
+                    <div class="hand-display" id="fingerDisplay">
+                        <div class="finger" id="finger4">
+                            <span class="finger-label">4</span>
+                        </div>
+                        <div class="finger" id="finger2">
+                            <span class="finger-label">2</span>
+                        </div>
+                        <div class="finger" id="finger1">
+                            <span class="finger-label">1</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 40px;">
+                        <span class="finger-number gradient-text" id="fingerNumber">0</span>
+                    </div>
+                    <div class="finger-controls">
+                        <button class="finger-btn" onclick="changeFingers(-1)">&#9664; Mniej</button>
+                        <button class="finger-btn" onclick="changeFingers(1)">Więcej &#9654;</button>
+                    </div>
+                </div>
+                <div style="min-width:200px;">
+                    <p style="font-size:1.1rem; line-height:2;">
+                        <span style="color:var(--neon-green)">000</span> = 0<br>
+                        <span style="color:var(--neon-green)">001</span> = 1<br>
+                        <span style="color:var(--neon-green)">010</span> = 2<br>
+                        <span style="color:var(--neon-green)">011</span> = 3<br>
+                        <span style="color:var(--neon-green)">100</span> = 4<br>
+                        <span style="color:var(--neon-green)">101</span> = 5<br>
+                        <span style="color:var(--neon-green)">110</span> = 6<br>
+                        <span style="color:var(--neon-green)">111</span> = 7
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: Secret code intro -->
+    <div class="slide" data-slide="6">
+        <h2><span class="gradient-yellow">Sekretny alfabet binarny!</span></h2>
+        <p class="big-text" style="margin-bottom: 15px;">
+            Każda litera ma swój numer binarny. Oto kody liter:
+        </p>
+        <div class="decode-table" id="decodeTable"></div>
+        <p style="opacity:0.5; font-size: 1rem; margin-top: 10px;">
+            A=1 (00001), B=2 (00010), C=3 (00011)... i tak dalej!
+        </p>
+    </div>
+
+    <!-- SLIDE 8: Decode exercise -->
+    <div class="slide" data-slide="7">
+        <h2><span class="gradient-text">Odczytaj tajną wiadomość!</span></h2>
+        <p style="opacity:0.6; margin-bottom: 5px;">Użyj tabelki z poprzedniego slajdu. Wpisz litery:</p>
+        <div class="decode-challenge" id="decodeChallenge"></div>
+        <div class="quiz-feedback" id="decodeFeedback"></div>
+    </div>
+
+    <!-- SLIDE 9: Pixel art -->
+    <div class="slide" data-slide="8">
+        <h2><span class="gradient-pink">Rysuj binarną grafikę!</span></h2>
+        <p class="big-text" style="margin-bottom:10px;">
+            Obrazki w komputerze to też 0 i 1!<br>
+            <strong style="color:var(--neon-green)">1</strong> = piksel zapalony,
+            <strong style="color:#555">0</strong> = piksel zgaszony
+        </p>
+        <div class="pixel-grid g8" id="pixelGrid"></div>
+        <div style="display:flex; gap:12px; margin-top:12px;">
+            <button class="finger-btn" onclick="clearPixels()">Wyczyść</button>
+            <button class="finger-btn" onclick="loadHeart()">Pokaż serce ❤️</button>
+            <button class="finger-btn" onclick="loadSmile()">Pokaż buźkę 😊</button>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: Quiz -->
+    <div class="slide" data-slide="9">
+        <h2><span class="gradient-yellow">Quiz binarny!</span></h2>
+        <div class="glass-card" style="text-align: center;" id="quizArea">
+            <p class="big-text" id="quizQuestion" style="margin-bottom: 15px;"></p>
+            <div class="quiz-options" id="quizOptions"></div>
+            <div class="quiz-feedback" id="quizFeedback"></div>
+            <button class="finger-btn" id="quizNext" style="display:none; margin-top:10px;" onclick="nextQuizQuestion()">Następne pytanie &#9654;</button>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: Summary -->
+    <div class="slide" data-slide="10">
+        <div class="emoji-big">🎉</div>
+        <h1><span class="gradient-text">Brawo!</span></h1>
+        <h2 style="font-size:1.8rem; color: var(--neon-pink);">Teraz znasz tajny język komputerów!</h2>
+        <div class="glass-card" style="text-align: center;">
+            <ul class="styled-list" style="display:inline-block; text-align:left;">
+                <li>Komputery rozumieją tylko <strong style="color:var(--neon-green)">0</strong> i <strong style="color:var(--neon-green)">1</strong></li>
+                <li>Każdy bit ma wartość: <strong style="color:var(--neon-yellow)">1, 2, 4, 8...</strong></li>
+                <li>Z bitów można tworzyć <strong style="color:var(--neon-blue)">liczby, litery i obrazki!</strong></li>
+                <li>Na 3 palcach binarnie policzymy do <strong style="color:var(--neon-orange)">7</strong>!</li>
+            </ul>
+        </div>
+        <p style="margin-top: 20px; opacity: 0.5; font-size: 1.1rem;">Coding Tree 🌳</p>
+    </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 11</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+    // === BINARY RAIN ===
+    const rainEl = document.getElementById('binaryRain');
+    for (let i = 0; i < 30; i++) {
+        const span = document.createElement('span');
+        span.textContent = Math.random() > 0.5 ? '1' : '0';
+        span.style.left = Math.random() * 100 + '%';
+        span.style.animationDuration = (6 + Math.random() * 10) + 's';
+        span.style.animationDelay = Math.random() * 8 + 's';
+        rainEl.appendChild(span);
+    }
+
+    // === NAVIGATION ===
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    function changeSlide(dir) {
+        const next = currentSlide + dir;
+        if (next < 0 || next >= totalSlides) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = next;
+        slides[currentSlide].classList.add('active');
+        updateNav();
+    }
+
+    function updateNav() {
+        document.getElementById('prevBtn').disabled = currentSlide === 0;
+        document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        document.getElementById('slideCounter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+        document.getElementById('progressBar').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); }
+    });
+
+    updateNav();
+
+    // === LIGHT SWITCH ===
+    function toggleBulb(el) {
+        const bulb = el.querySelector('.bulb');
+        const label = el.querySelector('.bulb-label');
+        const isOn = bulb.classList.toggle('on');
+        bulb.textContent = isOn ? '💡' : '🌑';
+        label.textContent = isOn ? '1' : '0';
+        label.classList.toggle('on', isOn);
+        label.classList.toggle('off', !isOn);
+    }
+
+    // === BINARY COUNTER ===
+    function toggleBit(el) {
+        const isActive = el.classList.toggle('active');
+        el.querySelector('.bit-digit').textContent = isActive ? '1' : '0';
+        updateCounter();
+    }
+
+    function updateCounter() {
+        const bits = document.querySelectorAll('[data-bitval]');
+        let total = 0;
+        bits.forEach(b => {
+            if (b.classList.contains('active')) total += parseInt(b.dataset.bitval);
+        });
+        document.getElementById('counterResult').innerHTML = '<span class="gradient-text">' + total + '</span>';
+    }
+
+    // === FINGER COUNTING ===
+    let fingerVal = 0;
+    function changeFingers(dir) {
+        fingerVal = Math.max(0, Math.min(7, fingerVal + dir));
+        updateFingers();
+    }
+
+    function updateFingers() {
+        const f4 = document.getElementById('finger4');
+        const f2 = document.getElementById('finger2');
+        const f1 = document.getElementById('finger1');
+        f4.className = 'finger' + ((fingerVal & 4) ? ' up' : '');
+        f2.className = 'finger' + ((fingerVal & 2) ? ' up' : '');
+        f1.className = 'finger' + ((fingerVal & 1) ? ' up' : '');
+        // keep labels
+        f4.innerHTML = '<span class="finger-label">4</span>';
+        f2.innerHTML = '<span class="finger-label">2</span>';
+        f1.innerHTML = '<span class="finger-label">1</span>';
+        document.getElementById('fingerNumber').textContent = fingerVal;
+    }
+
+    // === DECODE TABLE ===
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const decodeTableEl = document.getElementById('decodeTable');
+    for (let i = 0; i < 26; i++) {
+        const div = document.createElement('div');
+        div.className = 'decode-table-item';
+        const bin = (i + 1).toString(2).padStart(5, '0');
+        div.innerHTML = '<div class="letter">' + alphabet[i] + '</div><div class="code">' + bin + '</div>';
+        decodeTableEl.appendChild(div);
+    }
+
+    // === DECODE EXERCISE ===
+    // Secret message: "KOD" (simple word)
+    const secretWord = 'KOD';
+    const decodeChallengeEl = document.getElementById('decodeChallenge');
+    const decodeFeedbackEl = document.getElementById('decodeFeedback');
+
+    function setupDecode() {
+        const row = document.createElement('div');
+        row.className = 'decode-row';
+        for (let i = 0; i < secretWord.length; i++) {
+            const group = document.createElement('div');
+            group.className = 'decode-letter-group';
+            const charIndex = secretWord.charCodeAt(i) - 64; // A=1
+            const bin = charIndex.toString(2).padStart(5, '0');
+            group.innerHTML =
+                '<div class="decode-bits">' + bin + '</div>' +
+                '<input class="decode-input" maxlength="1" data-answer="' + secretWord[i] + '" oninput="checkDecode(this)">';
+            row.appendChild(group);
+        }
+        decodeChallengeEl.appendChild(row);
+
+        const hint = document.createElement('p');
+        hint.className = 'decode-hint';
+        hint.textContent = 'Wskazówka: zamień binarny na liczbę, potem znajdź literę (A=1, B=2...)';
+        decodeChallengeEl.appendChild(hint);
+    }
+
+    function checkDecode(input) {
+        const val = input.value.toUpperCase();
+        if (!val) {
+            input.classList.remove('correct', 'wrong');
+            decodeFeedbackEl.textContent = '';
+            return;
+        }
+        if (val === input.dataset.answer) {
+            input.classList.remove('wrong');
+            input.classList.add('correct');
+            // check if all correct
+            const allInputs = decodeChallengeEl.querySelectorAll('.decode-input');
+            const allCorrect = [...allInputs].every(inp => inp.classList.contains('correct'));
+            if (allCorrect) {
+                decodeFeedbackEl.innerHTML = '<span style="color:var(--neon-green)">Brawo! Tajne słowo to: KOD! 🎉</span>';
+                spawnConfetti(decodeFeedbackEl);
+            }
+        } else {
+            input.classList.remove('correct');
+            input.classList.add('wrong');
+            decodeFeedbackEl.innerHTML = '<span style="color:var(--neon-pink)">Spróbuj jeszcze raz!</span>';
+        }
+    }
+
+    setupDecode();
+
+    // === PIXEL ART ===
+    const pixelGridEl = document.getElementById('pixelGrid');
+    for (let i = 0; i < 64; i++) {
+        const px = document.createElement('div');
+        px.className = 'pixel';
+        px.addEventListener('click', () => px.classList.toggle('on'));
+        pixelGridEl.appendChild(px);
+    }
+
+    function clearPixels() {
+        pixelGridEl.querySelectorAll('.pixel').forEach(p => p.classList.remove('on'));
+    }
+
+    function setPixels(pattern) {
+        const pixels = pixelGridEl.querySelectorAll('.pixel');
+        pattern.forEach((row, r) => {
+            for (let c = 0; c < 8; c++) {
+                const idx = r * 8 + c;
+                if (row[c] === 1) pixels[idx].classList.add('on');
+                else pixels[idx].classList.remove('on');
+            }
+        });
+    }
+
+    function loadHeart() {
+        clearPixels();
+        setPixels([
+            [0,1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,0],
+            [0,0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0,0],
+            [0,0,0,0,0,0,0,0],
+        ]);
+    }
+
+    function loadSmile() {
+        clearPixels();
+        setPixels([
+            [0,0,1,1,1,1,0,0],
+            [0,1,0,0,0,0,1,0],
+            [1,0,1,0,0,1,0,1],
+            [1,0,0,0,0,0,0,1],
+            [1,0,1,0,0,1,0,1],
+            [1,0,0,1,1,0,0,1],
+            [0,1,0,0,0,0,1,0],
+            [0,0,1,1,1,1,0,0],
+        ]);
+    }
+
+    // === QUIZ ===
+    const quizQuestions = [
+        {
+            q: 'Ile cyfr zna komputer?',
+            opts: ['2', '10', '100', '26'],
+            correct: 0
+        },
+        {
+            q: 'Co oznacza binarny kod <span style="color:var(--neon-green)">0011</span>?',
+            opts: ['1', '2', '3', '4'],
+            correct: 2
+        },
+        {
+            q: 'Jaką wartość ma binarny <span style="color:var(--neon-green)">1010</span>?',
+            opts: ['8', '10', '12', '5'],
+            correct: 1
+        },
+        {
+            q: 'Na 3 palcach binarnie policzymy maksymalnie do:',
+            opts: ['3', '5', '7', '10'],
+            correct: 2
+        },
+        {
+            q: 'Co oznacza bit ustawiony na <span style="color:var(--neon-green)">1</span>?',
+            opts: ['Wyłączony', 'Włączony', 'Usunięty', 'Ukryty'],
+            correct: 1
+        }
+    ];
+    let quizIndex = 0;
+
+    function loadQuiz() {
+        if (quizIndex >= quizQuestions.length) {
+            document.getElementById('quizQuestion').innerHTML = '<span class="gradient-text" style="font-size:2rem;">Gratulacje! Ukończyłeś quiz! 🏆</span>';
+            document.getElementById('quizOptions').innerHTML = '';
+            document.getElementById('quizFeedback').innerHTML = '<span style="color:var(--neon-green)">Jesteś binarnym mistrzem!</span>';
+            document.getElementById('quizNext').style.display = 'none';
+            spawnConfetti(document.getElementById('quizArea'));
+            return;
+        }
+        const q = quizQuestions[quizIndex];
+        document.getElementById('quizQuestion').innerHTML = q.q;
+        document.getElementById('quizFeedback').textContent = '';
+        document.getElementById('quizNext').style.display = 'none';
+        const optsEl = document.getElementById('quizOptions');
+        optsEl.innerHTML = '';
+        q.opts.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-btn';
+            btn.textContent = opt;
+            btn.onclick = () => answerQuiz(i, btn);
+            optsEl.appendChild(btn);
+        });
+    }
+
+    function answerQuiz(idx, btn) {
+        const q = quizQuestions[quizIndex];
+        const btns = document.querySelectorAll('#quizOptions .quiz-btn');
+        btns.forEach(b => b.style.pointerEvents = 'none');
+        if (idx === q.correct) {
+            btn.classList.add('correct');
+            document.getElementById('quizFeedback').innerHTML = '<span style="color:var(--neon-green)">Dobrze! 🎉</span>';
+            spawnConfetti(btn);
+        } else {
+            btn.classList.add('wrong');
+            btns[q.correct].classList.add('correct');
+            document.getElementById('quizFeedback').innerHTML = '<span style="color:var(--neon-pink)">Prawidłowa odpowiedź: ' + q.opts[q.correct] + '</span>';
+        }
+        document.getElementById('quizNext').style.display = 'inline-block';
+    }
+
+    function nextQuizQuestion() {
+        quizIndex++;
+        loadQuiz();
+    }
+
+    loadQuiz();
+
+    // === CONFETTI ===
+    function spawnConfetti(anchor) {
+        const rect = anchor.getBoundingClientRect();
+        const burst = document.createElement('div');
+        burst.className = 'success-burst';
+        burst.style.left = (rect.left + rect.width / 2) + 'px';
+        burst.style.top = (rect.top) + 'px';
+        const colors = ['#39ff14', '#00d4ff', '#ff2eaa', '#ffe600', '#ff6b2b'];
+        for (let i = 0; i < 20; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.background = colors[Math.floor(Math.random() * colors.length)];
+            c.style.left = (Math.random() - 0.5) * 200 + 'px';
+            c.style.animationDuration = (0.6 + Math.random() * 0.8) + 's';
+            c.style.animationDelay = (Math.random() * 0.2) + 's';
+            burst.appendChild(c);
+        }
+        document.body.appendChild(burst);
+        setTimeout(() => burst.remove(), 2000);
+    }
+</script>
+
+</body>
+</html>
