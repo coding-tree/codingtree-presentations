@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Czesci Komputera</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:10px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:4.2rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.8rem;margin-bottom:8px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:25px;backdrop-filter:blur(10px);max-width:900px;width:100%}
+        .feedback{font-family:'Baloo 2',cursive;font-size:1.8rem;min-height:40px;text-align:center}
+        .round-dots{display:flex;gap:8px;justify-content:center;margin-top:5px}
+        .dot{width:14px;height:14px;border-radius:50%;background:#333;transition:background 0.3s}
+        .dot.done{background:var(--neon-green)}.dot.current{background:var(--neon-blue);box-shadow:0 0 10px rgba(0,212,255,0.5)}
+
+        /* Big emoji button */
+        .emoji-big{font-size:7rem;cursor:pointer;user-select:none;transition:transform 0.2s;display:inline-block}
+        .emoji-big:hover{transform:scale(1.1)}
+
+        /* Case */
+        .case-box{width:200px;height:250px;border-radius:20px;border:4px solid var(--glass-border);background:var(--glass);position:relative;display:flex;align-items:center;justify-content:center;transition:all 0.5s;overflow:hidden}
+        .case-box.open{border-color:var(--neon-blue);box-shadow:0 0 30px rgba(0,212,255,0.2)}
+        .case-parts{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:10px}
+        .fly-part{font-size:2.5rem;opacity:0;transform:scale(0);transition:all 0.4s ease}
+        .fly-part.show{opacity:1;transform:scale(1)}
+
+        /* Component cards */
+        .comp-row{display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap}
+        .comp-icon{font-size:5rem;transition:transform 0.2s;cursor:pointer}
+        .comp-icon:hover{transform:scale(1.15)}
+        .comp-label{font-family:'Baloo 2';font-size:1.2rem;font-weight:700;text-align:center;margin-top:5px}
+        .comp-analogy{font-size:4rem;opacity:0.7}
+        .equals{font-size:3rem;font-family:'Baloo 2';font-weight:800;color:var(--neon-blue)}
+
+        /* Thought bubbles */
+        .thought-area{min-height:80px;display:flex;gap:15px;align-items:center;justify-content:center;flex-wrap:wrap}
+        .thought{font-size:2.5rem;opacity:0;transform:translateY(20px);transition:all 0.4s;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:8px 14px}
+        .thought.show{opacity:1;transform:translateY(0)}
+
+        /* RAM desk */
+        .desk{width:350px;height:120px;border-radius:16px;border:3px solid var(--glass-border);background:var(--glass);display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:10px;position:relative;transition:border-color 0.3s}
+        .desk.full{border-color:var(--neon-pink);animation:shake 0.3s ease}
+        .desk-item{font-size:2.2rem;transition:all 0.3s;cursor:pointer}
+        .desk-item:hover{transform:scale(1.2)}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+        .desk-add{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+        .add-btn{width:55px;height:55px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);font-size:2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .add-btn:hover{border-color:var(--neon-blue);transform:scale(1.08)}
+
+        /* Closet */
+        .closet{width:200px;height:200px;border-radius:20px;border:4px solid var(--glass-border);background:rgba(139,94,60,0.15);position:relative;overflow:hidden;cursor:pointer;transition:all 0.3s}
+        .closet-door{position:absolute;inset:0;background:rgba(139,94,60,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:4rem;transition:transform 0.5s;transform-origin:left}
+        .closet.open .closet-door{transform:perspective(600px) rotateY(-80deg)}
+        .closet-items{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:15px}
+        .closet-items span{font-size:2rem}
+
+        /* GPU canvas */
+        .gpu-canvas{display:grid;grid-template-columns:repeat(8,30px);gap:2px;justify-content:center}
+        .gpu-px{width:30px;height:30px;border-radius:4px;background:#1a1e3a;border:1px solid rgba(255,255,255,0.05);transition:background 0.15s}
+
+        /* Peripherals reveal */
+        .periph-ring{display:flex;flex-wrap:wrap;gap:15px;align-items:center;justify-content:center;max-width:500px}
+        .periph-item{font-size:3.5rem;opacity:0;transform:scale(0) rotate(-180deg);transition:all 0.5s ease}
+        .periph-item.show{opacity:1;transform:scale(1) rotate(0)}
+
+        /* Match quiz */
+        .match-row{display:flex;gap:15px;align-items:center;justify-content:center;flex-wrap:wrap}
+        .match-scenario{font-size:4rem;min-width:80px;text-align:center}
+        .match-options{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+        .match-btn{width:75px;height:75px;border-radius:18px;border:3px solid var(--glass-border);background:var(--glass);font-size:2.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .match-btn:hover{transform:scale(1.08);border-color:var(--neon-blue)}
+        .match-btn.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.15);box-shadow:0 0 20px rgba(57,255,20,0.3)}
+        .match-btn.wrong{border-color:var(--neon-pink);opacity:0.4}
+
+        /* Sort buckets */
+        .bucket-area{display:flex;gap:30px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+        .bucket{width:160px;min-height:180px;border-radius:20px;border:3px dashed var(--glass-border);background:var(--glass);display:flex;flex-direction:column;align-items:center;padding:10px;gap:5px;transition:all 0.2s}
+        .bucket.over{border-color:var(--neon-blue);background:rgba(0,212,255,0.05)}
+        .bucket-label{font-family:'Baloo 2';font-size:1.2rem;font-weight:700;margin-bottom:5px}
+        .bucket-items{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+        .sort-pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+        .sort-item{width:60px;height:60px;border-radius:14px;border:3px solid var(--glass-border);background:var(--glass);font-size:2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .sort-item:hover{transform:scale(1.1);border-color:var(--neon-blue)}
+        .sort-item.selected{border-color:var(--neon-yellow);box-shadow:0 0 15px rgba(255,230,0,0.3)}
+        .sort-item.placed{opacity:0.3;pointer-events:none}
+
+        /* Build PC */
+        .build-case{width:220px;height:280px;border-radius:20px;border:4px dashed var(--glass-border);background:var(--glass);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:15px;transition:all 0.3s}
+        .build-case.complete{border-style:solid;border-color:var(--neon-green);box-shadow:0 0 30px rgba(57,255,20,0.2)}
+        .build-slot{width:55px;height:55px;border-radius:12px;border:2px dashed rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all 0.3s}
+        .build-slot.filled{border-style:solid;border-color:var(--neon-green)}
+        .build-pool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+        .build-part{width:65px;height:65px;border-radius:16px;border:3px solid var(--glass-border);background:var(--glass);font-size:2.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .build-part:hover{transform:scale(1.1);border-color:var(--neon-blue)}
+        .build-part.used{opacity:0.2;pointer-events:none}
+        .peripherals-row{display:flex;gap:8px;margin-top:8px;justify-content:center}
+        .periph-slot{width:45px;height:45px;border-radius:10px;border:2px dashed rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:all 0.3s}
+        .periph-slot.filled{border-style:solid;border-color:var(--neon-green)}
+
+        /* Power button */
+        .power-btn{width:120px;height:120px;border-radius:50%;border:5px solid var(--glass-border);background:var(--glass);font-size:3.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+        .power-btn:hover{border-color:var(--neon-green);box-shadow:0 0 30px rgba(57,255,20,0.3)}
+        .power-btn.on{border-color:var(--neon-green);background:rgba(57,255,20,0.15);box-shadow:0 0 50px rgba(57,255,20,0.4)}
+        .boot-screen{width:300px;height:180px;border-radius:16px;border:3px solid var(--glass-border);background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:all 0.5s;overflow:hidden}
+        .boot-screen.on{border-color:var(--neon-blue);box-shadow:0 0 30px rgba(0,212,255,0.3)}
+        .boot-line{font-family:'Baloo 2',monospace;font-size:1rem;color:var(--neon-green);opacity:0;transition:opacity 0.3s}
+        .boot-line.show{opacity:1}
+
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        @keyframes dance{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-20px) rotate(-10deg)}75%{transform:translateY(-20px) rotate(10deg)}}
+        .bravo-emoji{font-size:5rem;animation:float 2s ease-in-out infinite;display:inline-block}
+
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:cFall 1.2s ease-out forwards}
+        @keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        @media(max-width:768px){.slide{padding:15px 10px 100px}h1{font-size:2.8rem}h2{font-size:2rem}.emoji-big{font-size:5rem}.desk{width:280px}.closet{width:150px;height:150px}.build-case{width:180px;height:230px}}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-slide="0">
+    <div style="font-size:5rem;">🖥️⌨️🖱️</div>
+    <h1><span class="gradient-text">Czesci Komputera</span></h1>
+    <div style="font-size:2.5rem;">🔧🖨️🔊📷</div>
+</div>
+
+<!-- SLIDE 2: Open the case -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-pink">🔍</span></h2>
+    <div class="case-box" id="caseBox" onclick="openCase()">
+        <div id="caseClosed" style="font-size:5rem;">🖥️</div>
+        <div class="case-parts" id="caseParts" style="display:none;">
+            <span class="fly-part" data-delay="0">🧠</span>
+            <span class="fly-part" data-delay="200">📋</span>
+            <span class="fly-part" data-delay="400">💾</span>
+            <span class="fly-part" data-delay="600">🎨</span>
+            <span class="fly-part" data-delay="800">🌀</span>
+            <span class="fly-part" data-delay="1000">🔌</span>
+        </div>
+    </div>
+    <div class="feedback" id="caseFb" style="margin-top:10px;"></div>
+</div>
+
+<!-- SLIDE 3: CPU = Brain -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-text">CPU</span></h2>
+    <div class="comp-row">
+        <div style="text-align:center;">
+            <div class="comp-icon" id="cpuIcon" onclick="cpuThink()">🧠</div>
+        </div>
+        <div class="equals">=</div>
+        <div style="text-align:center;">
+            <div class="comp-analogy">💭</div>
+        </div>
+    </div>
+    <div class="thought-area" id="cpuThoughts"></div>
+</div>
+
+<!-- SLIDE 4: RAM = Desk -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-pink">RAM</span></h2>
+    <div class="comp-row" style="margin-bottom:10px;">
+        <span style="font-size:4rem;">📋</span>
+        <span class="equals">=</span>
+        <span style="font-size:4rem;">🗄️</span>
+    </div>
+    <div class="desk" id="ramDesk"></div>
+    <div class="desk-add" id="ramButtons"></div>
+    <div class="feedback" id="ramFb"></div>
+</div>
+
+<!-- SLIDE 5: Disk = Closet -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-yellow">💾</span></h2>
+    <div class="comp-row" style="margin-bottom:10px;">
+        <span style="font-size:4rem;">💾</span>
+        <span class="equals">=</span>
+        <span style="font-size:4rem;">🗄️</span>
+    </div>
+    <div style="display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;">
+        <div class="closet" id="closet" onclick="toggleCloset()">
+            <div class="closet-items" id="closetItems"></div>
+            <div class="closet-door" id="closetDoor">🚪</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="desk-add" id="closetButtons"></div>
+        </div>
+    </div>
+    <div class="feedback" id="closetFb"></div>
+</div>
+
+<!-- SLIDE 6: GPU = Artist -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-text">GPU</span></h2>
+    <div class="comp-row" style="margin-bottom:10px;">
+        <span style="font-size:4rem;">🎨</span>
+        <span class="equals">=</span>
+        <span style="font-size:4rem;">🖼️</span>
+    </div>
+    <div class="gpu-canvas" id="gpuCanvas"></div>
+    <div class="desk-add" style="margin-top:10px;">
+        <button class="add-btn" onclick="gpuDraw(0)" title="heart">❤️</button>
+        <button class="add-btn" onclick="gpuDraw(1)" title="star">⭐</button>
+        <button class="add-btn" onclick="gpuDraw(2)" title="smile">😊</button>
+        <button class="add-btn" onclick="gpuClear()">🗑️</button>
+    </div>
+</div>
+
+<!-- SLIDE 7: Peripherals reveal -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-pink">🔌</span></h2>
+    <div style="font-size:4rem;margin-bottom:10px;">🖥️</div>
+    <div class="periph-ring" id="periphRing">
+        <div class="periph-item" data-delay="0">⌨️</div>
+        <div class="periph-item" data-delay="300">🖱️</div>
+        <div class="periph-item" data-delay="600">🖨️</div>
+        <div class="periph-item" data-delay="900">🔊</div>
+        <div class="periph-item" data-delay="1200">📷</div>
+        <div class="periph-item" data-delay="1500">🎤</div>
+        <div class="periph-item" data-delay="1800">🎧</div>
+    </div>
+</div>
+
+<!-- SLIDE 8: Match peripheral -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-yellow">🤔</span></h2>
+    <div class="match-scenario" id="matchScenario"></div>
+    <div class="match-options" id="matchOptions"></div>
+    <div class="feedback" id="matchFb"></div>
+    <div class="round-dots" id="matchDots"></div>
+</div>
+
+<!-- SLIDE 9: Inside vs Outside sort -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-text">📦</span></h2>
+    <div class="sort-pool" id="sortPool"></div>
+    <div class="bucket-area">
+        <div class="bucket" id="bucketInside" onclick="placeInBucket('inside')">
+            <div class="bucket-label">🖥️ ⬇️</div>
+            <div class="bucket-items" id="bucketInsideItems"></div>
+        </div>
+        <div class="bucket" id="bucketOutside" onclick="placeInBucket('outside')">
+            <div class="bucket-label">🔌 ⬇️</div>
+            <div class="bucket-items" id="bucketOutsideItems"></div>
+        </div>
+    </div>
+    <div class="feedback" id="sortFb"></div>
+</div>
+
+<!-- SLIDE 10: Build a PC -->
+<div class="slide" data-slide="9">
+    <h2><span class="gradient-pink">🔧</span></h2>
+    <div style="display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;">
+        <div>
+            <div class="build-case" id="buildCase">
+                <div class="build-slot" id="bs0"></div>
+                <div class="build-slot" id="bs1"></div>
+                <div class="build-slot" id="bs2"></div>
+                <div class="build-slot" id="bs3"></div>
+                <div class="build-slot" id="bs4"></div>
+            </div>
+            <div class="peripherals-row" id="periphSlots">
+                <div class="periph-slot" id="ps0"></div>
+                <div class="periph-slot" id="ps1"></div>
+                <div class="periph-slot" id="ps2"></div>
+            </div>
+        </div>
+        <div>
+            <div class="build-pool" id="buildPool"></div>
+            <div class="feedback" id="buildFb" style="margin-top:8px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: Power on -->
+<div class="slide" data-slide="10">
+    <h2><span class="gradient-yellow">⚡</span></h2>
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-line" id="boot0">🖥️ Coding Tree OS</div>
+        <div class="boot-line" id="boot1">🧠 CPU... ✅</div>
+        <div class="boot-line" id="boot2">📋 RAM... ✅</div>
+        <div class="boot-line" id="boot3">💾 Dysk... ✅</div>
+        <div class="boot-line" id="boot4">🎨 GPU... ✅</div>
+        <div class="boot-line" id="boot5" style="font-size:1.5rem;color:var(--neon-yellow);">🎉 Gotowe!</div>
+    </div>
+    <div class="power-btn" id="powerBtn" onclick="powerOn()" style="margin-top:15px;">⏻</div>
+</div>
+
+<!-- SLIDE 12: Bravo -->
+<div class="slide" data-slide="11">
+    <div style="display:flex;gap:20px;justify-content:center;">
+        <span class="bravo-emoji">🖥️</span>
+        <span class="bravo-emoji" style="animation-delay:0.3s">🎉</span>
+        <span class="bravo-emoji" style="animation-delay:0.6s">🖥️</span>
+    </div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <div style="font-size:2rem;opacity:0.5;font-family:'Baloo 2';">Coding Tree 🌳</div>
+</div>
+
+</div>
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 12</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// === AUDIO ===
+let audioCtx;
+function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playSound(freq,dur,type='sine'){ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=0.25;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}
+function sfxSuccess(){playSound(523,0.1);setTimeout(()=>playSound(659,0.1),100);setTimeout(()=>playSound(784,0.2),200);}
+function sfxError(){playSound(200,0.3,'sawtooth');}
+function sfxClick(){playSound(500,0.08);}
+function sfxPop(){playSound(700+Math.random()*300,0.1);}
+
+// === RAIN ===
+const rainEl=document.getElementById('rain');
+for(let i=0;i<25;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s);}
+
+// === NAV ===
+let currentSlide=0;const slides=document.querySelectorAll('.slide');const totalSlides=slides.length;
+function changeSlide(dir){const n=currentSlide+dir;if(n<0||n>=totalSlides)return;slides[currentSlide].classList.remove('active');currentSlide=n;slides[currentSlide].classList.add('active');updateNav();onSlideEnter(currentSlide);}
+function updateNav(){document.getElementById('prevBtn').disabled=currentSlide===0;document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}});
+updateNav();
+
+// === CONFETTI ===
+function spawnConfetti(anchor){const rect=anchor.getBoundingClientRect();const burst=document.createElement('div');burst.className='success-burst';burst.style.left=(rect.left+rect.width/2)+'px';burst.style.top=rect.top+'px';const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<25;i++){const c=document.createElement('div');c.className='confetti';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.left=(Math.random()-0.5)*250+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';burst.appendChild(c);}document.body.appendChild(burst);setTimeout(()=>burst.remove(),2500);}
+
+// === SLIDE 2: Open case ===
+let caseOpened=false;
+function openCase(){
+    if(caseOpened)return;caseOpened=true;
+    sfxClick();
+    document.getElementById('caseClosed').style.display='none';
+    document.getElementById('caseParts').style.display='flex';
+    document.getElementById('caseBox').classList.add('open');
+    document.querySelectorAll('.fly-part').forEach(p=>{
+        setTimeout(()=>{p.classList.add('show');sfxPop();},parseInt(p.dataset.delay));
+    });
+    document.getElementById('caseFb').innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+}
+
+// === SLIDE 3: CPU think ===
+const cpuThoughtSets=[['1️⃣','➕','1️⃣','=','2️⃣'],['🔤','➡️','🔢'],['📊','📈','✅']];
+let cpuIdx=0;
+function cpuThink(){
+    const area=document.getElementById('cpuThoughts');area.innerHTML='';
+    const set=cpuThoughtSets[cpuIdx%cpuThoughtSets.length];
+    set.forEach((t,i)=>{
+        const el=document.createElement('div');el.className='thought';el.textContent=t;
+        area.appendChild(el);
+        setTimeout(()=>{el.classList.add('show');sfxPop();},i*300);
+    });
+    cpuIdx++;
+    document.getElementById('cpuIcon').style.transform='scale(1.2)';
+    setTimeout(()=>document.getElementById('cpuIcon').style.transform='',300);
+}
+
+// === SLIDE 4: RAM desk ===
+const ramEmojis=['📄','🖼️','🎵','📊','🎮','📝'];
+let ramItems=[];
+const MAX_RAM=5;
+function initRam(){
+    const btns=document.getElementById('ramButtons');btns.innerHTML='';
+    ramEmojis.forEach(e=>{
+        const b=document.createElement('button');b.className='add-btn';b.textContent=e;
+        b.onclick=()=>addToRam(e);
+        btns.appendChild(b);
+    });
+    renderRam();
+}
+function addToRam(emoji){
+    if(ramItems.length>=MAX_RAM){
+        document.getElementById('ramDesk').classList.add('full');
+        sfxError();
+        document.getElementById('ramFb').innerHTML='<span style="color:var(--neon-pink)">💥</span>';
+        setTimeout(()=>{document.getElementById('ramDesk').classList.remove('full');document.getElementById('ramFb').textContent='';},600);
+        return;
+    }
+    ramItems.push(emoji);sfxPop();renderRam();
+}
+function renderRam(){
+    const desk=document.getElementById('ramDesk');desk.innerHTML='';
+    ramItems.forEach((item,i)=>{
+        const el=document.createElement('span');el.className='desk-item';el.textContent=item;
+        el.onclick=()=>{ramItems.splice(i,1);sfxClick();renderRam();};
+        desk.appendChild(el);
+    });
+}
+
+// === SLIDE 5: Closet ===
+let closetOpen=false;
+const closetEmojis=['📸','🎵','📄','🎮','📹'];
+let closetItems=[];
+function initCloset(){
+    const btns=document.getElementById('closetButtons');btns.innerHTML='';
+    closetEmojis.forEach(e=>{
+        const b=document.createElement('button');b.className='add-btn';b.textContent=e;
+        b.onclick=()=>addToCloset(e);
+        btns.appendChild(b);
+    });
+    renderCloset();
+}
+function toggleCloset(){closetOpen=!closetOpen;document.getElementById('closet').classList.toggle('open',closetOpen);sfxClick();}
+function addToCloset(emoji){closetItems.push(emoji);sfxPop();renderCloset();if(!closetOpen)toggleCloset();}
+function renderCloset(){
+    const el=document.getElementById('closetItems');el.innerHTML='';
+    closetItems.forEach(item=>{const s=document.createElement('span');s.textContent=item;el.appendChild(s);});
+}
+
+// === SLIDE 6: GPU draw ===
+const gpuPatterns=[
+    // Heart
+    [0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0],
+    // Star
+    [0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,1,1,0,0,1,1,0,1,1,0,0,0,0,1,1],
+    // Smile
+    [0,0,1,1,1,1,0,0,0,1,0,0,0,0,1,0,1,0,1,0,0,1,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,1,0,0,1,0,1,0,1,0,1,1,0,1,0,0,0,1,1,1,1,0,0]
+];
+const gpuColors=['var(--neon-pink)','var(--neon-yellow)','var(--neon-green)'];
+function initGpu(){
+    const c=document.getElementById('gpuCanvas');c.innerHTML='';
+    for(let i=0;i<64;i++){const px=document.createElement('div');px.className='gpu-px';px.id='gpx'+i;c.appendChild(px);}
+}
+function gpuDraw(patIdx){
+    gpuClear();
+    const pattern=gpuPatterns[patIdx];
+    const color=gpuColors[patIdx];
+    pattern.forEach((v,i)=>{
+        if(v){setTimeout(()=>{document.getElementById('gpx'+i).style.background=color;sfxPop();},i*25);}
+    });
+}
+function gpuClear(){for(let i=0;i<64;i++)document.getElementById('gpx'+i).style.background='#1a1e3a';playSound(300,0.2);}
+
+// === SLIDE 7: Peripherals reveal ===
+function revealPeripherals(){
+    document.querySelectorAll('#periphRing .periph-item').forEach(p=>{
+        setTimeout(()=>{p.classList.add('show');sfxPop();},parseInt(p.dataset.delay));
+    });
+}
+
+// === SLIDE 8: Match peripheral ===
+const matchRounds=[
+    {scenario:'🎵🎶',answer:'🔊',options:['🔊','⌨️','🖨️','🖱️']},
+    {scenario:'📝✍️',answer:'⌨️',options:['📷','⌨️','🔊','🎤']},
+    {scenario:'👆👆',answer:'🖱️',options:['🖨️','🎧','🖱️','⌨️']},
+    {scenario:'📄➡️📃',answer:'🖨️',options:['🖱️','🖨️','📷','🔊']},
+    {scenario:'🗣️🎙️',answer:'🎤',options:['🎤','🖱️','⌨️','🖨️']}
+];
+let matchIdx=0;
+function initMatch(){matchIdx=0;showMatch();}
+function showMatch(){
+    if(matchIdx>=matchRounds.length){
+        document.getElementById('matchScenario').innerHTML='<span style="font-size:5rem;">🏆</span>';
+        document.getElementById('matchOptions').innerHTML='';
+        document.getElementById('matchFb').innerHTML='<span style="color:var(--neon-green)">⭐⭐⭐</span>';
+        renderDots('matchDots',matchRounds.length,matchRounds.length,-1);
+        return;
+    }
+    const r=matchRounds[matchIdx];
+    document.getElementById('matchScenario').textContent=r.scenario;
+    const opts=document.getElementById('matchOptions');opts.innerHTML='';
+    r.options.forEach(o=>{
+        const btn=document.createElement('div');btn.className='match-btn';btn.textContent=o;
+        btn.onclick=()=>{
+            opts.querySelectorAll('.match-btn').forEach(b=>b.style.pointerEvents='none');
+            if(o===r.answer){sfxSuccess();btn.classList.add('correct');document.getElementById('matchFb').innerHTML='<span style="color:var(--neon-green)">🎉</span>';spawnConfetti(btn);}
+            else{sfxError();btn.classList.add('wrong');document.getElementById('matchFb').innerHTML='<span style="color:var(--neon-pink)">😅</span>';opts.querySelectorAll('.match-btn').forEach(b=>{if(b.textContent===r.answer)b.classList.add('correct');});}
+            matchIdx++;setTimeout(showMatch,1200);
+        };
+        opts.appendChild(btn);
+    });
+    document.getElementById('matchFb').textContent='';
+    renderDots('matchDots',matchRounds.length,matchIdx,matchIdx);
+}
+function renderDots(id,total,done,current){const d=document.getElementById(id);d.innerHTML='';for(let i=0;i<total;i++){const dot=document.createElement('div');dot.className='dot';if(i<done)dot.classList.add('done');if(i===current)dot.classList.add('current');d.appendChild(dot);}}
+
+// === SLIDE 9: Sort inside vs outside ===
+const sortItems=[
+    {emoji:'🧠',type:'inside'},{emoji:'📋',type:'inside'},{emoji:'💾',type:'inside'},{emoji:'🎨',type:'inside'},
+    {emoji:'⌨️',type:'outside'},{emoji:'🖱️',type:'outside'},{emoji:'🖨️',type:'outside'},{emoji:'🔊',type:'outside'}
+];
+let sortSelected=null;
+let sortPlaced={inside:[],outside:[]};
+function initSort(){
+    sortSelected=null;sortPlaced={inside:[],outside:[]};
+    const pool=document.getElementById('sortPool');pool.innerHTML='';
+    const shuffled=[...sortItems].sort(()=>Math.random()-0.5);
+    shuffled.forEach((item,i)=>{
+        const el=document.createElement('div');el.className='sort-item';el.textContent=item.emoji;
+        el.dataset.type=item.type;el.dataset.idx=i;
+        el.onclick=()=>{
+            if(el.classList.contains('placed'))return;
+            document.querySelectorAll('.sort-item').forEach(s=>s.classList.remove('selected'));
+            el.classList.add('selected');sortSelected={emoji:item.emoji,type:item.type,el};sfxClick();
+        };
+        pool.appendChild(el);
+    });
+    document.getElementById('bucketInsideItems').innerHTML='';
+    document.getElementById('bucketOutsideItems').innerHTML='';
+    document.getElementById('sortFb').textContent='';
+}
+function placeInBucket(bucket){
+    if(!sortSelected)return;
+    const correct=sortSelected.type===bucket;
+    if(correct){
+        sfxSuccess();sortPlaced[bucket].push(sortSelected.emoji);
+        sortSelected.el.classList.add('placed');sortSelected.el.classList.remove('selected');
+        const itemEl=document.createElement('span');itemEl.style.fontSize='2rem';itemEl.textContent=sortSelected.emoji;
+        document.getElementById(bucket==='inside'?'bucketInsideItems':'bucketOutsideItems').appendChild(itemEl);
+        spawnConfetti(document.getElementById(bucket==='inside'?'bucketInside':'bucketOutside'));
+        sortSelected=null;
+        // Check complete
+        if(sortPlaced.inside.length+sortPlaced.outside.length===sortItems.length){
+            document.getElementById('sortFb').innerHTML='<span style="color:var(--neon-green)">🎉 ⭐⭐⭐</span>';
+        }
+    }else{
+        sfxError();
+        document.getElementById('sortFb').innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+        setTimeout(()=>document.getElementById('sortFb').textContent='',800);
+    }
+}
+
+// === SLIDE 10: Build a PC ===
+const buildParts=[
+    {emoji:'🔌',name:'motherboard'},
+    {emoji:'🧠',name:'cpu'},
+    {emoji:'📋',name:'ram'},
+    {emoji:'🎨',name:'gpu'},
+    {emoji:'💾',name:'disk'},
+    {emoji:'🖥️',name:'screen'},
+    {emoji:'⌨️',name:'keyboard'},
+    {emoji:'🖱️',name:'mouse'}
+];
+let buildStep=0;
+function initBuild(){
+    buildStep=0;
+    const pool=document.getElementById('buildPool');pool.innerHTML='';
+    const shuffled=[...buildParts].sort(()=>Math.random()-0.5);
+    shuffled.forEach(part=>{
+        const el=document.createElement('div');el.className='build-part';el.textContent=part.emoji;el.id='bp_'+part.name;
+        el.onclick=()=>placePart(part.name,part.emoji,el);
+        pool.appendChild(el);
+    });
+    for(let i=0;i<5;i++)document.getElementById('bs'+i).textContent='';
+    for(let i=0;i<3;i++)document.getElementById('ps'+i).textContent='';
+    document.querySelectorAll('.build-slot,.periph-slot').forEach(s=>s.classList.remove('filled'));
+    document.getElementById('buildCase').classList.remove('complete');
+    document.getElementById('buildFb').textContent='';
+}
+function placePart(name,emoji,el){
+    const order=['motherboard','cpu','ram','gpu','disk','screen','keyboard','mouse'];
+    if(name!==order[buildStep]){
+        sfxError();
+        document.getElementById('buildFb').innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+        el.style.animation='shake 0.3s ease';setTimeout(()=>el.style.animation='',300);
+        setTimeout(()=>document.getElementById('buildFb').textContent='',800);
+        return;
+    }
+    sfxPop();
+    el.classList.add('used');
+    if(buildStep<5){
+        const slot=document.getElementById('bs'+buildStep);slot.textContent=emoji;slot.classList.add('filled');
+    }else{
+        const slot=document.getElementById('ps'+(buildStep-5));slot.textContent=emoji;slot.classList.add('filled');
+    }
+    buildStep++;
+    if(buildStep===buildParts.length){
+        document.getElementById('buildCase').classList.add('complete');
+        document.getElementById('buildFb').innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+        sfxSuccess();spawnConfetti(document.getElementById('buildCase'));
+    }
+}
+
+// === SLIDE 11: Power on ===
+let powered=false;
+function powerOn(){
+    if(powered)return;powered=true;
+    sfxClick();
+    document.getElementById('powerBtn').classList.add('on');
+    document.getElementById('bootScreen').classList.add('on');
+    for(let i=0;i<=5;i++){
+        setTimeout(()=>{
+            document.getElementById('boot'+i).classList.add('show');
+            sfxPop();
+            if(i===5){sfxSuccess();spawnConfetti(document.getElementById('bootScreen'));}
+        },i*600+300);
+    }
+}
+
+// === SLIDE ENTER ===
+const slideInited={};
+function onSlideEnter(idx){
+    if(slideInited[idx])return;slideInited[idx]=true;
+    if(idx===3)initRam();
+    if(idx===4)initCloset();
+    if(idx===5)initGpu();
+    if(idx===6)revealPeripherals();
+    if(idx===7)initMatch();
+    if(idx===8)initSort();
+    if(idx===9)initBuild();
+    if(idx===11){setTimeout(()=>{const h=document.querySelector('.slide[data-slide="11"] h1');if(h){spawnConfetti(h);setTimeout(()=>spawnConfetti(h),400);}},300);}
+}
+</script>
+</body>
+</html>
