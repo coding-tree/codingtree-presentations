@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bramki Logiczne - Jak Komputer Podejmuje Decyzje!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}.bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}.bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:40px 50px 100px;animation:slideIn 0.5s ease;overflow-y:auto}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.5rem;text-align:center;line-height:1.15;margin-bottom:15px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.3rem;margin-bottom:20px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        p,li{font-size:1.25rem;line-height:1.7}
+        .big-text{font-size:1.4rem;text-align:center;max-width:800px;line-height:1.8}
+        .emoji-big{font-size:4rem;margin:8px 0}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:30px;backdrop-filter:blur(10px);max-width:900px;width:100%}
+        .styled-list{list-style:none;max-width:700px}
+        .styled-list li{padding:8px 0 8px 30px;position:relative}
+        .styled-list li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:4px;background:var(--neon-green);box-shadow:0 0 8px rgba(57,255,20,0.3)}
+        .btn{padding:10px 24px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .btn:hover{border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .quiz-btn{padding:14px 28px;border-radius:16px;border:3px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:700;cursor:pointer;transition:all 0.25s;min-width:80px}
+        .quiz-btn:hover{border-color:var(--neon-blue);transform:scale(1.05)}
+        .quiz-btn.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.15);color:var(--neon-green);box-shadow:0 0 25px rgba(57,255,20,0.2)}
+        .quiz-btn.wrong{border-color:var(--neon-pink);background:rgba(255,46,170,0.1);opacity:0.5}
+        .quiz-options{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+        .feedback{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:700;text-align:center;min-height:36px}
+
+        /* Gate interactive */
+        .gate-sim{display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+        .gate-input{display:flex;flex-direction:column;align-items:center;gap:8px}
+        .toggle-btn{width:70px;height:70px;border-radius:50%;border:3px solid var(--glass-border);background:var(--glass);font-family:'Baloo 2',monospace;font-size:2rem;font-weight:800;color:#555;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center}
+        .toggle-btn.on{background:linear-gradient(135deg,rgba(57,255,20,0.25),rgba(0,212,255,0.2));border-color:var(--neon-green);color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.2)}
+        .gate-box{padding:16px 28px;border-radius:16px;border:3px solid var(--neon-yellow);background:rgba(255,230,0,0.08);font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:800;color:var(--neon-yellow);min-width:100px;text-align:center}
+        .gate-output{width:80px;height:80px;border-radius:50%;border:3px solid var(--glass-border);background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:2.5rem;transition:all 0.3s}
+        .gate-output.on{background:radial-gradient(circle,#fff7a0,#ffe100 40%,#ffb800);border-color:#ffcc00;box-shadow:0 0 30px rgba(255,230,0,0.4)}
+
+        /* Truth table */
+        .truth-table{border-collapse:collapse;margin:10px auto;font-family:'Baloo 2',monospace;font-size:1.1rem}
+        .truth-table th{padding:8px 16px;border-bottom:2px solid var(--neon-green);color:var(--neon-green);font-weight:700}
+        .truth-table td{padding:8px 16px;text-align:center;border-bottom:1px solid var(--glass-border)}
+        .truth-table tr.active{background:rgba(57,255,20,0.1)}
+        .truth-table td.out{color:var(--neon-yellow);font-weight:700}
+
+        /* Circuit builder */
+        .circuit-slots{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin:12px 0}
+        .circuit-slot{padding:10px 20px;border-radius:14px;border:2px dashed var(--glass-border);background:var(--glass);min-width:90px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'Baloo 2',cursive;font-weight:700;font-size:1.1rem}
+        .circuit-slot:hover{border-color:var(--neon-blue)}
+        .circuit-slot.filled{border-style:solid;border-color:var(--neon-yellow);color:var(--neon-yellow)}
+        .gate-picker{display:flex;gap:8px;justify-content:center;margin:8px 0}
+        .gate-pick{padding:8px 16px;border-radius:10px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .gate-pick:hover{border-color:var(--neon-yellow)}
+        .gate-pick.selected{border-color:var(--neon-yellow);background:rgba(255,230,0,0.1);color:var(--neon-yellow)}
+
+        /* Fill truth table exercise */
+        .tt-input{width:40px;height:36px;border-radius:8px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;text-align:center;outline:none}
+        .tt-input:focus{border-color:var(--neon-blue)}
+        .tt-input.correct{border-color:var(--neon-green);color:var(--neon-green);background:rgba(57,255,20,0.1)}
+        .tt-input.wrong{border-color:var(--neon-pink)}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:48px;height:48px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:cFall 1.2s ease-out forwards}
+        @keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+        @media(max-width:768px){.slide{padding:25px 15px 100px}h1{font-size:2.2rem}h2{font-size:1.6rem}.glass-card{padding:20px}.toggle-btn{width:55px;height:55px;font-size:1.5rem}}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- 1 -->
+<div class="slide active" data-slide="0">
+    <div class="emoji-big">🧠</div>
+    <h1><span class="gradient-text">Bramki Logiczne</span></h1>
+    <h2 style="font-size:1.8rem;color:var(--neon-pink)">Jak Komputer Podejmuje Decyzje!</h2>
+    <p class="big-text" style="margin-top:16px;opacity:0.7">Poznaj małe obwody, które pozwalają komputerom myśleć!</p>
+</div>
+
+<!-- 2: True/False -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-text">Prawda i Fałsz</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.3rem;margin-bottom:16px">Komputer podejmuje decyzje za pomocą <strong style="color:var(--neon-green)">PRAWDA (1)</strong> i <strong style="color:#666">FAŁSZ (0)</strong></p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px"><span style="font-size:1.8rem">💡</span><br>Światło jest <strong style="color:var(--neon-green)">włączone</strong> = 1<br>Światło jest <strong style="color:#666">wyłączone</strong> = 0</div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px"><span style="font-size:1.8rem">🚪</span><br>Drzwi są <strong style="color:var(--neon-green)">otwarte</strong> = 1<br>Drzwi są <strong style="color:#666">zamknięte</strong> = 0</div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:14px"><span style="font-size:1.8rem">🌧️</span><br>Pada deszcz = <strong style="color:var(--neon-green)">1</strong><br>Nie pada = <strong style="color:#666">0</strong></div>
+        </div>
+        <p style="font-size:1.15rem;opacity:0.7"><strong style="color:var(--neon-yellow)">Bramki logiczne</strong> to małe obwody, które łączą takie decyzje!</p>
+    </div>
+</div>
+
+<!-- 3: AND -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-yellow">Bramka AND</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:12px">Wynik = 1 tylko gdy <strong style="color:var(--neon-green)">oba</strong> wejścia to 1</p>
+        <p style="font-size:1.05rem;opacity:0.7;margin-bottom:12px">🚗 Samochód jedzie gdy kluczyk jest włożony <strong style="color:var(--neon-yellow)">I</strong> silnik odpalony</p>
+        <table class="truth-table">
+            <tr><th>A</th><th>B</th><th>A AND B</th></tr>
+            <tr><td>0</td><td>0</td><td class="out">0</td></tr>
+            <tr><td>0</td><td>1</td><td class="out">0</td></tr>
+            <tr><td>1</td><td>0</td><td class="out">0</td></tr>
+            <tr><td>1</td><td>1</td><td class="out">1</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- 4: AND exercise -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-text">Klikaj AND!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div class="gate-sim">
+            <div class="gate-input"><div class="toggle-btn" id="andA" onclick="toggleGate('and','A')">0</div><div style="font-size:0.9rem;opacity:0.6">Wejście A</div></div>
+            <div class="gate-input"><div class="toggle-btn" id="andB" onclick="toggleGate('and','B')">0</div><div style="font-size:0.9rem;opacity:0.6">Wejście B</div></div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-box">AND</div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-output" id="andOut">🌑</div>
+        </div>
+        <table class="truth-table" id="andTable">
+            <tr><th>A</th><th>B</th><th>Wynik</th></tr>
+            <tr id="andR00"><td>0</td><td>0</td><td class="out">0</td></tr>
+            <tr id="andR01"><td>0</td><td>1</td><td class="out">0</td></tr>
+            <tr id="andR10"><td>1</td><td>0</td><td class="out">0</td></tr>
+            <tr id="andR11"><td>1</td><td>1</td><td class="out">1</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- 5: OR -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-pink">Bramka OR</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:12px">Wynik = 1 gdy <strong style="color:var(--neon-green)">przynajmniej jedno</strong> wejście to 1</p>
+        <p style="font-size:1.05rem;opacity:0.7;margin-bottom:12px">🔔 Alarm dzwoni gdy ktoś naciśnie przycisk <strong style="color:var(--neon-yellow)">LUB</strong> otworzy drzwi</p>
+        <table class="truth-table">
+            <tr><th>A</th><th>B</th><th>A OR B</th></tr>
+            <tr><td>0</td><td>0</td><td class="out">0</td></tr>
+            <tr><td>0</td><td>1</td><td class="out">1</td></tr>
+            <tr><td>1</td><td>0</td><td class="out">1</td></tr>
+            <tr><td>1</td><td>1</td><td class="out">1</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- 6: OR exercise -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-yellow">Klikaj OR!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div class="gate-sim">
+            <div class="gate-input"><div class="toggle-btn" id="orA" onclick="toggleGate('or','A')">0</div><div style="font-size:0.9rem;opacity:0.6">Wejście A</div></div>
+            <div class="gate-input"><div class="toggle-btn" id="orB" onclick="toggleGate('or','B')">0</div><div style="font-size:0.9rem;opacity:0.6">Wejście B</div></div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-box">OR</div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-output" id="orOut">🌑</div>
+        </div>
+        <table class="truth-table" id="orTable">
+            <tr><th>A</th><th>B</th><th>Wynik</th></tr>
+            <tr id="orR00"><td>0</td><td>0</td><td class="out">0</td></tr>
+            <tr id="orR01"><td>0</td><td>1</td><td class="out">1</td></tr>
+            <tr id="orR10"><td>1</td><td>0</td><td class="out">1</td></tr>
+            <tr id="orR11"><td>1</td><td>1</td><td class="out">1</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- 7: NOT -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-text">Bramka NOT</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:12px"><strong style="color:var(--neon-orange)">Odwraca</strong> wejście: 0→1, 1→0</p>
+        <p style="font-size:1.05rem;opacity:0.7;margin-bottom:12px">🔄 Jak przycisk odwracający - jeśli jest włączone, wyłącz!</p>
+        <table class="truth-table">
+            <tr><th>A</th><th>NOT A</th></tr>
+            <tr><td>0</td><td class="out">1</td></tr>
+            <tr><td>1</td><td class="out">0</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- 8: NOT exercise -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-pink">Klikaj NOT!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div class="gate-sim">
+            <div class="gate-input"><div class="toggle-btn" id="notA" onclick="toggleGate('not','A')">0</div><div style="font-size:0.9rem;opacity:0.6">Wejście A</div></div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-box">NOT</div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-output on" id="notOut">💡</div>
+        </div>
+        <p style="font-size:1.2rem;margin-top:12px">Wejście: <span id="notInLabel" style="color:var(--neon-green);font-weight:700">0</span> → Wyjście: <span id="notOutLabel" style="color:var(--neon-yellow);font-weight:700">1</span></p>
+    </div>
+</div>
+
+<!-- 9: Combined gates -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-yellow">Łączenie bramek</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.15rem;margin-bottom:16px">Bramki można łączyć w obwody!</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.5rem;font-weight:800;color:var(--neon-orange)">NAND</div>
+                <div style="font-size:1rem;opacity:0.7">= NOT(AND)</div>
+                <div style="font-size:0.95rem;margin-top:4px">Odwrócone AND</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.5rem;font-weight:800;color:var(--neon-blue)">NOR</div>
+                <div style="font-size:1rem;opacity:0.7">= NOT(OR)</div>
+                <div style="font-size:0.95rem;margin-top:4px">Odwrócone OR</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.5rem;font-weight:800;color:var(--neon-pink)">XOR</div>
+                <div style="font-size:1rem;opacity:0.7">= różne wejścia</div>
+                <div style="font-size:0.95rem;margin-top:4px">1 gdy wejścia się różnią</div>
+            </div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:16px;opacity:0.7">Z tych podstawowych bramek zbudowany jest <strong style="color:var(--neon-green)">cały komputer</strong>!</p>
+    </div>
+</div>
+
+<!-- 10: Build circuit -->
+<div class="slide" data-slide="9">
+    <h2><span class="gradient-text">Zbuduj obwód!</span></h2>
+    <div class="glass-card" style="text-align:center" id="buildArea">
+        <p style="font-size:1.05rem;opacity:0.7;margin-bottom:8px">Wybierz bramkę, potem kliknij slot. Ustaw wejścia i zobacz wynik!</p>
+        <div class="gate-picker" id="gatePicker">
+            <button class="gate-pick selected" onclick="selectGatePick('AND')">AND</button>
+            <button class="gate-pick" onclick="selectGatePick('OR')">OR</button>
+            <button class="gate-pick" onclick="selectGatePick('NOT')">NOT</button>
+            <button class="gate-pick" onclick="selectGatePick('XOR')">XOR</button>
+            <button class="gate-pick" onclick="selectGatePick('NAND')">NAND</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;margin:12px 0">
+            <div class="gate-input"><div class="toggle-btn" id="buildA" onclick="toggleBuild('A')">0</div><div style="font-size:0.85rem;opacity:0.5">A</div></div>
+            <div class="gate-input"><div class="toggle-btn" id="buildB" onclick="toggleBuild('B')">0</div><div style="font-size:0.85rem;opacity:0.5">B</div></div>
+            <div style="font-size:1.5rem;color:var(--neon-yellow)">→</div>
+            <div class="circuit-slot filled" id="buildSlot1" onclick="placeGate(1)">AND</div>
+            <div style="font-size:1.5rem;color:var(--neon-yellow)">→</div>
+            <div class="circuit-slot" id="buildSlot2" onclick="placeGate(2)">slot 2</div>
+            <div style="font-size:1.5rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-output" id="buildOut">🌑</div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:8px">Wynik: <span id="buildResult" style="color:var(--neon-green);font-weight:700">0</span></p>
+        <button class="btn" onclick="resetBuild()" style="margin-top:8px">Reset</button>
+    </div>
+</div>
+
+<!-- 11: XOR -->
+<div class="slide" data-slide="10">
+    <h2><span class="gradient-pink">XOR - bramka specjalna!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:12px">Wynik = 1 gdy wejścia są <strong style="color:var(--neon-orange)">różne</strong></p>
+        <div class="gate-sim">
+            <div class="gate-input"><div class="toggle-btn" id="xorA" onclick="toggleGate('xor','A')">0</div><div style="font-size:0.9rem;opacity:0.6">A</div></div>
+            <div class="gate-input"><div class="toggle-btn" id="xorB" onclick="toggleGate('xor','B')">0</div><div style="font-size:0.9rem;opacity:0.6">B</div></div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-box" style="border-color:var(--neon-pink);color:var(--neon-pink)">XOR</div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div class="gate-output" id="xorOut">🌑</div>
+        </div>
+        <table class="truth-table" id="xorTable">
+            <tr><th>A</th><th>B</th><th>A XOR B</th></tr>
+            <tr id="xorR00"><td>0</td><td>0</td><td class="out">0</td></tr>
+            <tr id="xorR01"><td>0</td><td>1</td><td class="out">1</td></tr>
+            <tr id="xorR10"><td>1</td><td>0</td><td class="out">1</td></tr>
+            <tr id="xorR11"><td>1</td><td>1</td><td class="out">0</td></tr>
+        </table>
+        <p style="font-size:1rem;opacity:0.6;margin-top:8px">XOR jest kluczowy w dodawaniu binarnym i szyfrowaniu!</p>
+    </div>
+</div>
+
+<!-- 12: Guess the gate -->
+<div class="slide" data-slide="11">
+    <h2><span class="gradient-yellow">Zgadnij bramkę!</span></h2>
+    <div class="glass-card" style="text-align:center" id="guessArea">
+        <p style="font-size:1.1rem;opacity:0.7;margin-bottom:8px">Jaką bramkę pokazuje ta tablica prawdy?</p>
+        <table class="truth-table" id="guessTable"></table>
+        <div class="quiz-options" id="guessOpts" style="margin-top:12px"></div>
+        <div class="feedback" id="guessFb"></div>
+        <button class="btn" id="guessNext" style="display:none;margin-top:8px" onclick="nextGuess()">Następne ▶</button>
+        <div style="font-size:0.9rem;opacity:0.5;margin-top:6px" id="guessScore"></div>
+    </div>
+</div>
+
+<!-- 13: Fill truth table -->
+<div class="slide" data-slide="12">
+    <h2><span class="gradient-text">Uzupełnij tablicę prawdy!</span></h2>
+    <div class="glass-card" style="text-align:center" id="fillArea">
+        <p style="font-size:1.1rem;margin-bottom:8px" id="fillDesc"></p>
+        <table class="truth-table" id="fillTable"></table>
+        <div style="margin-top:12px;display:flex;gap:10px;justify-content:center">
+            <button class="btn" onclick="checkFill()">Sprawdź</button>
+            <button class="btn" onclick="newFill()">Nowe zadanie</button>
+        </div>
+        <div class="feedback" id="fillFb" style="margin-top:8px"></div>
+    </div>
+</div>
+
+<!-- 14: Challenge -->
+<div class="slide" data-slide="13">
+    <h2><span class="gradient-pink">Wyzwanie!</span></h2>
+    <div class="glass-card" style="text-align:center" id="chalArea">
+        <p style="font-size:1.15rem;margin-bottom:12px">Zbuduj obwód: wynik = 1 <strong style="color:var(--neon-orange)">tylko gdy dokładnie jedno</strong> z dwóch wejść jest włączone</p>
+        <p style="font-size:1rem;opacity:0.6;margin-bottom:12px">Która bramka to robi?</p>
+        <div class="quiz-options">
+            <button class="quiz-btn" onclick="answerChal(this,'AND')">AND</button>
+            <button class="quiz-btn" onclick="answerChal(this,'OR')">OR</button>
+            <button class="quiz-btn" onclick="answerChal(this,'XOR')">XOR</button>
+            <button class="quiz-btn" onclick="answerChal(this,'NOT')">NOT</button>
+            <button class="quiz-btn" onclick="answerChal(this,'NAND')">NAND</button>
+        </div>
+        <div class="feedback" id="chalFb" style="margin-top:10px"></div>
+    </div>
+</div>
+
+<!-- 15: Summary -->
+<div class="slide" data-slide="14">
+    <div class="emoji-big">🎉</div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <h2 style="font-size:1.7rem;color:var(--neon-pink)">Znasz bramki logiczne!</h2>
+    <div class="glass-card" style="text-align:center">
+        <ul class="styled-list" style="display:inline-block;text-align:left">
+            <li><strong style="color:var(--neon-green)">AND</strong> - oba wejścia muszą być 1</li>
+            <li><strong style="color:var(--neon-blue)">OR</strong> - wystarczy jedno wejście = 1</li>
+            <li><strong style="color:var(--neon-orange)">NOT</strong> - odwraca wartość</li>
+            <li><strong style="color:var(--neon-pink)">XOR</strong> - wejścia muszą się różnić</li>
+            <li>Z bramek logicznych zbudowany jest <strong style="color:var(--neon-yellow)">cały komputer!</strong></li>
+        </ul>
+    </div>
+    <p style="margin-top:18px;opacity:0.5;font-size:1.1rem">Coding Tree 🌳</p>
+</div>
+
+</div>
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 15</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// Rain
+const rainEl=document.getElementById('rain');for(let i=0;i<30;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s)}
+
+// Nav
+let cur=0;const slides=document.querySelectorAll('.slide'),total=slides.length;
+function changeSlide(d){const n=cur+d;if(n<0||n>=total)return;slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');updateNav()}
+function updateNav(){document.getElementById('prevBtn').disabled=cur===0;document.getElementById('nextBtn').disabled=cur===total-1;document.getElementById('slideCounter').textContent=(cur+1)+' / '+total;document.getElementById('progressBar').style.width=((cur+1)/total*100)+'%'}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}});updateNav();
+
+function boom(el){const r=el.getBoundingClientRect(),b=document.createElement('div');b.className='success-burst';b.style.left=(r.left+r.width/2)+'px';b.style.top=r.top+'px';const cols=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<20;i++){const c=document.createElement('div');c.className='confetti';c.style.background=cols[~~(Math.random()*cols.length)];c.style.left=(Math.random()-0.5)*200+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';b.appendChild(c)}document.body.appendChild(b);setTimeout(()=>b.remove(),2000)}
+
+// Gate states
+const gateState={and:{A:0,B:0},or:{A:0,B:0},not:{A:0},xor:{A:0,B:0}};
+const gateFns={AND:(a,b)=>a&b,OR:(a,b)=>a|b,NOT:(a)=>a?0:1,XOR:(a,b)=>a^b,NAND:(a,b)=>(a&b)?0:1,NOR:(a,b)=>(a|b)?0:1};
+
+function toggleGate(gate,input){
+    const st=gateState[gate];st[input]=st[input]?0:1;
+    const btn=document.getElementById(gate+input);btn.textContent=st[input];btn.classList.toggle('on',st[input]===1);
+    let out;
+    if(gate==='not'){out=st.A?0:1;document.getElementById('notInLabel').textContent=st.A;document.getElementById('notOutLabel').textContent=out}
+    else{const fn=gateFns[gate.toUpperCase()];out=fn(st.A,st.B)}
+    const outEl=document.getElementById(gate+'Out');outEl.textContent=out?'💡':'🌑';outEl.classList.toggle('on',out===1);
+    // Highlight truth table row
+    if(gate!=='not'){
+        const tbl=document.getElementById(gate+'Table');if(tbl){tbl.querySelectorAll('tr').forEach(r=>r.classList.remove('active'));
+        const rowId=gate+'R'+st.A+st.B;const row=document.getElementById(rowId);if(row)row.classList.add('active')}
+    }
+}
+
+// Build circuit
+let selectedGate='AND';let buildGates=['AND',null];let buildInputs={A:0,B:0};
+function selectGatePick(g){selectedGate=g;document.querySelectorAll('.gate-pick').forEach(b=>{b.classList.toggle('selected',b.textContent===g)})}
+function placeGate(slot){
+    buildGates[slot-1]=selectedGate;
+    const el=document.getElementById('buildSlot'+slot);el.textContent=selectedGate;el.classList.add('filled');
+    updateBuild();
+}
+function toggleBuild(input){
+    buildInputs[input]=buildInputs[input]?0:1;
+    const btn=document.getElementById('build'+input);btn.textContent=buildInputs[input];btn.classList.toggle('on',buildInputs[input]===1);
+    updateBuild();
+}
+function updateBuild(){
+    let val;const g1=buildGates[0],g2=buildGates[1];
+    if(!g1){val=0}
+    else{
+        const fn1=gateFns[g1];
+        if(g1==='NOT')val=fn1(buildInputs.A);else val=fn1(buildInputs.A,buildInputs.B);
+        if(g2){const fn2=gateFns[g2];val=fn2(val,0);}// second gate acts as NOT-style on result
+    }
+    const outEl=document.getElementById('buildOut');outEl.textContent=val?'💡':'🌑';outEl.classList.toggle('on',val===1);
+    document.getElementById('buildResult').textContent=val;
+}
+function resetBuild(){buildGates=[null,null];buildInputs={A:0,B:0};
+    ['buildA','buildB'].forEach(id=>{const b=document.getElementById(id);b.textContent='0';b.classList.remove('on')});
+    ['buildSlot1','buildSlot2'].forEach((id,i)=>{const el=document.getElementById(id);el.textContent='slot '+(i+1);el.classList.remove('filled')});
+    document.getElementById('buildOut').textContent='🌑';document.getElementById('buildOut').classList.remove('on');document.getElementById('buildResult').textContent='0';
+}
+
+// Guess the gate
+const guessGates=[
+    {gate:'AND',table:[[0,0,0],[0,1,0],[1,0,0],[1,1,1]]},
+    {gate:'OR',table:[[0,0,0],[0,1,1],[1,0,1],[1,1,1]]},
+    {gate:'XOR',table:[[0,0,0],[0,1,1],[1,0,1],[1,1,0]]},
+    {gate:'NAND',table:[[0,0,1],[0,1,1],[1,0,1],[1,1,0]]},
+    {gate:'NOR',table:[[0,0,1],[0,1,0],[1,0,0],[1,1,0]]},
+];
+let gIdx=0,gOk=0;
+function loadGuess(){
+    if(gIdx>=guessGates.length){document.getElementById('guessTable').innerHTML='';document.getElementById('guessOpts').innerHTML='<span class="gradient-text" style="font-size:1.8rem">Gratulacje!</span>';document.getElementById('guessFb').innerHTML='<span style="color:var(--neon-green)">Wynik: '+gOk+'/'+guessGates.length+'</span>';document.getElementById('guessNext').style.display='none';if(gOk>=3)boom(document.getElementById('guessArea'));return}
+    const g=guessGates[gIdx];
+    let h='<tr><th>A</th><th>B</th><th>Wynik</th></tr>';
+    g.table.forEach(r=>{h+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="out">'+r[2]+'</td></tr>'});
+    document.getElementById('guessTable').innerHTML=h;
+    document.getElementById('guessFb').textContent='';document.getElementById('guessNext').style.display='none';
+    const opts=['AND','OR','XOR','NAND','NOR'];
+    const el=document.getElementById('guessOpts');el.innerHTML='';
+    opts.forEach(o=>{const b=document.createElement('button');b.className='quiz-btn';b.textContent=o;b.style.fontSize='1.1rem';b.style.padding='10px 20px';
+        b.onclick=()=>{el.querySelectorAll('.quiz-btn').forEach(x=>x.style.pointerEvents='none');
+            if(o===g.gate){b.classList.add('correct');gOk++;document.getElementById('guessFb').innerHTML='<span style="color:var(--neon-green)">Tak! To '+g.gate+'!</span>';boom(b)}
+            else{b.classList.add('wrong');el.querySelectorAll('.quiz-btn').forEach(x=>{if(x.textContent===g.gate)x.classList.add('correct')});document.getElementById('guessFb').innerHTML='<span style="color:var(--neon-pink)">To '+g.gate+'</span>'}
+            document.getElementById('guessNext').style.display='inline-block'};
+        el.appendChild(b)});
+    document.getElementById('guessScore').textContent='Pytanie '+(gIdx+1)+'/'+guessGates.length;
+}
+function nextGuess(){gIdx++;loadGuess()}
+loadGuess();
+
+// Fill truth table
+const fillCircuits=[
+    {desc:'A AND B, potem NOT',fn:(a,b)=>(a&b)?0:1},
+    {desc:'A OR B, potem NOT',fn:(a,b)=>(a|b)?0:1},
+    {desc:'(NOT A) AND B',fn:(a,b)=>(a?0:1)&b},
+    {desc:'A AND (NOT B)',fn:(a,b)=>a&(b?0:1)},
+    {desc:'(A OR B) AND (A XOR B)',fn:(a,b)=>(a|b)&(a^b)},
+];
+let fillCur=null,fillAnswers=[];
+function newFill(){
+    fillCur=fillCircuits[Math.floor(Math.random()*fillCircuits.length)];
+    document.getElementById('fillDesc').innerHTML='Obwód: <strong style="color:var(--neon-yellow)">'+fillCur.desc+'</strong>';
+    const inputs=[[0,0],[0,1],[1,0],[1,1]];
+    fillAnswers=inputs.map(([a,b])=>fillCur.fn(a,b));
+    // Show some, hide others
+    const hide=[1,2];// hide rows 1 and 2
+    let h='<tr><th>A</th><th>B</th><th>Wynik</th></tr>';
+    inputs.forEach(([a,b],i)=>{
+        const out=fillAnswers[i];
+        if(hide.includes(i)){h+='<tr><td>'+a+'</td><td>'+b+'</td><td><input class="tt-input" id="fi'+i+'" maxlength="1"></td></tr>'}
+        else{h+='<tr><td>'+a+'</td><td>'+b+'</td><td class="out">'+out+'</td></tr>'}
+    });
+    document.getElementById('fillTable').innerHTML=h;
+    document.getElementById('fillFb').textContent='';
+}
+function checkFill(){
+    let ok=true;
+    [1,2].forEach(i=>{
+        const inp=document.getElementById('fi'+i);
+        if(parseInt(inp.value)===fillAnswers[i]){inp.classList.add('correct');inp.classList.remove('wrong')}
+        else{inp.classList.add('wrong');inp.classList.remove('correct');ok=false}
+    });
+    if(ok){document.getElementById('fillFb').innerHTML='<span style="color:var(--neon-green)">Brawo!</span>';boom(document.getElementById('fillArea'))}
+    else{document.getElementById('fillFb').innerHTML='<span style="color:var(--neon-pink)">Spróbuj jeszcze raz!</span>'}
+}
+newFill();
+
+// Challenge
+function answerChal(btn,ans){
+    document.querySelectorAll('#chalArea .quiz-btn').forEach(b=>b.style.pointerEvents='none');
+    if(ans==='XOR'){btn.classList.add('correct');document.getElementById('chalFb').innerHTML='<span style="color:var(--neon-green)">Tak! XOR daje 1 tylko gdy wejścia się różnią!</span>';boom(btn)}
+    else{btn.classList.add('wrong');document.querySelectorAll('#chalArea .quiz-btn').forEach(b=>{if(b.textContent==='XOR')b.classList.add('correct')});document.getElementById('chalFb').innerHTML='<span style="color:var(--neon-pink)">To XOR! Daje 1 gdy dokładnie jedno wejście = 1</span>'}
+}
+</script>
+</body>
+</html>

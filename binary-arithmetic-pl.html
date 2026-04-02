@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arytmetyka Binarna - Matematyka Komputerów!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg-deep:#0b0e2d;--bg-mid:#131847;
+            --neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;
+            --neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;
+            --glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12);
+        }
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:50px 60px 100px;animation:slideIn 0.5s ease;overflow-y:auto}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.5rem;text-align:center;line-height:1.15;margin-bottom:20px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.4rem;margin-bottom:25px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        p,li{font-size:1.3rem;line-height:1.8}
+        .big-text{font-size:1.5rem;text-align:center;max-width:800px;line-height:1.8}
+        .emoji-big{font-size:4rem;margin:10px 0}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:35px;backdrop-filter:blur(10px);max-width:900px;width:100%}
+        .styled-list{list-style:none;max-width:700px}
+        .styled-list li{padding:8px 0 8px 30px;position:relative}
+        .styled-list li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:4px;background:var(--neon-green);box-shadow:0 0 8px rgba(57,255,20,0.3)}
+
+        /* Bit boxes */
+        .bits-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+        .bit-box{width:80px;height:80px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:'Baloo 2',monospace;font-weight:800;font-size:2.2rem;transition:all 0.25s;border:3px solid var(--glass-border);background:var(--glass);user-select:none}
+        .bit-box:hover{transform:scale(1.08)}
+        .bit-box.active{background:linear-gradient(135deg,rgba(57,255,20,0.2),rgba(0,212,255,0.2));border-color:var(--neon-green);color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.15)}
+        .bit-box .val-label{font-size:0.65rem;font-weight:600;opacity:0.5;margin-top:2px}
+        .counter-result{font-family:'Baloo 2',monospace;font-size:3rem;font-weight:800;text-align:center}
+
+        /* Addition columns */
+        .add-grid{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:'Baloo 2',monospace;font-weight:700;font-size:1.8rem}
+        .add-row{display:flex;gap:8px;align-items:center}
+        .add-cell{width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:10px;transition:all 0.3s}
+        .add-cell.carry{color:var(--neon-orange);font-size:1.2rem}
+        .add-cell.highlight{background:rgba(57,255,20,0.15);border:2px solid var(--neon-green)}
+        .add-cell.result{color:var(--neon-green)}
+        .add-separator{width:100%;max-width:280px;height:3px;background:var(--soft-white);margin:2px 0;border-radius:2px}
+
+        /* Input exercises */
+        .bit-input{width:50px;height:50px;border-radius:12px;border:3px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',monospace;font-size:1.8rem;font-weight:700;text-align:center;outline:none;transition:all 0.3s}
+        .bit-input:focus{border-color:var(--neon-blue);box-shadow:0 0 15px rgba(0,212,255,0.2)}
+        .bit-input.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.12);color:var(--neon-green)}
+        .bit-input.wrong{border-color:var(--neon-pink);animation:shake 0.4s ease}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+        /* Buttons */
+        .btn{padding:10px 24px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .btn:hover{border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .btn.primary{border-color:var(--neon-green);background:rgba(57,255,20,0.1)}
+        .btn:disabled{opacity:0.4;cursor:default}
+
+        /* Quiz */
+        .quiz-options{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+        .quiz-btn{padding:14px 28px;border-radius:16px;border:3px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:700;cursor:pointer;transition:all 0.25s;min-width:90px}
+        .quiz-btn:hover{border-color:var(--neon-blue);transform:scale(1.05)}
+        .quiz-btn.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.15);color:var(--neon-green);box-shadow:0 0 25px rgba(57,255,20,0.2)}
+        .quiz-btn.wrong{border-color:var(--neon-pink);background:rgba(255,46,170,0.1);opacity:0.5}
+        .feedback{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:700;text-align:center;min-height:40px}
+
+        /* Shift demo */
+        .shift-row{display:flex;gap:6px;align-items:center;justify-content:center}
+        .shift-cell{width:55px;height:55px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',monospace;font-size:1.6rem;font-weight:800;border:2px solid var(--glass-border);background:var(--glass);transition:all 0.4s}
+        .shift-cell.on{background:linear-gradient(135deg,rgba(57,255,20,0.2),rgba(0,212,255,0.2));border-color:var(--neon-green);color:var(--neon-green)}
+        .shift-arrow{font-size:2rem;color:var(--neon-yellow);margin:0 10px}
+
+        /* Calculator */
+        .calc-input{width:100%;max-width:200px;padding:10px 14px;border-radius:12px;border:2px solid var(--glass-border);background:var(--glass);color:var(--neon-green);font-family:'Baloo 2',monospace;font-size:1.4rem;font-weight:700;outline:none;text-align:center}
+        .calc-input:focus{border-color:var(--neon-blue)}
+        .calc-op{font-size:2rem;font-weight:800;cursor:pointer;padding:8px 16px;border-radius:12px;border:2px solid var(--glass-border);background:var(--glass);color:var(--neon-yellow);transition:all 0.2s}
+        .calc-op.selected{border-color:var(--neon-yellow);background:rgba(255,230,0,0.15)}
+
+        /* Timer challenge */
+        .timer-display{font-family:'Baloo 2',monospace;font-size:2.5rem;font-weight:800;color:var(--neon-orange)}
+        .score-display{font-family:'Baloo 2',monospace;font-size:1.4rem;font-weight:700}
+        .challenge-problem{font-family:'Baloo 2',monospace;font-size:2rem;font-weight:700;text-align:center;margin:10px 0}
+
+        /* Nav */
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:48px;height:48px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFall 1.2s ease-out forwards}
+        @keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+        @media(max-width:768px){
+            .slide{padding:30px 15px 100px}h1{font-size:2.2rem}h2{font-size:1.6rem}
+            .bit-box{width:55px;height:55px;font-size:1.6rem}.add-cell{width:38px;height:38px;font-size:1.3rem}
+            .big-text{font-size:1.15rem}.glass-card{padding:20px}
+        }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation" id="pres">
+
+<!-- 1: Title -->
+<div class="slide active" data-slide="0">
+    <div class="emoji-big">🧮</div>
+    <h1><span class="gradient-text">Arytmetyka Binarna</span></h1>
+    <h2 style="font-size:1.9rem;color:var(--neon-pink)">Matematyka Komputerów!</h2>
+    <p class="big-text" style="margin-top:20px;opacity:0.7">Naucz się dodawać, odejmować i liczyć jak prawdziwy komputer!</p>
+</div>
+
+<!-- 2: Refresher -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-text">Szybka powtórka</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.3rem;margin-bottom:16px">Komputer liczy w systemie <strong style="color:var(--neon-green)">binarnym</strong> - używa tylko <strong style="color:var(--neon-green)">0</strong> i <strong style="color:var(--neon-green)">1</strong>.</p>
+        <p style="font-size:1.2rem;margin-bottom:16px;opacity:0.7">Każda pozycja (bit) ma wartość:</p>
+        <div class="bits-row" style="margin-bottom:20px">
+            <div class="bit-box active" style="cursor:default;width:70px;height:70px"><span>16</span></div>
+            <div class="bit-box active" style="cursor:default;width:70px;height:70px"><span>8</span></div>
+            <div class="bit-box active" style="cursor:default;width:70px;height:70px"><span>4</span></div>
+            <div class="bit-box active" style="cursor:default;width:70px;height:70px"><span>2</span></div>
+            <div class="bit-box active" style="cursor:default;width:70px;height:70px"><span>1</span></div>
+        </div>
+        <p style="font-size:1.2rem">Przykład: <span style="color:var(--neon-green);font-family:'Baloo 2';font-weight:700">10110</span> = <strong style="color:var(--neon-yellow)">16</strong>+0+<strong style="color:var(--neon-yellow)">4</strong>+<strong style="color:var(--neon-yellow)">2</strong>+0 = <strong style="color:var(--neon-blue);font-size:1.5rem">22</strong></p>
+    </div>
+</div>
+
+<!-- 3: 5-bit counter -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-pink">Klikaj bity!</span></h2>
+    <p style="opacity:0.6;margin-bottom:10px">Kliknij bity, żeby tworzyć liczby od 0 do 31</p>
+    <div class="bits-row" id="counterBits">
+        <div class="bit-box" data-bv="16" onclick="toggleCBit(this)"><span class="bd">0</span><span class="val-label">16</span></div>
+        <div class="bit-box" data-bv="8" onclick="toggleCBit(this)"><span class="bd">0</span><span class="val-label">8</span></div>
+        <div class="bit-box" data-bv="4" onclick="toggleCBit(this)"><span class="bd">0</span><span class="val-label">4</span></div>
+        <div class="bit-box" data-bv="2" onclick="toggleCBit(this)"><span class="bd">0</span><span class="val-label">2</span></div>
+        <div class="bit-box" data-bv="1" onclick="toggleCBit(this)"><span class="bd">0</span><span class="val-label">1</span></div>
+    </div>
+    <div style="font-size:2rem;opacity:0.5;margin:10px 0">=</div>
+    <div class="counter-result" id="cResult"><span class="gradient-text">0</span></div>
+    <p style="opacity:0.4;font-size:0.95rem;margin-top:10px">Spróbuj: 5, 13, 21, 31!</p>
+</div>
+
+<!-- 4: Addition rules -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-yellow">Dodawanie binarne</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:20px">Zasady są proste - jak w zwykłym dodawaniu, ale mamy tylko 0 i 1!</p>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:500px;margin:0 auto">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-green)">0 + 0 = 0</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-green)">0 + 1 = 1</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-green)">1 + 0 = 1</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;border-color:var(--neon-orange)">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-orange)">1 + 1 = 10</div>
+                <div style="font-size:0.9rem;color:var(--neon-orange);opacity:0.8">Przeniesienie!</div>
+            </div>
+        </div>
+        <p style="font-size:1.15rem;margin-top:20px;opacity:0.7"><strong style="color:var(--neon-orange)">1 + 1 = 10</strong> bo wynik to 0, a <strong style="color:var(--neon-orange)">1</strong> przenosimy na następną pozycję (jak 5+5=10 w systemie dziesiętnym!)</p>
+    </div>
+</div>
+
+<!-- 5: Step-by-step addition -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-text">Dodawanie krok po kroku</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div class="add-grid" id="stepAdd">
+            <div class="add-row" id="stepCarry"><div class="add-cell" style="width:70px"></div><div class="add-cell carry" id="sc3"></div><div class="add-cell carry" id="sc2"></div><div class="add-cell carry" id="sc1"></div><div class="add-cell carry" id="sc0"></div></div>
+            <div class="add-row"><div class="add-cell" style="width:70px"></div><div class="add-cell" id="sa3">0</div><div class="add-cell" id="sa2">1</div><div class="add-cell" id="sa1">1</div><div class="add-cell" id="sa0">1</div></div>
+            <div class="add-row"><div class="add-cell" style="width:70px;font-size:1.4rem">+</div><div class="add-cell" id="sb3">0</div><div class="add-cell" id="sb2">1</div><div class="add-cell" id="sb1">0</div><div class="add-cell" id="sb0">1</div></div>
+            <div class="add-separator" style="max-width:300px"></div>
+            <div class="add-row"><div class="add-cell" style="width:70px"></div><div class="add-cell result" id="sr3"></div><div class="add-cell result" id="sr2"></div><div class="add-cell result" id="sr1"></div><div class="add-cell result" id="sr0"></div></div>
+        </div>
+        <p style="margin-top:10px;opacity:0.7;font-size:1rem" id="stepMsg">0111 (7) + 0101 (5) = ?</p>
+        <div style="margin-top:15px;display:flex;gap:12px;justify-content:center">
+            <button class="btn primary" id="stepBtn" onclick="nextAddStep()">Następny krok ▶</button>
+            <button class="btn" onclick="resetAddSteps()">Od nowa</button>
+        </div>
+    </div>
+</div>
+
+<!-- 6: Add yourself -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-pink">Dodaj sam!</span></h2>
+    <div class="glass-card" style="text-align:center" id="addExArea">
+        <div id="addExProblem"></div>
+        <div class="feedback" id="addExFeedback"></div>
+        <div style="margin-top:10px;display:flex;gap:10px;justify-content:center">
+            <button class="btn" onclick="checkAddEx()">Sprawdź</button>
+            <button class="btn" onclick="newAddEx()">Nowe zadanie</button>
+        </div>
+    </div>
+</div>
+
+<!-- 7: Subtraction rules -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-yellow">Odejmowanie binarne</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:20px">Odejmowanie działa odwrotnie do dodawania:</p>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:500px;margin:0 auto">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-green)">0 - 0 = 0</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-green)">1 - 0 = 1</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-green)">1 - 1 = 0</div>
+            </div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;border-color:var(--neon-orange)">
+                <div style="font-family:'Baloo 2';font-size:1.8rem;font-weight:800;color:var(--neon-orange)">0 - 1 = 1</div>
+                <div style="font-size:0.9rem;color:var(--neon-orange);opacity:0.8">Pożyczka z następnej pozycji!</div>
+            </div>
+        </div>
+        <p style="font-size:1.15rem;margin-top:20px;opacity:0.7"><strong style="color:var(--neon-orange)">0 - 1</strong>: pożyczamy <strong style="color:var(--neon-orange)">1</strong> z wyższej pozycji (jak 0-5 w dziesiętnym - pożyczamy dziesiątkę!)</p>
+    </div>
+</div>
+
+<!-- 8: Subtract yourself -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-text">Odejmij sam!</span></h2>
+    <div class="glass-card" style="text-align:center" id="subExArea">
+        <div id="subExProblem"></div>
+        <div class="feedback" id="subExFeedback"></div>
+        <div style="margin-top:10px;display:flex;gap:10px;justify-content:center">
+            <button class="btn" onclick="checkSubEx()">Sprawdź</button>
+            <button class="btn" onclick="newSubEx()">Nowe zadanie</button>
+        </div>
+    </div>
+</div>
+
+<!-- 9: Shift / double / half -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-pink">Podwajanie i połówki</span></h2>
+    <p style="opacity:0.6;margin-bottom:10px">Przesunięcie bitów w lewo = ×2, w prawo = ÷2</p>
+    <div class="glass-card" style="text-align:center">
+        <div id="shiftDemo">
+            <div class="shift-row" id="shiftBits"></div>
+            <div style="font-family:'Baloo 2';font-size:2rem;font-weight:800;margin:12px 0" id="shiftVal"></div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:12px">
+            <button class="btn" onclick="doShift('left')">◀ Przesuń w lewo (×2)</button>
+            <button class="btn" onclick="doShift('right')">Przesuń w prawo (÷2) ▶</button>
+            <button class="btn" onclick="resetShift()">Reset</button>
+        </div>
+    </div>
+</div>
+
+<!-- 10: Shift quiz -->
+<div class="slide" data-slide="9">
+    <h2><span class="gradient-yellow">Quiz przesunięć!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p class="big-text" id="shiftQ" style="margin-bottom:15px"></p>
+        <div class="quiz-options" id="shiftOpts"></div>
+        <div class="feedback" id="shiftFb"></div>
+        <button class="btn" id="shiftNext" style="display:none;margin-top:10px" onclick="nextShiftQ()">Następne ▶</button>
+    </div>
+</div>
+
+<!-- 11: Calculator -->
+<div class="slide" data-slide="10">
+    <h2><span class="gradient-text">Kalkulator binarny</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap">
+            <div>
+                <div style="font-size:0.9rem;opacity:0.5;margin-bottom:4px">Liczba A (binarnie)</div>
+                <input class="calc-input" id="calcA" placeholder="np. 1010" oninput="calcUpdate()">
+            </div>
+            <div style="display:flex;gap:8px">
+                <span class="calc-op selected" id="opPlus" onclick="setOp('+')">+</span>
+                <span class="calc-op" id="opMinus" onclick="setOp('-')">−</span>
+            </div>
+            <div>
+                <div style="font-size:0.9rem;opacity:0.5;margin-bottom:4px">Liczba B (binarnie)</div>
+                <input class="calc-input" id="calcB" placeholder="np. 0101" oninput="calcUpdate()">
+            </div>
+        </div>
+        <div style="font-size:2rem;opacity:0.5;margin:15px 0">=</div>
+        <div style="font-family:'Baloo 2';font-size:1.6rem;font-weight:700">
+            Binarnie: <span style="color:var(--neon-green)" id="calcResBin">-</span>
+        </div>
+        <div style="font-family:'Baloo 2';font-size:1.4rem;font-weight:700;margin-top:6px">
+            Dziesiętnie: <span style="color:var(--neon-blue)" id="calcResDec">-</span>
+        </div>
+        <div style="font-size:1rem;margin-top:8px;opacity:0.5" id="calcDetail"></div>
+    </div>
+</div>
+
+<!-- 12: Timed challenge -->
+<div class="slide" data-slide="11">
+    <h2><span class="gradient-pink">Wyzwanie na czas!</span></h2>
+    <div class="glass-card" style="text-align:center" id="challengeArea">
+        <div class="timer-display" id="chalTimer">0:00</div>
+        <div class="score-display" id="chalScore">Zadanie: 0 / 10</div>
+        <div class="challenge-problem" id="chalProblem"></div>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;margin:10px 0">
+            <span style="font-family:'Baloo 2';font-size:1.4rem;font-weight:700">=</span>
+            <input class="calc-input" id="chalInput" style="max-width:180px" onkeydown="if(event.key==='Enter')checkChallenge()">
+            <button class="btn primary" onclick="checkChallenge()">OK</button>
+        </div>
+        <div class="feedback" id="chalFeedback"></div>
+        <button class="btn primary" id="chalStart" onclick="startChallenge()">Rozpocznij!</button>
+    </div>
+</div>
+
+<!-- 13: Summary -->
+<div class="slide" data-slide="12">
+    <div class="emoji-big">🎉</div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <h2 style="font-size:1.7rem;color:var(--neon-pink)">Opanowałeś arytmetykę binarną!</h2>
+    <div class="glass-card" style="text-align:center">
+        <ul class="styled-list" style="display:inline-block;text-align:left">
+            <li><strong style="color:var(--neon-green)">1+1=10</strong> - z przeniesieniem na wyższą pozycję</li>
+            <li><strong style="color:var(--neon-green)">0-1</strong> - pożyczamy z wyższej pozycji</li>
+            <li>Przesunięcie w lewo = <strong style="color:var(--neon-yellow)">×2</strong></li>
+            <li>Przesunięcie w prawo = <strong style="color:var(--neon-yellow)">÷2</strong></li>
+            <li>Komputer liczy miliardy takich operacji <strong style="color:var(--neon-blue)">na sekundę!</strong></li>
+        </ul>
+    </div>
+    <p style="margin-top:20px;opacity:0.5;font-size:1.1rem">Coding Tree 🌳</p>
+</div>
+
+</div><!-- /presentation -->
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 13</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// === Rain ===
+const rainEl=document.getElementById('rain');
+for(let i=0;i<30;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s)}
+
+// === Navigation ===
+let cur=0;const slides=document.querySelectorAll('.slide'),total=slides.length;
+function changeSlide(d){const n=cur+d;if(n<0||n>=total)return;slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');updateNav()}
+function updateNav(){document.getElementById('prevBtn').disabled=cur===0;document.getElementById('nextBtn').disabled=cur===total-1;document.getElementById('slideCounter').textContent=(cur+1)+' / '+total;document.getElementById('progressBar').style.width=((cur+1)/total*100)+'%'}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}});
+updateNav();
+
+// === Confetti ===
+function boom(el){const r=el.getBoundingClientRect(),b=document.createElement('div');b.className='success-burst';b.style.left=(r.left+r.width/2)+'px';b.style.top=r.top+'px';const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<20;i++){const c=document.createElement('div');c.className='confetti';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.left=(Math.random()-0.5)*200+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';b.appendChild(c)}document.body.appendChild(b);setTimeout(()=>b.remove(),2000)}
+
+// === Slide 3: 5-bit counter ===
+function toggleCBit(el){const on=el.classList.toggle('active');el.querySelector('.bd').textContent=on?'1':'0';let t=0;document.querySelectorAll('#counterBits .bit-box').forEach(b=>{if(b.classList.contains('active'))t+=parseInt(b.dataset.bv)});document.getElementById('cResult').innerHTML='<span class="gradient-text">'+t+'</span>'}
+
+// === Slide 5: Step addition 0111+0101 ===
+let addStep=0;const A=[0,1,1,1],B=[0,1,0,1],carry=[0,0,0,0,0],res=[0,0,0,0];
+function nextAddStep(){
+    if(addStep>=4){document.getElementById('stepMsg').innerHTML='<span style="color:var(--neon-green)">0111 (7) + 0101 (5) = 1100 (12) ✓</span>';document.getElementById('stepBtn').disabled=true;boom(document.getElementById('stepAdd'));return}
+    const i=3-addStep;const sum=A[i]+B[i]+carry[i+1>3?0:i+1];
+    // actually compute properly
+    recomputeAdd();addStep++;renderAddStep()
+}
+function recomputeAdd(){
+    for(let k=0;k<4;k++){carry[k]=0;res[k]=0}
+    let c=0;
+    for(let i=3;i>=0;i--){const s=A[i]+B[i]+c;res[i]=s%2;c=Math.floor(s/2);if(i>0)carry[i-1]=0}
+    // store carries properly
+    c=0;for(let i=3;i>=0;i--){const s=A[i]+B[i]+c;res[i]=s%2;c=Math.floor(s/2)}
+    // we need per-step carries
+}
+function resetAddSteps(){addStep=0;['sr0','sr1','sr2','sr3','sc0','sc1','sc2','sc3'].forEach(id=>document.getElementById(id).textContent='');document.getElementById('stepMsg').textContent='0111 (7) + 0101 (5) = ?';document.getElementById('stepBtn').disabled=false;document.querySelectorAll('.add-cell').forEach(c=>c.classList.remove('highlight'))}
+function renderAddStep(){}
+// Proper step-by-step
+resetAddSteps();
+addStep=0;
+function nextAddStep(){
+    if(addStep>=4){boom(document.getElementById('stepAdd'));document.getElementById('stepMsg').innerHTML='<span style="color:var(--neon-green)">0111 (7) + 0101 (5) = 1100 (12)</span>';document.getElementById('stepBtn').disabled=true;return}
+    const col=3-addStep;
+    let c=0;for(let i=3;i>=col;i--){const prev=i<3?parseInt(document.getElementById('sc'+(i+1)).textContent||'0'):0;c=0;let cc=0;for(let j=3;j>=i;j--){const s=A[j]+B[j]+cc;cc=Math.floor(s/2)}};
+    // simpler approach: just hardcode the steps for 0111+0101
+    const steps=[
+        {col:0,a:1,b:1,c:0,sum:0,carry:1,msg:'Kolumna 1: 1+1+0 = 10 → wynik 0, przeniesienie 1'},
+        {col:1,a:1,b:0,c:1,sum:0,carry:1,msg:'Kolumna 2: 1+0+1 = 10 → wynik 0, przeniesienie 1'},
+        {col:2,a:1,b:1,c:1,sum:1,carry:1,msg:'Kolumna 3: 1+1+1 = 11 → wynik 1, przeniesienie 1'},
+        {col:3,a:0,b:0,c:1,sum:1,carry:0,msg:'Kolumna 4: 0+0+1 = 1 → wynik 1'}
+    ];
+    const st=steps[addStep];
+    const ci=3-st.col;
+    document.getElementById('sr'+st.col).textContent=st.sum;
+    document.getElementById('sr'+st.col).classList.add('highlight');
+    document.getElementById('sa'+st.col).classList.add('highlight');
+    document.getElementById('sb'+st.col).classList.add('highlight');
+    if(st.carry&&ci>=0)document.getElementById('sc'+ci).textContent=st.carry;
+    if(st.c)document.getElementById('sc'+st.col).classList.add('highlight');
+    document.getElementById('stepMsg').textContent=st.msg;
+    addStep++;
+    if(addStep>=4)document.getElementById('stepBtn').textContent='Gotowe! ✓';
+}
+
+// === Slide 6: Add exercise ===
+let addA,addB;
+function newAddEx(){
+    addA=Math.floor(Math.random()*12)+2;addB=Math.floor(Math.random()*12)+2;
+    if(addA+addB>31){addB=31-addA}
+    const ab=addA.toString(2).padStart(5,'0'),bb=addB.toString(2).padStart(5,'0');
+    const html='<div class="add-grid"><div class="add-row"><div class="add-cell" style="width:50px"></div>'+ab.split('').map((_,i)=>'<div class="add-cell">'+ab[i]+'</div>').join('')+'</div><div class="add-row"><div class="add-cell" style="width:50px;font-size:1.2rem">+</div>'+bb.split('').map((_,i)=>'<div class="add-cell">'+bb[i]+'</div>').join('')+'</div><div class="add-separator" style="max-width:320px"></div><div class="add-row"><div class="add-cell" style="width:50px"></div>'+[0,1,2,3,4].map(i=>'<input class="bit-input" id="aei'+i+'" maxlength="1" style="width:44px;height:44px;font-size:1.5rem">').join('')+'</div></div><p style="opacity:0.6;font-size:1rem;margin-top:8px">'+ab+' ('+addA+') + '+bb+' ('+addB+') = ?</p>';
+    document.getElementById('addExProblem').innerHTML=html;
+    document.getElementById('addExFeedback').textContent='';
+}
+function checkAddEx(){
+    const ans=(addA+addB).toString(2).padStart(5,'0');
+    let user='';for(let i=0;i<5;i++){const v=document.getElementById('aei'+i);user+=v.value||'_'}
+    if(user===ans){document.getElementById('addExFeedback').innerHTML='<span style="color:var(--neon-green)">Brawo! '+ans+' = '+(addA+addB)+'</span>';for(let i=0;i<5;i++)document.getElementById('aei'+i).classList.add('correct');boom(document.getElementById('addExArea'))}
+    else{document.getElementById('addExFeedback').innerHTML='<span style="color:var(--neon-pink)">Spróbuj jeszcze raz! Poprawna odpowiedź ma 5 bitów.</span>';for(let i=0;i<5;i++){const v=document.getElementById('aei'+i);if(v.value!==ans[i])v.classList.add('wrong');else v.classList.add('correct')}}
+}
+newAddEx();
+
+// === Slide 8: Subtract exercise ===
+let subA,subB;
+function newSubEx(){
+    subB=Math.floor(Math.random()*10)+1;subA=subB+Math.floor(Math.random()*12)+1;
+    if(subA>31)subA=31;
+    const ab=subA.toString(2).padStart(5,'0'),bb=subB.toString(2).padStart(5,'0');
+    const html='<div class="add-grid"><div class="add-row"><div class="add-cell" style="width:50px"></div>'+ab.split('').map((_,i)=>'<div class="add-cell">'+ab[i]+'</div>').join('')+'</div><div class="add-row"><div class="add-cell" style="width:50px;font-size:1.2rem">−</div>'+bb.split('').map((_,i)=>'<div class="add-cell">'+bb[i]+'</div>').join('')+'</div><div class="add-separator" style="max-width:320px"></div><div class="add-row"><div class="add-cell" style="width:50px"></div>'+[0,1,2,3,4].map(i=>'<input class="bit-input" id="sei'+i+'" maxlength="1" style="width:44px;height:44px;font-size:1.5rem">').join('')+'</div></div><p style="opacity:0.6;font-size:1rem;margin-top:8px">'+ab+' ('+subA+') − '+bb+' ('+subB+') = ?</p>';
+    document.getElementById('subExProblem').innerHTML=html;
+    document.getElementById('subExFeedback').textContent='';
+}
+function checkSubEx(){
+    const ans=(subA-subB).toString(2).padStart(5,'0');
+    let user='';for(let i=0;i<5;i++){const v=document.getElementById('sei'+i);user+=v.value||'_'}
+    if(user===ans){document.getElementById('subExFeedback').innerHTML='<span style="color:var(--neon-green)">Brawo! '+ans+' = '+(subA-subB)+'</span>';for(let i=0;i<5;i++)document.getElementById('sei'+i).classList.add('correct');boom(document.getElementById('subExArea'))}
+    else{document.getElementById('subExFeedback').innerHTML='<span style="color:var(--neon-pink)">Spróbuj jeszcze raz!</span>';for(let i=0;i<5;i++){const v=document.getElementById('sei'+i);if(v.value!==ans[i])v.classList.add('wrong');else v.classList.add('correct')}}
+}
+newSubEx();
+
+// === Slide 9: Shift demo ===
+let shiftVal=6;// 00110
+function renderShift(){
+    const bits=shiftVal.toString(2).padStart(8,'0');
+    let h='';for(let i=0;i<8;i++){h+='<div class="shift-cell'+(bits[i]==='1'?' on':'')+'">'+bits[i]+'</div>'}
+    document.getElementById('shiftBits').innerHTML=h;
+    document.getElementById('shiftVal').innerHTML='Wartość: <span style="color:var(--neon-blue)">'+shiftVal+'</span> <span style="opacity:0.5;font-size:1rem">('+bits+')</span>';
+}
+function doShift(dir){if(dir==='left'&&shiftVal<128)shiftVal<<=1;if(dir==='right')shiftVal>>>=1;renderShift()}
+function resetShift(){shiftVal=6;renderShift()}
+renderShift();
+
+// === Slide 10: Shift quiz ===
+const shiftQs=[
+    {q:'Co to jest <span style="color:var(--neon-green)">0011</span> przesunięte w lewo?',opts:['0110','0001','1100','0010'],correct:0},
+    {q:'Co to jest <span style="color:var(--neon-green)">1010</span> przesunięte w prawo?',opts:['0101','1100','0100','1111'],correct:0},
+    {q:'<span style="color:var(--neon-green)">0100</span> (4) przesunięte w lewo daje:',opts:['8','2','6','16'],correct:0},
+    {q:'<span style="color:var(--neon-green)">1000</span> (8) przesunięte w prawo daje:',opts:['4','16','2','6'],correct:0},
+    {q:'Przesunięcie <span style="color:var(--neon-green)">0001</span> dwa razy w lewo daje:',opts:['0100','0010','1000','0011'],correct:0},
+    {q:'Ile to jest 5 × 2 binarnie (0101 przesunięte w lewo)?',opts:['1010','0110','1100','0011'],correct:0}
+];
+let sqIdx=0;
+function loadShiftQ(){
+    if(sqIdx>=shiftQs.length){document.getElementById('shiftQ').innerHTML='<span class="gradient-text">Wszystkie poprawne! Gratulacje!</span>';document.getElementById('shiftOpts').innerHTML='';document.getElementById('shiftNext').style.display='none';document.getElementById('shiftFb').innerHTML='<span style="color:var(--neon-green)">Mistrz przesunięć!</span>';boom(document.getElementById('shiftFb'));return}
+    const q=shiftQs[sqIdx];document.getElementById('shiftQ').innerHTML=q.q;document.getElementById('shiftFb').textContent='';document.getElementById('shiftNext').style.display='none';
+    const el=document.getElementById('shiftOpts');el.innerHTML='';
+    q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='quiz-btn';b.textContent=o;b.onclick=()=>answerShiftQ(i,b);el.appendChild(b)});
+}
+function answerShiftQ(i,btn){
+    const q=shiftQs[sqIdx],btns=document.querySelectorAll('#shiftOpts .quiz-btn');
+    btns.forEach(b=>b.style.pointerEvents='none');
+    if(i===q.correct){btn.classList.add('correct');document.getElementById('shiftFb').innerHTML='<span style="color:var(--neon-green)">Dobrze!</span>';boom(btn)}
+    else{btn.classList.add('wrong');btns[q.correct].classList.add('correct');document.getElementById('shiftFb').innerHTML='<span style="color:var(--neon-pink)">Poprawna: '+q.opts[q.correct]+'</span>'}
+    document.getElementById('shiftNext').style.display='inline-block';
+}
+function nextShiftQ(){sqIdx++;loadShiftQ()}
+loadShiftQ();
+
+// === Slide 11: Calculator ===
+let calcOp='+';
+function setOp(op){calcOp=op;document.getElementById('opPlus').classList.toggle('selected',op==='+');document.getElementById('opMinus').classList.toggle('selected',op==='-');calcUpdate()}
+function calcUpdate(){
+    const a=document.getElementById('calcA').value.replace(/[^01]/g,'');
+    const b=document.getElementById('calcB').value.replace(/[^01]/g,'');
+    if(!a||!b){document.getElementById('calcResBin').textContent='-';document.getElementById('calcResDec').textContent='-';document.getElementById('calcDetail').textContent='';return}
+    const da=parseInt(a,2),db=parseInt(b,2);
+    const dr=calcOp==='+'?da+db:da-db;
+    if(dr<0){document.getElementById('calcResBin').textContent='błąd';document.getElementById('calcResDec').textContent='wynik ujemny!';document.getElementById('calcDetail').textContent='A musi być >= B przy odejmowaniu';return}
+    document.getElementById('calcResBin').textContent=dr.toString(2);
+    document.getElementById('calcResDec').textContent=dr;
+    document.getElementById('calcDetail').textContent=da+' '+calcOp+' '+db+' = '+dr;
+}
+
+// === Slide 12: Timed challenge ===
+let chalIdx=0,chalCorrect=0,chalProblems=[],chalTimerInt=null,chalSeconds=0,chalActive=false;
+function genChalProblems(){
+    chalProblems=[];
+    for(let i=0;i<10;i++){
+        const isAdd=Math.random()>0.3;
+        let a,b;
+        if(isAdd){a=Math.floor(Math.random()*14)+1;b=Math.floor(Math.random()*14)+1;if(a+b>31)b=31-a;chalProblems.push({a,b,op:'+',ans:a+b})}
+        else{a=Math.floor(Math.random()*14)+3;b=Math.floor(Math.random()*(a-1))+1;chalProblems.push({a,b,op:'-',ans:a-b})}
+    }
+}
+function startChallenge(){
+    genChalProblems();chalIdx=0;chalCorrect=0;chalSeconds=0;chalActive=true;
+    document.getElementById('chalStart').style.display='none';
+    document.getElementById('chalInput').style.display='';
+    chalTimerInt=setInterval(()=>{chalSeconds++;const m=Math.floor(chalSeconds/60),s=chalSeconds%60;document.getElementById('chalTimer').textContent=m+':'+(s<10?'0':'')+s},1000);
+    showChalProblem();
+}
+function showChalProblem(){
+    if(chalIdx>=10){clearInterval(chalTimerInt);chalActive=false;
+        document.getElementById('chalProblem').innerHTML='';
+        document.getElementById('chalInput').style.display='none';
+        document.getElementById('chalFeedback').innerHTML='<span style="color:var(--neon-green);font-size:2rem">Wynik: '+chalCorrect+' / 10</span>';
+        if(chalCorrect>=7)boom(document.getElementById('challengeArea'));
+        document.getElementById('chalStart').style.display='';document.getElementById('chalStart').textContent='Jeszcze raz!';return}
+    const p=chalProblems[chalIdx];
+    document.getElementById('chalProblem').innerHTML='<span style="color:var(--neon-green)">'+p.a.toString(2).padStart(5,'0')+'</span> <span style="color:var(--neon-yellow)">'+p.op+'</span> <span style="color:var(--neon-green)">'+p.b.toString(2).padStart(5,'0')+'</span>';
+    document.getElementById('chalScore').textContent='Zadanie: '+(chalIdx+1)+' / 10 | Poprawne: '+chalCorrect;
+    document.getElementById('chalInput').value='';document.getElementById('chalInput').focus();
+    document.getElementById('chalFeedback').textContent='';
+}
+function checkChallenge(){
+    if(!chalActive)return;
+    const p=chalProblems[chalIdx],v=document.getElementById('chalInput').value.replace(/[^01]/g,'');
+    const userDec=parseInt(v,2);
+    if(userDec===p.ans){chalCorrect++;document.getElementById('chalFeedback').innerHTML='<span style="color:var(--neon-green)">✓ Dobrze!</span>';boom(document.getElementById('chalInput'))}
+    else{document.getElementById('chalFeedback').innerHTML='<span style="color:var(--neon-pink)">✗ Poprawna: '+p.ans.toString(2)+'  ('+p.ans+')</span>'}
+    chalIdx++;setTimeout(showChalProblem,800);
+}
+// init
+document.getElementById('chalInput').style.display='none';
+</script>
+</body>
+</html>

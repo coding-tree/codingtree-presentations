@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jak Komputer Przechowuje Tekst</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}.bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}.bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:40px 50px 100px;animation:slideIn 0.5s ease;overflow-y:auto}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.5rem;text-align:center;line-height:1.15;margin-bottom:15px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.3rem;margin-bottom:20px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        p,li{font-size:1.25rem;line-height:1.7}
+        .big-text{font-size:1.4rem;text-align:center;max-width:800px;line-height:1.8}
+        .emoji-big{font-size:4rem;margin:8px 0}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:30px;backdrop-filter:blur(10px);max-width:900px;width:100%}
+        .styled-list{list-style:none;max-width:700px}
+        .styled-list li{padding:8px 0 8px 30px;position:relative}
+        .styled-list li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:4px;background:var(--neon-green);box-shadow:0 0 8px rgba(57,255,20,0.3)}
+        .btn{padding:10px 24px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .btn:hover{border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .btn.primary{border-color:var(--neon-green);background:rgba(57,255,20,0.1)}
+        .quiz-btn{padding:14px 28px;border-radius:16px;border:3px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:700;cursor:pointer;transition:all 0.25s;min-width:80px}
+        .quiz-btn:hover{border-color:var(--neon-blue);transform:scale(1.05)}
+        .quiz-btn.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.15);color:var(--neon-green);box-shadow:0 0 25px rgba(57,255,20,0.2)}
+        .quiz-btn.wrong{border-color:var(--neon-pink);background:rgba(255,46,170,0.1);opacity:0.5}
+        .quiz-options{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+        .feedback{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:700;text-align:center;min-height:36px}
+        .text-input{padding:10px 16px;border-radius:12px;border:2px solid var(--glass-border);background:var(--glass);color:var(--neon-green);font-family:'Baloo 2',monospace;font-size:1.3rem;font-weight:700;outline:none;text-align:center}
+        .text-input:focus{border-color:var(--neon-blue);box-shadow:0 0 15px rgba(0,212,255,0.2)}
+        .decode-input{width:50px;height:50px;border-radius:12px;border:3px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-family:'Baloo 2',monospace;font-size:1.6rem;font-weight:700;text-align:center;outline:none;text-transform:uppercase;transition:all 0.3s}
+        .decode-input:focus{border-color:var(--neon-blue)}.decode-input.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.12);color:var(--neon-green)}.decode-input.wrong{border-color:var(--neon-pink);animation:shake 0.4s}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+        /* ASCII table */
+        .ascii-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;max-height:320px;overflow-y:auto;padding:8px}
+        .ascii-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:6px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:'Baloo 2',monospace}
+        .ascii-item:hover{border-color:var(--neon-blue);transform:scale(1.05)}
+        .ascii-item.selected{border-color:var(--neon-yellow);background:rgba(255,230,0,0.1);box-shadow:0 0 15px rgba(255,230,0,0.15)}
+        .ascii-char{font-size:1.3rem;font-weight:800;color:var(--neon-yellow)}
+        .ascii-num{font-size:0.75rem;color:var(--neon-green)}
+
+        /* Bit flip */
+        .bit-cell{display:inline-flex;width:44px;height:44px;align-items:center;justify-content:center;border-radius:10px;border:2px solid var(--glass-border);background:var(--glass);font-family:'Baloo 2',monospace;font-size:1.5rem;font-weight:800;cursor:pointer;transition:all 0.2s;margin:2px}
+        .bit-cell:hover{border-color:var(--neon-blue);transform:scale(1.08)}
+        .bit-cell.highlight{border-color:var(--neon-orange);background:rgba(255,107,43,0.15);color:var(--neon-orange);box-shadow:0 0 12px rgba(255,107,43,0.2)}
+        .bit-cell.on{color:var(--neon-green)}.bit-cell.off{color:#555}
+
+        /* Encoder output */
+        .bin-output{font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);line-height:2;word-break:break-all;max-height:200px;overflow-y:auto}
+        .char-block{display:inline-block;margin:4px 8px;text-align:center}
+        .char-letter{font-size:1.2rem;color:var(--neon-yellow);font-weight:700}
+        .char-bin{font-size:0.85rem;color:var(--neon-green)}
+        .char-dec{font-size:0.75rem;color:var(--neon-blue)}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:48px;height:48px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:cFall 1.2s ease-out forwards}
+        @keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+        @media(max-width:768px){.slide{padding:25px 15px 100px}h1{font-size:2.2rem}h2{font-size:1.6rem}.glass-card{padding:20px}.ascii-grid{grid-template-columns:repeat(auto-fill,minmax(55px,1fr))}}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div><div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- 1: Title -->
+<div class="slide active" data-slide="0">
+    <div class="emoji-big">📝</div>
+    <h1><span class="gradient-text">Jak Komputer Przechowuje Tekst</span></h1>
+    <h2 style="font-size:1.8rem;color:var(--neon-pink)">Sekret Liter i Cyfr!</h2>
+    <p class="big-text" style="margin-top:16px;opacity:0.7">Dowiedz się, jak komputer zamienia litery na liczby!</p>
+</div>
+
+<!-- 2: Everything is numbers -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-text">Wszystko to liczby!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.3rem;margin-bottom:16px">Komputer nie zna liter - zna tylko <strong style="color:var(--neon-green)">liczby</strong>!</p>
+        <p style="font-size:1.15rem;margin-bottom:16px;opacity:0.8">Dlatego ludzie wymyślili system, w którym każda litera ma swój numer.</p>
+        <div style="display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin:20px 0">
+            <div style="text-align:center"><div style="font-size:3rem">📡</div><p style="font-size:0.95rem;opacity:0.6">Telegraf (1837)</p><p style="font-size:0.9rem">Kropki i kreski</p></div>
+            <div style="text-align:center"><div style="font-size:3rem">📻</div><p style="font-size:0.95rem;opacity:0.6">Kod Morse'a</p><p style="font-size:0.9rem">· − · · −</p></div>
+            <div style="text-align:center"><div style="font-size:3rem">💻</div><p style="font-size:0.95rem;opacity:0.6">ASCII (1963)</p><p style="font-size:0.9rem">Litery = liczby</p></div>
+        </div>
+        <p style="font-size:1.2rem"><strong style="color:var(--neon-yellow)">ASCII</strong> = American Standard Code for Information Interchange</p>
+    </div>
+</div>
+
+<!-- 3: ASCII table -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-pink">Tabela ASCII</span></h2>
+    <p style="opacity:0.6;margin-bottom:8px">Kliknij znak, żeby zobaczyć jego kod!</p>
+    <div class="glass-card">
+        <div class="ascii-grid" id="asciiGrid"></div>
+        <div style="text-align:center;margin-top:12px;min-height:50px" id="asciiDetail">
+            <span style="opacity:0.5">Kliknij dowolny znak powyżej</span>
+        </div>
+    </div>
+</div>
+
+<!-- 4: Find the code quiz -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-yellow">Znajdź kod!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p class="big-text" id="findQ" style="margin-bottom:12px"></p>
+        <div class="quiz-options" id="findOpts"></div>
+        <div class="feedback" id="findFb"></div>
+        <button class="btn" id="findNext" style="display:none;margin-top:8px" onclick="nextFindQ()">Następne ▶</button>
+        <div style="font-size:0.95rem;opacity:0.5;margin-top:8px" id="findScore"></div>
+    </div>
+</div>
+
+<!-- 5: Step by step -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-text">Od liczby do litery</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:20px">Jak komputer odczytuje literę <strong style="color:var(--neon-yellow);font-size:2rem">A</strong>?</p>
+        <div style="display:flex;gap:20px;justify-content:center;align-items:center;flex-wrap:wrap;font-family:'Baloo 2';font-weight:700">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:0.85rem;opacity:0.5">Binarnie</div>
+                <div style="font-size:1.8rem;color:var(--neon-green)">01000001</div>
+            </div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:0.85rem;opacity:0.5">Dziesiętnie</div>
+                <div style="font-size:1.8rem;color:var(--neon-blue)">65</div>
+            </div>
+            <div style="font-size:2rem;color:var(--neon-yellow)">→</div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:0.85rem;opacity:0.5">Znak ASCII</div>
+                <div style="font-size:2.5rem;color:var(--neon-yellow)">A</div>
+            </div>
+        </div>
+        <p style="font-size:1.1rem;margin-top:20px;opacity:0.7">64 + 1 = <strong style="color:var(--neon-blue)">65</strong> → w tabeli ASCII to litera <strong style="color:var(--neon-yellow)">A</strong></p>
+        <p style="font-size:1rem;margin-top:8px;opacity:0.5">B=66, C=67, D=68... Każda następna litera to +1!</p>
+    </div>
+</div>
+
+<!-- 6: Decoder -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-pink">Dekoder ASCII</span></h2>
+    <p style="opacity:0.6;margin-bottom:8px">Zamień kody binarne na litery i odkryj ukryte słowo!</p>
+    <div class="glass-card" style="text-align:center" id="decoderArea">
+        <div style="display:flex;gap:18px;justify-content:center;flex-wrap:wrap" id="decoderRow"></div>
+        <div class="feedback" id="decoderFb" style="margin-top:12px"></div>
+        <button class="btn" onclick="newDecodeWord()" style="margin-top:8px">Nowe słowo</button>
+    </div>
+</div>
+
+<!-- 7: Encoder -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-yellow">Enkoder tekstu</span></h2>
+    <p style="opacity:0.6;margin-bottom:8px">Wpisz tekst i zobacz, jak wygląda binarnie!</p>
+    <div class="glass-card" style="text-align:center">
+        <input class="text-input" id="encInput" placeholder="Wpisz tekst..." style="width:100%;max-width:400px;text-align:left;color:var(--soft-white)" oninput="encodeText()">
+        <div class="bin-output" id="encOutput" style="margin-top:16px;min-height:60px"></div>
+    </div>
+</div>
+
+<!-- 8: Upper vs lower -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-text">Wielkie vs małe litery</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div style="display:flex;gap:30px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+            <div style="text-align:center">
+                <div style="font-size:3rem;color:var(--neon-yellow);font-family:'Baloo 2';font-weight:800">A</div>
+                <div style="font-size:1.1rem;color:var(--neon-blue)">65</div>
+                <div style="font-size:0.9rem;color:var(--neon-green)">01000001</div>
+            </div>
+            <div style="font-size:2rem;color:var(--neon-orange)">↕ +32</div>
+            <div style="text-align:center">
+                <div style="font-size:3rem;color:var(--neon-yellow);font-family:'Baloo 2';font-weight:800">a</div>
+                <div style="font-size:1.1rem;color:var(--neon-blue)">97</div>
+                <div style="font-size:0.9rem;color:var(--neon-green)">01100001</div>
+            </div>
+        </div>
+        <p style="font-size:1.2rem">Różnica to zawsze <strong style="color:var(--neon-orange)">32</strong> - to dokładnie <strong style="color:var(--neon-orange)">1 bit</strong>!</p>
+        <div style="font-family:'Baloo 2',monospace;font-size:1.4rem;margin-top:12px">
+            A = 0<strong style="color:var(--neon-orange)">1</strong>000001 → a = 0<strong style="color:var(--neon-orange)">1</strong>100001
+        </div>
+        <p style="font-size:1rem;opacity:0.6;margin-top:8px">Bit nr 5 (wartość 32): <strong style="color:var(--neon-green)">0</strong>=wielka, <strong style="color:var(--neon-green)">1</strong>=mała</p>
+    </div>
+</div>
+
+<!-- 9: Flip the bit -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-pink">Odwróć bit!</span></h2>
+    <p style="opacity:0.6;margin-bottom:8px">Kliknij bit, który zmienia wielką literę na małą!</p>
+    <div class="glass-card" style="text-align:center" id="flipArea">
+        <div style="font-family:'Baloo 2';font-size:2.5rem;font-weight:800;color:var(--neon-yellow);margin-bottom:8px" id="flipChar"></div>
+        <div id="flipBits" style="margin-bottom:12px"></div>
+        <div class="feedback" id="flipFb"></div>
+        <button class="btn" id="flipNext" style="display:none;margin-top:8px" onclick="nextFlip()">Następna litera ▶</button>
+        <div style="font-size:0.9rem;opacity:0.5;margin-top:8px" id="flipScore"></div>
+    </div>
+</div>
+
+<!-- 10: Special chars -->
+<div class="slide" data-slide="9">
+    <h2><span class="gradient-yellow">Znaki specjalne</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:16px">Nie tylko litery mają kody - wszystko ma numer!</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;max-width:600px;margin:0 auto">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px"><span style="font-size:1.5rem">␣</span><br><span style="color:var(--neon-blue)">Spacja = 32</span></div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px"><span style="font-size:1.5rem">0-9</span><br><span style="color:var(--neon-blue)">Cyfry = 48-57</span></div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px"><span style="font-size:1.5rem">!</span><br><span style="color:var(--neon-blue)">Wykrzyknik = 33</span></div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px"><span style="font-size:1.5rem">?</span><br><span style="color:var(--neon-blue)">Pytajnik = 63</span></div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px"><span style="font-size:1.5rem">@</span><br><span style="color:var(--neon-blue)">Małpa = 64</span></div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:12px"><span style="font-size:1.5rem">.</span><br><span style="color:var(--neon-blue)">Kropka = 46</span></div>
+        </div>
+        <p style="font-size:1rem;opacity:0.6;margin-top:16px">Cyfra <strong style="color:var(--neon-yellow)">'0'</strong> to nie to samo co liczba <strong style="color:var(--neon-yellow)">0</strong>! Znak '0' ma kod <strong style="color:var(--neon-blue)">48</strong>.</p>
+    </div>
+</div>
+
+<!-- 11: Secret cipher -->
+<div class="slide" data-slide="10">
+    <h2><span class="gradient-text">Tajny szyfr!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center">
+            <div style="flex:1;min-width:260px">
+                <p style="font-size:1rem;margin-bottom:6px;color:var(--neon-yellow);font-weight:700">Zaszyfruj tekst:</p>
+                <input class="text-input" id="cipherEncIn" placeholder="Wpisz wiadomość..." style="width:100%;text-align:left;color:var(--soft-white)" oninput="cipherEncode()">
+                <div style="margin-top:8px;font-family:'Baloo 2',monospace;font-size:0.9rem;color:var(--neon-green);word-break:break-all;min-height:40px;text-align:left" id="cipherEncOut"></div>
+            </div>
+            <div style="flex:1;min-width:260px">
+                <p style="font-size:1rem;margin-bottom:6px;color:var(--neon-blue);font-weight:700">Odszyfruj binarny:</p>
+                <input class="text-input" id="cipherDecIn" placeholder="Wklej kod binarny..." style="width:100%;text-align:left;color:var(--neon-green);font-size:1rem" oninput="cipherDecode()">
+                <div style="margin-top:8px;font-family:'Baloo 2',monospace;font-size:1.2rem;color:var(--neon-yellow);min-height:40px;text-align:left" id="cipherDecOut"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 12: Unicode -->
+<div class="slide" data-slide="11">
+    <h2><span class="gradient-pink">Unicode i emoji!</span></h2>
+    <div class="glass-card" style="text-align:center">
+        <p style="font-size:1.2rem;margin-bottom:16px">ASCII ma tylko <strong style="color:var(--neon-yellow)">128</strong> znaków - za mało na cały świat!</p>
+        <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:16px 0">
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;min-width:120px"><div style="font-size:2rem">ASCII</div><div style="color:var(--neon-blue);font-size:1.1rem">128 znaków</div><div style="font-size:0.85rem;opacity:0.6">A-Z, 0-9, !@#...</div></div>
+            <div style="font-size:2rem;align-self:center;color:var(--neon-yellow)">→</div>
+            <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:16px;min-width:120px"><div style="font-size:2rem">Unicode</div><div style="color:var(--neon-green);font-size:1.1rem">1 000 000+ znaków</div><div style="font-size:0.85rem;opacity:0.6">Wszystkie języki!</div></div>
+        </div>
+        <p style="font-size:1.2rem;margin:12px 0">Emoji to po prostu <strong style="color:var(--neon-orange)">duże liczby</strong>:</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+            <div style="text-align:center"><span style="font-size:2rem">😊</span><br><span style="color:var(--neon-green);font-size:0.8rem">U+1F60A</span></div>
+            <div style="text-align:center"><span style="font-size:2rem">🎮</span><br><span style="color:var(--neon-green);font-size:0.8rem">U+1F3AE</span></div>
+            <div style="text-align:center"><span style="font-size:2rem">🌳</span><br><span style="color:var(--neon-green);font-size:0.8rem">U+1F333</span></div>
+            <div style="text-align:center"><span style="font-size:2rem">💻</span><br><span style="color:var(--neon-green);font-size:0.8rem">U+1F4BB</span></div>
+            <div style="text-align:center"><span style="font-size:2rem">🚀</span><br><span style="color:var(--neon-green);font-size:0.8rem">U+1F680</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- 13: Quiz -->
+<div class="slide" data-slide="12">
+    <h2><span class="gradient-yellow">Quiz!</span></h2>
+    <div class="glass-card" style="text-align:center" id="quizArea">
+        <p class="big-text" id="quizQ" style="margin-bottom:12px"></p>
+        <div class="quiz-options" id="quizOpts"></div>
+        <div class="feedback" id="quizFb"></div>
+        <button class="btn" id="quizNext" style="display:none;margin-top:8px" onclick="nextQuiz()">Następne ▶</button>
+    </div>
+</div>
+
+<!-- 14: Summary -->
+<div class="slide" data-slide="13">
+    <div class="emoji-big">🎉</div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <h2 style="font-size:1.7rem;color:var(--neon-pink)">Znasz sekret liter w komputerze!</h2>
+    <div class="glass-card" style="text-align:center">
+        <ul class="styled-list" style="display:inline-block;text-align:left">
+            <li>Każdy znak to <strong style="color:var(--neon-green)">liczba</strong> w tabeli ASCII</li>
+            <li>A=65, B=66, C=67... łatwe!</li>
+            <li>Wielka ↔ mała litera = zmiana <strong style="color:var(--neon-orange)">jednego bitu</strong> (±32)</li>
+            <li><strong style="color:var(--neon-blue)">Unicode</strong> obsługuje wszystkie języki i emoji</li>
+            <li>Nawet emoji to po prostu <strong style="color:var(--neon-yellow)">duże liczby</strong>!</li>
+        </ul>
+    </div>
+    <p style="margin-top:18px;opacity:0.5;font-size:1.1rem">Coding Tree 🌳</p>
+</div>
+
+</div>
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 14</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// Rain
+const rainEl=document.getElementById('rain');for(let i=0;i<30;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s)}
+
+// Nav
+let cur=0;const slides=document.querySelectorAll('.slide'),total=slides.length;
+function changeSlide(d){const n=cur+d;if(n<0||n>=total)return;slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');updateNav()}
+function updateNav(){document.getElementById('prevBtn').disabled=cur===0;document.getElementById('nextBtn').disabled=cur===total-1;document.getElementById('slideCounter').textContent=(cur+1)+' / '+total;document.getElementById('progressBar').style.width=((cur+1)/total*100)+'%'}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}});updateNav();
+
+// Confetti
+function boom(el){const r=el.getBoundingClientRect(),b=document.createElement('div');b.className='success-burst';b.style.left=(r.left+r.width/2)+'px';b.style.top=r.top+'px';const cols=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<20;i++){const c=document.createElement('div');c.className='confetti';c.style.background=cols[~~(Math.random()*cols.length)];c.style.left=(Math.random()-0.5)*200+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';b.appendChild(c)}document.body.appendChild(b);setTimeout(()=>b.remove(),2000)}
+
+// === ASCII Table ===
+const asciiGrid=document.getElementById('asciiGrid');
+const asciiChars=[];
+for(let i=32;i<127;i++){
+    const div=document.createElement('div');div.className='ascii-item';
+    const ch=i===32?'␣':String.fromCharCode(i);
+    div.innerHTML='<div class="ascii-char">'+ch+'</div><div class="ascii-num">'+i+'</div>';
+    div.onclick=()=>{document.querySelectorAll('.ascii-item').forEach(x=>x.classList.remove('selected'));div.classList.add('selected');
+        const bin=i.toString(2).padStart(8,'0');
+        document.getElementById('asciiDetail').innerHTML='<span style="font-size:2rem;color:var(--neon-yellow);font-family:Baloo 2;font-weight:800">'+ch+'</span> = dziesiętnie <span style="color:var(--neon-blue);font-weight:700">'+i+'</span> = binarnie <span style="color:var(--neon-green);font-weight:700">'+bin+'</span>'};
+    asciiGrid.appendChild(div);asciiChars.push({code:i,char:ch});
+}
+
+// === Find code quiz ===
+const findLetters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+let findIdx=0,findCorrectCount=0;const findTotal=6;
+function loadFindQ(){
+    if(findIdx>=findTotal){document.getElementById('findQ').innerHTML='<span class="gradient-text">Gratulacje!</span>';document.getElementById('findOpts').innerHTML='';document.getElementById('findNext').style.display='none';document.getElementById('findFb').innerHTML='<span style="color:var(--neon-green)">Wynik: '+findCorrectCount+'/'+findTotal+'</span>';if(findCorrectCount>=4)boom(document.getElementById('findFb'));return}
+    const ch=findLetters[Math.floor(Math.random()*26)];const code=ch.charCodeAt(0);
+    document.getElementById('findQ').innerHTML='Jaki kod ASCII ma litera <span style="color:var(--neon-yellow);font-size:2rem;font-family:Baloo 2;font-weight:800">'+ch+'</span>?';
+    document.getElementById('findFb').textContent='';document.getElementById('findNext').style.display='none';
+    const opts=new Set([code]);while(opts.size<4)opts.add(65+Math.floor(Math.random()*26));
+    const arr=[...opts].sort(()=>Math.random()-0.5);
+    const el=document.getElementById('findOpts');el.innerHTML='';
+    arr.forEach(o=>{const b=document.createElement('button');b.className='quiz-btn';b.textContent=o;b.onclick=()=>{el.querySelectorAll('.quiz-btn').forEach(x=>x.style.pointerEvents='none');if(o===code){b.classList.add('correct');findCorrectCount++;document.getElementById('findFb').innerHTML='<span style="color:var(--neon-green)">Tak! '+ch+' = '+code+'</span>';boom(b)}else{b.classList.add('wrong');el.querySelectorAll('.quiz-btn').forEach(x=>{if(parseInt(x.textContent)===code)x.classList.add('correct')});document.getElementById('findFb').innerHTML='<span style="color:var(--neon-pink)">'+ch+' = '+code+'</span>'}document.getElementById('findNext').style.display='inline-block'};el.appendChild(b)});
+    document.getElementById('findScore').textContent='Pytanie '+(findIdx+1)+'/'+findTotal;
+}
+function nextFindQ(){findIdx++;loadFindQ()}
+loadFindQ();
+
+// === Decoder ===
+const decWords=['KOT','DOM','GRA','KOD','LAS','MYS','SUN'];
+let decWord='';
+function newDecodeWord(){
+    decWord=decWords[Math.floor(Math.random()*decWords.length)];
+    const row=document.getElementById('decoderRow');row.innerHTML='';
+    document.getElementById('decoderFb').textContent='';
+    for(let i=0;i<decWord.length;i++){
+        const g=document.createElement('div');g.style.cssText='display:flex;flex-direction:column;align-items:center;gap:6px';
+        const code=decWord.charCodeAt(i);const bin=code.toString(2).padStart(8,'0');
+        g.innerHTML='<div style="font-family:Baloo 2,monospace;font-size:1.3rem;font-weight:700;color:var(--neon-green);letter-spacing:2px">'+bin+'</div><div style="font-size:0.85rem;opacity:0.5">('+code+')</div><input class="decode-input" maxlength="1" data-ans="'+decWord[i]+'" oninput="checkDecode(this)">';
+        row.appendChild(g);
+    }
+}
+function checkDecode(inp){
+    const v=inp.value.toUpperCase();if(!v){inp.classList.remove('correct','wrong');return}
+    if(v===inp.dataset.ans){inp.classList.remove('wrong');inp.classList.add('correct');
+        const all=document.querySelectorAll('#decoderRow .decode-input');
+        if([...all].every(x=>x.classList.contains('correct'))){document.getElementById('decoderFb').innerHTML='<span style="color:var(--neon-green)">Brawo! Słowo: '+decWord+'!</span>';boom(document.getElementById('decoderArea'))}
+    }else{inp.classList.remove('correct');inp.classList.add('wrong')}
+}
+newDecodeWord();
+
+// === Encoder ===
+function encodeText(){
+    const txt=document.getElementById('encInput').value;
+    if(!txt){document.getElementById('encOutput').innerHTML='';return}
+    let h='';for(const ch of txt){const code=ch.charCodeAt(0);const bin=code.toString(2).padStart(8,'0');
+        h+='<div class="char-block"><div class="char-letter">'+ch+'</div><div class="char-dec">'+code+'</div><div class="char-bin">'+bin+'</div></div>'}
+    document.getElementById('encOutput').innerHTML=h;
+}
+
+// === Flip the bit ===
+const flipLetters='ABCDEFGHIJKLMNOP';
+let flipIdx=0,flipOk=0;const flipTotal=5;
+function loadFlip(){
+    if(flipIdx>=flipTotal){document.getElementById('flipChar').textContent='';document.getElementById('flipBits').innerHTML='<span class="gradient-text" style="font-size:2rem">Gratulacje!</span>';document.getElementById('flipFb').innerHTML='<span style="color:var(--neon-green)">Wynik: '+flipOk+'/'+flipTotal+'</span>';document.getElementById('flipNext').style.display='none';if(flipOk>=3)boom(document.getElementById('flipArea'));return}
+    const ch=flipLetters[Math.floor(Math.random()*flipLetters.length)];
+    const code=ch.charCodeAt(0);const bin=code.toString(2).padStart(8,'0');
+    document.getElementById('flipChar').textContent=ch+' → '+ch.toLowerCase()+' ?';
+    document.getElementById('flipFb').textContent='';document.getElementById('flipNext').style.display='none';
+    let h='';for(let i=0;i<8;i++){const cls=bin[i]==='1'?'on':'off';
+        h+='<span class="bit-cell '+cls+'" data-pos="'+i+'" onclick="tryFlip(this,'+i+')">'+bin[i]+'</span>'}
+    document.getElementById('flipBits').innerHTML=h;
+    document.getElementById('flipScore').textContent='Pytanie '+(flipIdx+1)+'/'+flipTotal;
+}
+function tryFlip(el,pos){
+    document.querySelectorAll('#flipBits .bit-cell').forEach(b=>b.style.pointerEvents='none');
+    if(pos===2){// bit 5 (index 2 in 8-bit)
+        el.classList.add('highlight');flipOk++;
+        document.getElementById('flipFb').innerHTML='<span style="color:var(--neon-green)">Tak! Bit 5 (pozycja 2) zmienia wielkość litery!</span>';boom(el);
+    }else{
+        el.style.borderColor='var(--neon-pink)';
+        document.querySelectorAll('#flipBits .bit-cell')[2].classList.add('highlight');
+        document.getElementById('flipFb').innerHTML='<span style="color:var(--neon-pink)">To bit na pozycji 2 (wartość 32)!</span>';
+    }
+    document.getElementById('flipNext').style.display='inline-block';
+}
+function nextFlip(){flipIdx++;loadFlip()}
+loadFlip();
+
+// === Cipher ===
+function cipherEncode(){
+    const txt=document.getElementById('cipherEncIn').value;
+    if(!txt){document.getElementById('cipherEncOut').textContent='';return}
+    let out='';for(const ch of txt)out+=ch.charCodeAt(0).toString(2).padStart(8,'0')+' ';
+    document.getElementById('cipherEncOut').textContent=out.trim();
+}
+function cipherDecode(){
+    const txt=document.getElementById('cipherDecIn').value.replace(/[^01 ]/g,'').trim();
+    if(!txt){document.getElementById('cipherDecOut').textContent='';return}
+    const bytes=txt.split(/\s+/);let out='';
+    for(const b of bytes){const n=parseInt(b,2);if(n>=32&&n<127)out+=String.fromCharCode(n);else out+='?'}
+    document.getElementById('cipherDecOut').textContent=out;
+}
+
+// === Quiz ===
+const quizQs=[
+    {q:'Jaki kod ASCII ma litera <strong style="color:var(--neon-yellow)">A</strong>?',opts:['65','97','48','32'],correct:0},
+    {q:'Jaka jest różnica między kodem wielkiej i małej litery?',opts:['32','16','64','10'],correct:0},
+    {q:'Jaki znak ma kod ASCII <strong style="color:var(--neon-blue)">32</strong>?',opts:['Spacja','Zero','A','!'],correct:0},
+    {q:'Ile znaków ma tabela ASCII?',opts:['128','256','1000','64'],correct:0},
+    {q:'Cyfra <strong style="color:var(--neon-yellow)">\'0\'</strong> ma kod ASCII:',opts:['48','0','30','10'],correct:0},
+    {q:'Co to jest Unicode?',opts:['Rozszerzenie ASCII na miliony znaków','Język programowania','Rodzaj komputera','Nazwa czcionki'],correct:0},
+    {q:'Litera <strong style="color:var(--neon-yellow)">B</strong> ma kod 66. Jaki kod ma <strong style="color:var(--neon-yellow)">b</strong>?',opts:['98','34','66','100'],correct:0},
+    {q:'Który bit zmienia wielką literę na małą?',opts:['Bit 5 (wartość 32)','Bit 0 (wartość 1)','Bit 7 (wartość 128)','Bit 3 (wartość 8)'],correct:0},
+    {q:'Emoji 😊 to w komputerze:',opts:['Duża liczba w Unicode','Specjalny obrazek','Plik graficzny','Nie da się zapisać binarnie'],correct:0},
+    {q:'<strong style="color:var(--neon-green)">01001000</strong> to jaka litera?',opts:['H','A','Z','P'],correct:0}
+];
+let qIdx=0;
+function loadQuiz(){
+    if(qIdx>=quizQs.length){document.getElementById('quizQ').innerHTML='<span class="gradient-text" style="font-size:2rem">Gratulacje! Quiz ukończony!</span>';document.getElementById('quizOpts').innerHTML='';document.getElementById('quizNext').style.display='none';document.getElementById('quizFb').innerHTML='<span style="color:var(--neon-green)">Mistrz ASCII!</span>';boom(document.getElementById('quizArea'));return}
+    const q=quizQs[qIdx];document.getElementById('quizQ').innerHTML=q.q;document.getElementById('quizFb').textContent='';document.getElementById('quizNext').style.display='none';
+    const el=document.getElementById('quizOpts');el.innerHTML='';
+    q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='quiz-btn';b.innerHTML=o;b.onclick=()=>{el.querySelectorAll('.quiz-btn').forEach(x=>x.style.pointerEvents='none');if(i===q.correct){b.classList.add('correct');document.getElementById('quizFb').innerHTML='<span style="color:var(--neon-green)">Dobrze!</span>';boom(b)}else{b.classList.add('wrong');el.querySelectorAll('.quiz-btn')[q.correct].classList.add('correct');document.getElementById('quizFb').innerHTML='<span style="color:var(--neon-pink)">Poprawna: '+q.opts[q.correct]+'</span>'}document.getElementById('quizNext').style.display='inline-block'};el.appendChild(b)})
+}
+function nextQuiz(){qIdx++;loadQuiz()}
+loadQuiz();
+</script>
+</body>
+</html>
