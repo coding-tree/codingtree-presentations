@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pikselki</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:8px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:4.2rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.8rem;margin-bottom:8px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+
+        /* Pixel grids */
+        .px-grid{display:grid;gap:2px;justify-content:center}
+        .px{border-radius:4px;cursor:pointer;transition:all 0.1s;border:1px solid rgba(255,255,255,0.08)}
+        .px:hover{opacity:0.8;transform:scale(1.05)}
+        .px.guide{border:2px dashed rgba(57,255,20,0.25)}
+
+        /* Palette */
+        .palette{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+        .pal-color{width:45px;height:45px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all 0.2s}
+        .pal-color:hover{transform:scale(1.15)}
+        .pal-color.selected{border-color:var(--soft-white);box-shadow:0 0 15px rgba(255,255,255,0.4)}
+        .pal-color.eraser{background:var(--glass)!important;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+
+        /* Tool buttons */
+        .tool-row{display:flex;gap:10px;justify-content:center;margin:5px 0}
+        .tool-btn{width:50px;height:50px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);cursor:pointer;font-size:1.5rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .tool-btn:hover{border-color:var(--neon-blue);transform:scale(1.08)}
+
+        /* Zoom demo */
+        .zoom-demo{display:flex;flex-direction:column;align-items:center;gap:15px}
+        .zoom-container{position:relative;width:240px;height:240px;border-radius:16px;border:2px solid var(--glass-border);overflow:hidden;transition:all 0.5s}
+        .zoom-container.zoomed{transform:scale(1.5)}
+        .zoom-pixel{position:absolute;border:1px solid rgba(255,255,255,0.05);transition:all 0.5s}
+        .zoom-pixel.highlight{border:3px solid var(--neon-green);box-shadow:0 0 15px rgba(57,255,20,0.5);z-index:10}
+
+        /* Side by side */
+        .side-by-side{display:flex;gap:20px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+        .grid-label{font-family:'Baloo 2';font-size:1.2rem;text-align:center;margin-bottom:5px;opacity:0.6}
+
+        /* Mirror line */
+        .mirror-wrap{position:relative;display:inline-block}
+        .mirror-line{position:absolute;top:0;bottom:0;left:50%;width:3px;background:var(--neon-blue);opacity:0.5;z-index:5;transform:translateX(-50%)}
+
+        /* Reference thumbnail */
+        .ref-thumb{display:grid;gap:1px;justify-content:center;margin:0 auto 8px;border-radius:8px;overflow:hidden;border:2px solid var(--glass-border)}
+        .ref-px{width:12px;height:12px}
+
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:cFall 1.2s ease-out forwards}
+        @keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        @keyframes pixelBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+        .title-pixel{display:inline-block;animation:pixelBounce 1.5s ease-in-out infinite}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        @media(max-width:768px){.slide{padding:10px 8px 100px}h1{font-size:2.8rem}h2{font-size:2rem}}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-slide="0">
+    <div style="display:flex;gap:6px;justify-content:center;">
+        <span class="title-pixel" style="width:40px;height:40px;background:var(--neon-pink);border-radius:6px;"></span>
+        <span class="title-pixel" style="width:40px;height:40px;background:var(--neon-green);border-radius:6px;animation-delay:0.2s"></span>
+        <span class="title-pixel" style="width:40px;height:40px;background:var(--neon-blue);border-radius:6px;animation-delay:0.4s"></span>
+        <span class="title-pixel" style="width:40px;height:40px;background:var(--neon-yellow);border-radius:6px;animation-delay:0.6s"></span>
+    </div>
+    <h1><span class="gradient-text">Pikselki</span></h1>
+    <div style="font-size:3rem;">🎨🖌️✨</div>
+</div>
+
+<!-- SLIDE 2: What is a pixel? -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-pink">🔍</span></h2>
+    <div class="zoom-demo">
+        <div class="zoom-container" id="zoomBox"></div>
+        <button class="tool-btn" onclick="toggleZoom()" style="width:auto;padding:0 20px;font-size:1.3rem;" id="zoomBtn">🔍</button>
+    </div>
+</div>
+
+<!-- SLIDE 3: Tap to color (5x5, 1 color) -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-text">👆</span></h2>
+    <div id="grid5"></div>
+    <div class="tool-row"><button class="tool-btn" onclick="clearGrid('grid5',5)">🗑️</button></div>
+</div>
+
+<!-- SLIDE 4: 2 colors (6x6) -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-pink">❤️</span></h2>
+    <div id="ref6" class="ref-thumb"></div>
+    <div id="grid6"></div>
+    <div class="palette" id="pal6"></div>
+    <div class="tool-row"><button class="tool-btn" onclick="clearGrid('grid6',6)">🗑️</button></div>
+</div>
+
+<!-- SLIDE 5: 4 colors (7x7) -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-yellow">🌳</span></h2>
+    <div id="ref7" class="ref-thumb"></div>
+    <div id="grid7"></div>
+    <div class="palette" id="pal7"></div>
+    <div class="tool-row"><button class="tool-btn" onclick="clearGrid('grid7',7)">🗑️</button></div>
+</div>
+
+<!-- SLIDE 6: Copy the picture -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-text">📋</span></h2>
+    <div class="side-by-side">
+        <div><div class="grid-label">📷</div><div id="copyRef"></div></div>
+        <div><div class="grid-label">✏️</div><div id="copyGrid"></div></div>
+    </div>
+    <div class="palette" id="palCopy"></div>
+</div>
+
+<!-- SLIDE 7: Mirror -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-pink">🪞</span></h2>
+    <div class="mirror-wrap">
+        <div class="mirror-line"></div>
+        <div id="mirrorGrid"></div>
+    </div>
+    <div class="palette" id="palMirror"></div>
+</div>
+
+<!-- SLIDE 8: Free draw (8x8) -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-yellow">✨</span></h2>
+    <div id="grid8"></div>
+    <div class="palette" id="pal8"></div>
+    <div class="tool-row">
+        <button class="tool-btn" onclick="undoFree()">↩️</button>
+        <button class="tool-btn" onclick="clearGrid('grid8',8)">🗑️</button>
+    </div>
+</div>
+
+<!-- SLIDE 9: Bravo -->
+<div class="slide" data-slide="8">
+    <div style="font-size:5rem;">🎨</div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <div id="bravoGrid" style="margin:10px 0;"></div>
+    <div style="font-size:2rem;opacity:0.5;font-family:'Baloo 2';">Coding Tree 🌳</div>
+</div>
+
+</div>
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 9</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// === AUDIO ===
+let audioCtx;
+function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playSound(freq,dur,type='sine'){ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=0.2;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}
+function playClick(){playSound(600+Math.random()*200,0.06);}
+function playSuccess(){playSound(523,0.1);setTimeout(()=>playSound(659,0.1),100);setTimeout(()=>playSound(784,0.2),200);}
+
+// === RAIN ===
+const rainEl=document.getElementById('rain');
+for(let i=0;i<25;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s);}
+
+// === NAV ===
+let currentSlide=0;const slides=document.querySelectorAll('.slide');const totalSlides=slides.length;
+function changeSlide(dir){const n=currentSlide+dir;if(n<0||n>=totalSlides)return;slides[currentSlide].classList.remove('active');currentSlide=n;slides[currentSlide].classList.add('active');updateNav();onSlideEnter(currentSlide);}
+function updateNav(){document.getElementById('prevBtn').disabled=currentSlide===0;document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}});
+updateNav();
+
+// === CONFETTI ===
+function spawnConfetti(anchor){const rect=anchor.getBoundingClientRect();const burst=document.createElement('div');burst.className='success-burst';burst.style.left=(rect.left+rect.width/2)+'px';burst.style.top=rect.top+'px';const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<25;i++){const c=document.createElement('div');c.className='confetti';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.left=(Math.random()-0.5)*250+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';burst.appendChild(c);}document.body.appendChild(burst);setTimeout(()=>burst.remove(),2500);}
+
+// === COLOR CONSTANTS ===
+const EMPTY='#1a1e3a';
+const C={green:'#39ff14',pink:'#ff2eaa',white:'#e8eaff',red:'#ff4466',brown:'#8B5E3C',blue:'#4488ff',yellow:'#ffe600',orange:'#ff6b2b',purple:'#9b59b6',black:'#111'};
+
+// === GRID STATE ===
+const gridStates={};
+const activeColors={};
+
+function buildGrid(containerId,size,cellSize,colors,guideData){
+    const el=document.getElementById(containerId);el.innerHTML='';
+    const grid=document.createElement('div');grid.className='px-grid';
+    grid.style.gridTemplateColumns=`repeat(${size},${cellSize}px)`;
+    if(!gridStates[containerId])gridStates[containerId]=new Array(size*size).fill(EMPTY);
+    if(!activeColors[containerId])activeColors[containerId]=colors[0];
+    const state=gridStates[containerId];
+    for(let i=0;i<size*size;i++){
+        const px=document.createElement('div');px.className='px';
+        px.style.width=cellSize+'px';px.style.height=cellSize+'px';
+        px.style.background=state[i];
+        if(guideData&&guideData[i])px.classList.add('guide');
+        px.onclick=()=>{
+            playClick();
+            state[i]=state[i]===activeColors[containerId]?EMPTY:activeColors[containerId];
+            px.style.background=state[i];
+        };
+        grid.appendChild(px);
+    }
+    el.appendChild(grid);
+}
+
+function buildPalette(palId,gridId,colors){
+    const pal=document.getElementById(palId);pal.innerHTML='';
+    colors.forEach((c,i)=>{
+        const el=document.createElement('div');el.className='pal-color'+(i===0?' selected':'');
+        el.style.background=c;
+        el.onclick=()=>{
+            activeColors[gridId]=c;
+            pal.querySelectorAll('.pal-color').forEach(p=>p.classList.remove('selected'));
+            el.classList.add('selected');playSound(400+i*80,0.08);
+        };
+        pal.appendChild(el);
+    });
+}
+
+function clearGrid(containerId,size){
+    gridStates[containerId]=new Array(size*size).fill(EMPTY);
+    const pxs=document.getElementById(containerId).querySelectorAll('.px');
+    pxs.forEach(px=>px.style.background=EMPTY);
+    playSound(300,0.2);
+}
+
+function buildRefThumb(refId,size,data,colors){
+    const el=document.getElementById(refId);el.innerHTML='';
+    el.style.gridTemplateColumns=`repeat(${size},12px)`;
+    data.forEach(ci=>{
+        const px=document.createElement('div');px.className='ref-px';
+        px.style.background=ci===-1?EMPTY:colors[ci];
+        el.appendChild(px);
+    });
+}
+
+// === SLIDE 2: Zoom demo ===
+let zoomed=false;
+function initZoom(){
+    const box=document.getElementById('zoomBox');box.innerHTML='';
+    // Build a 6x6 smiley
+    const face=[
+        0,0,1,1,0,0,
+        0,1,1,1,1,0,
+        1,1,2,1,2,1,
+        1,1,1,1,1,1,
+        1,2,1,1,2,1,
+        0,1,1,1,1,0
+    ];
+    const faceColors=[EMPTY,'#ffe600','#333'];
+    const cellSize=40;
+    face.forEach((v,i)=>{
+        const px=document.createElement('div');px.className='zoom-pixel';
+        px.style.width=cellSize+'px';px.style.height=cellSize+'px';
+        px.style.left=(i%6)*cellSize+'px';px.style.top=Math.floor(i/6)*cellSize+'px';
+        px.style.background=faceColors[v];
+        if(i===14)px.id='highlightPx'; // one pixel to highlight
+        box.appendChild(px);
+    });
+}
+function toggleZoom(){
+    zoomed=!zoomed;
+    const box=document.getElementById('zoomBox');
+    if(zoomed){
+        box.classList.add('zoomed');
+        const hp=document.getElementById('highlightPx');
+        if(hp)hp.classList.add('highlight');
+        document.getElementById('zoomBtn').textContent='🔙';
+    }else{
+        box.classList.remove('zoomed');
+        const hp=document.getElementById('highlightPx');
+        if(hp)hp.classList.remove('highlight');
+        document.getElementById('zoomBtn').textContent='🔍';
+    }
+    playSound(zoomed?800:400,0.15);
+}
+
+// === SLIDE 3: 5x5 smiley guide ===
+function initGrid5(){
+    const guide=new Array(25).fill(false);
+    // smiley outline on 5x5
+    [1,3,6,8,12,16,17,18,21,23].forEach(i=>guide[i]=true);
+    activeColors['grid5']=C.green;
+    gridStates['grid5']=new Array(25).fill(EMPTY);
+    buildGrid('grid5',5,50,[C.green],guide);
+}
+
+// === SLIDE 4: 6x6 heart ===
+const heart6=[
+    -1,0,-1,-1,0,-1,
+     0,0,0,0,0,0,
+     0,0,0,0,0,0,
+    -1,0,0,0,0,-1,
+    -1,-1,0,0,-1,-1,
+    -1,-1,-1,-1,-1,-1
+]; // 0=pink, -1=white (empty)
+function initGrid6(){
+    const colors6=[C.pink,C.white];
+    gridStates['grid6']=new Array(36).fill(EMPTY);
+    activeColors['grid6']=C.pink;
+    buildGrid('grid6',6,45,colors6);
+    buildPalette('pal6','grid6',colors6);
+    buildRefThumb('ref6',6,heart6.map(v=>v===-1?1:0),[C.pink,C.white]);
+}
+
+// === SLIDE 5: 7x7 tree ===
+const tree7Colors=[C.green,C.brown,C.blue,C.yellow];
+const tree7=[
+    2,2,2,0,2,2,2,
+    2,2,0,0,0,2,2,
+    2,0,0,0,0,0,2,
+    0,0,0,0,0,0,0,
+    2,2,2,1,2,2,2,
+    2,2,2,1,2,2,2,
+    2,2,3,3,3,2,2
+];
+function initGrid7(){
+    gridStates['grid7']=new Array(49).fill(EMPTY);
+    activeColors['grid7']=C.green;
+    buildGrid('grid7',7,38,tree7Colors);
+    buildPalette('pal7','grid7',tree7Colors);
+    buildRefThumb('ref7',7,tree7,tree7Colors);
+}
+
+// === SLIDE 6: Copy ===
+const copy6Colors=[C.red,C.blue,C.yellow,C.green];
+const copy6Data=[
+    0,0,1,1,2,2,
+    0,0,1,1,2,2,
+    3,3,0,0,1,1,
+    3,3,0,0,1,1,
+    2,2,3,3,0,0,
+    2,2,3,3,0,0
+];
+function initCopy(){
+    // Reference (non-interactive)
+    const refEl=document.getElementById('copyRef');refEl.innerHTML='';
+    const refGrid=document.createElement('div');refGrid.className='px-grid';
+    refGrid.style.gridTemplateColumns='repeat(6,40px)';
+    copy6Data.forEach(ci=>{
+        const px=document.createElement('div');px.className='px';
+        px.style.width='40px';px.style.height='40px';
+        px.style.background=copy6Colors[ci];px.style.cursor='default';
+        refGrid.appendChild(px);
+    });
+    refEl.appendChild(refGrid);
+    // Editable
+    gridStates['copyGrid']=new Array(36).fill(EMPTY);
+    activeColors['copyGrid']=copy6Colors[0];
+    buildGrid('copyGrid',6,40,copy6Colors);
+    buildPalette('palCopy','copyGrid',copy6Colors);
+}
+
+// === SLIDE 7: Mirror ===
+const mirrorColors=[C.pink,C.blue,C.green,C.yellow];
+const mirrorLeft=[
+    0,1,0,1,
+    1,2,1,2,
+    2,3,2,3,
+    3,0,3,0,
+    0,1,0,1,
+    1,2,1,2,
+    2,3,2,3,
+    3,0,3,0
+]; // 8 rows x 4 cols left half
+function initMirror(){
+    const el=document.getElementById('mirrorGrid');el.innerHTML='';
+    const grid=document.createElement('div');grid.className='px-grid';
+    grid.style.gridTemplateColumns='repeat(8,36px)';
+    const state=new Array(64).fill(EMPTY);
+    // Fill left half
+    for(let r=0;r<8;r++)for(let c=0;c<4;c++){
+        state[r*8+c]=mirrorColors[mirrorLeft[r*4+c]];
+    }
+    gridStates['mirrorGrid']=state;
+    for(let i=0;i<64;i++){
+        const px=document.createElement('div');px.className='px';
+        px.style.width='36px';px.style.height='36px';
+        px.style.background=state[i];
+        const col=i%8;
+        if(col<4){px.style.cursor='default';px.style.opacity='1';}
+        else{
+            px.onclick=(()=>{const idx=i;return()=>{
+                playClick();
+                state[idx]=state[idx]===activeColors['mirrorGrid']?EMPTY:activeColors['mirrorGrid'];
+                px.style.background=state[idx];
+            }})();
+        }
+        grid.appendChild(px);
+    }
+    el.appendChild(grid);
+    activeColors['mirrorGrid']=mirrorColors[0];
+    buildPalette('palMirror','mirrorGrid',mirrorColors);
+}
+
+// === SLIDE 8: Free draw 8x8 ===
+const free8Colors=[C.red,C.orange,C.yellow,C.green,C.blue,C.purple,C.black,C.white];
+const freeHistory=[];
+function initFree(){
+    gridStates['grid8']=new Array(64).fill(EMPTY);
+    activeColors['grid8']=free8Colors[0];
+    buildGrid('grid8',8,34,free8Colors);
+    // Add eraser to palette
+    const pal=document.getElementById('pal8');pal.innerHTML='';
+    free8Colors.forEach((c,i)=>{
+        const el=document.createElement('div');el.className='pal-color'+(i===0?' selected':'');
+        el.style.background=c;
+        el.onclick=()=>{activeColors['grid8']=c;pal.querySelectorAll('.pal-color').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');};
+        pal.appendChild(el);
+    });
+    const eraser=document.createElement('div');eraser.className='pal-color eraser';
+    eraser.textContent='🧹';eraser.style.background=EMPTY;
+    eraser.onclick=()=>{activeColors['grid8']=EMPTY;pal.querySelectorAll('.pal-color').forEach(p=>p.classList.remove('selected'));eraser.classList.add('selected');};
+    pal.appendChild(eraser);
+}
+function undoFree(){
+    // Simple: clear last non-empty cell
+    const state=gridStates['grid8'];
+    for(let i=state.length-1;i>=0;i--){
+        if(state[i]!==EMPTY){state[i]=EMPTY;break;}
+    }
+    buildGrid('grid8',8,34,free8Colors);
+    playSound(300,0.1);
+}
+
+// === SLIDE 9: Bravo ===
+function initBravo(){
+    const state=gridStates['grid8']||new Array(64).fill(EMPTY);
+    const el=document.getElementById('bravoGrid');el.innerHTML='';
+    const grid=document.createElement('div');grid.className='px-grid';
+    grid.style.gridTemplateColumns='repeat(8,30px)';
+    state.forEach(c=>{
+        const px=document.createElement('div');px.className='px';
+        px.style.width='30px';px.style.height='30px';
+        px.style.background=c;px.style.cursor='default';
+        grid.appendChild(px);
+    });
+    el.appendChild(grid);
+}
+
+// === SLIDE ENTER ===
+const slideInited={};
+function onSlideEnter(idx){
+    if(idx===1&&!slideInited[1]){slideInited[1]=true;initZoom();}
+    if(idx===2&&!slideInited[2]){slideInited[2]=true;initGrid5();}
+    if(idx===3&&!slideInited[3]){slideInited[3]=true;initGrid6();}
+    if(idx===4&&!slideInited[4]){slideInited[4]=true;initGrid7();}
+    if(idx===5&&!slideInited[5]){slideInited[5]=true;initCopy();}
+    if(idx===6&&!slideInited[6]){slideInited[6]=true;initMirror();}
+    if(idx===7&&!slideInited[7]){slideInited[7]=true;initFree();}
+    if(idx===8){initBravo();if(!slideInited[8]){slideInited[8]=true;setTimeout(()=>{const h=document.querySelector('.slide[data-slide="8"] h1');if(h){spawnConfetti(h);setTimeout(()=>spawnConfetti(h),400);}},300);}}
+}
+</script>
+</body>
+</html>

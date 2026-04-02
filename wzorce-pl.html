@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wzorce i Sekwencje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:40px 30px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:10px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:4.2rem;text-align:center;line-height:1.15;margin-bottom:10px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.8rem;margin-bottom:10px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:25px;backdrop-filter:blur(10px);max-width:900px;width:100%}
+
+        /* Shapes */
+        .shape{display:inline-flex;align-items:center;justify-content:center;transition:transform 0.2s,box-shadow 0.2s}
+        .shape.circle{border-radius:50%}
+        .shape.square{border-radius:12px}
+        .shape.triangle{background:transparent!important;width:0!important;height:0!important;border-left:30px solid transparent;border-right:30px solid transparent;border-bottom:52px solid #ff2eaa}
+        .shape-sm{width:45px;height:45px}.shape-md{width:65px;height:65px}.shape-lg{width:85px;height:85px}
+
+        /* Sequence display */
+        .seq-row{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;margin:12px 0}
+        .seq-item{display:flex;align-items:center;justify-content:center}
+        .seq-qmark{width:65px;height:65px;border-radius:16px;border:3px dashed var(--neon-blue);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-size:2.5rem;font-weight:800;color:var(--neon-blue);animation:pulse 1.5s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:0.7}}
+
+        /* Options */
+        .options-row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+        .opt-btn{padding:10px;border-radius:20px;border:3px solid var(--glass-border);background:var(--glass);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;min-width:80px;min-height:80px}
+        .opt-btn:hover{border-color:var(--neon-blue);transform:scale(1.08)}
+        .opt-btn.correct{border-color:var(--neon-green);background:rgba(57,255,20,0.15);box-shadow:0 0 25px rgba(57,255,20,0.3)}
+        .opt-btn.wrong{border-color:var(--neon-pink);opacity:0.4}
+        .feedback{font-family:'Baloo 2',cursive;font-size:1.8rem;min-height:45px;text-align:center}
+        .round-dots{display:flex;gap:8px;justify-content:center;margin-top:5px}
+        .dot{width:14px;height:14px;border-radius:50%;background:#333;transition:background 0.3s}
+        .dot.done{background:var(--neon-green)}.dot.current{background:var(--neon-blue);box-shadow:0 0 10px rgba(0,212,255,0.5)}
+
+        /* Rhythm */
+        .beat{width:60px;height:60px;border-radius:50%;transition:all 0.3s;cursor:pointer;border:3px solid var(--glass-border)}
+        .beat.big{transform:scale(1.3);background:var(--neon-pink);border-color:var(--neon-pink);box-shadow:0 0 20px rgba(255,46,170,0.4)}
+        .beat.small{transform:scale(0.7);background:var(--neon-blue);border-color:var(--neon-blue)}
+        .beat.empty{background:var(--glass);border-style:dashed}
+        .beat.playing{animation:beatPulse 0.3s ease}
+        @keyframes beatPulse{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+
+        /* Grid pattern */
+        .mini-grid{display:grid;gap:4px;justify-content:center}
+        .mini-cell{border-radius:8px;transition:all 0.2s;border:2px solid rgba(255,255,255,0.05)}
+
+        /* Growing blocks */
+        .block-stack{display:flex;flex-direction:column-reverse;align-items:center;gap:3px}
+        .block{width:40px;height:40px;border-radius:8px;background:var(--neon-blue)}
+
+        /* Create your own */
+        .palette-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+        .pal-item{width:55px;height:55px;border-radius:14px;border:3px solid var(--glass-border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .pal-item:hover{transform:scale(1.1)}.pal-item.selected{border-color:var(--soft-white);box-shadow:0 0 15px rgba(255,255,255,0.3)}
+        .strip-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+        .strip-slot{width:65px;height:65px;border-radius:16px;border:3px dashed var(--glass-border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .strip-slot.filled{border-style:solid}
+
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:cFall 1.2s ease-out forwards}
+        @keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+        .bravo-shape{animation:float 2s ease-in-out infinite;display:inline-block}
+
+        /* Title animation */
+        .title-shapes{display:flex;gap:20px;justify-content:center;margin:15px 0}
+        .title-shapes .shape{animation:morph 4s ease-in-out infinite}
+        @keyframes morph{0%,100%{border-radius:50%;transform:rotate(0)}33%{border-radius:12px;transform:rotate(120deg)}66%{border-radius:50% 0;transform:rotate(240deg)}}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        @media(max-width:768px){.slide{padding:15px 10px 100px}h1{font-size:2.8rem}h2{font-size:2rem}.shape-md{width:50px;height:50px}.seq-qmark{width:50px;height:50px}}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-slide="0">
+    <div class="title-shapes">
+        <div class="shape circle shape-lg" style="background:var(--neon-pink)"></div>
+        <div class="shape circle shape-lg" style="background:var(--neon-blue);animation-delay:1.3s"></div>
+        <div class="shape circle shape-lg" style="background:var(--neon-green);animation-delay:2.6s"></div>
+    </div>
+    <h1><span class="gradient-text">Wzorce i Sekwencje</span></h1>
+    <div style="font-size:2.5rem;">🔴🔵🔴🔵❓</div>
+</div>
+
+<!-- SLIDE 2: Color sequence -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-pink">🎨</span></h2>
+    <div class="seq-row" id="colorSeq"></div>
+    <div class="options-row" id="colorOpts"></div>
+    <div class="feedback" id="colorFb"></div>
+    <div class="round-dots" id="colorDots"></div>
+</div>
+
+<!-- SLIDE 3: Shape sequence -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-text">🔷</span></h2>
+    <div class="seq-row" id="shapeSeq"></div>
+    <div class="options-row" id="shapeOpts"></div>
+    <div class="feedback" id="shapeFb"></div>
+    <div class="round-dots" id="shapeDots"></div>
+</div>
+
+<!-- SLIDE 4: Mixed patterns -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-yellow">🎨🔷</span></h2>
+    <div class="seq-row" id="mixSeq"></div>
+    <div class="options-row" id="mixOpts"></div>
+    <div class="feedback" id="mixFb"></div>
+    <div class="round-dots" id="mixDots"></div>
+</div>
+
+<!-- SLIDE 5: Size patterns -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-pink">📏</span></h2>
+    <div class="seq-row" id="sizeSeq"></div>
+    <div class="options-row" id="sizeOpts"></div>
+    <div class="feedback" id="sizeFb"></div>
+    <div class="round-dots" id="sizeDots"></div>
+</div>
+
+<!-- SLIDE 6: Rhythm -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-text">🥁</span></h2>
+    <div class="seq-row" id="rhythmRow"></div>
+    <div class="feedback" id="rhythmFb"></div>
+    <div style="margin-top:8px;">
+        <button class="opt-btn" onclick="playRhythm()" style="min-width:60px;min-height:60px;font-size:2rem;" id="rhythmPlayBtn">▶️</button>
+        <button class="opt-btn" onclick="checkRhythm()" style="min-width:60px;min-height:60px;font-size:2rem;margin-left:10px;" id="rhythmCheckBtn">✅</button>
+    </div>
+    <div class="round-dots" id="rhythmDots"></div>
+</div>
+
+<!-- SLIDE 7: Grid pattern -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-yellow">🟩</span></h2>
+    <div id="gridArea" style="display:flex;flex-direction:column;align-items:center;gap:12px;"></div>
+    <div class="options-row" id="gridOpts"></div>
+    <div class="feedback" id="gridFb"></div>
+    <div class="round-dots" id="gridDots"></div>
+</div>
+
+<!-- SLIDE 8: Growing patterns -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-pink">📈</span></h2>
+    <div class="seq-row" id="growSeq"></div>
+    <div class="options-row" id="growOpts"></div>
+    <div class="feedback" id="growFb"></div>
+    <div class="round-dots" id="growDots"></div>
+</div>
+
+<!-- SLIDE 9: Create your own -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-text">✨</span></h2>
+    <div class="palette-row" id="createPalette"></div>
+    <div class="strip-row" id="createStrip"></div>
+    <button class="opt-btn" onclick="clearStrip()" style="font-size:1.8rem;min-width:60px;min-height:50px;margin-top:5px;">🗑️</button>
+</div>
+
+<!-- SLIDE 10: Bravo -->
+<div class="slide" data-slide="9">
+    <div style="display:flex;gap:20px;justify-content:center;">
+        <span class="bravo-shape" style="font-size:4rem;">🔴</span>
+        <span class="bravo-shape" style="font-size:4rem;animation-delay:0.3s">🔵</span>
+        <span class="bravo-shape" style="font-size:4rem;animation-delay:0.6s">🟢</span>
+    </div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <div style="font-size:2rem;opacity:0.5;font-family:'Baloo 2';">Coding Tree 🌳</div>
+</div>
+
+</div>
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 10</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// === AUDIO ===
+let audioCtx;
+function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playSound(freq,dur,type='sine'){ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=0.25;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}
+function playSuccess(){playSound(523,0.1);setTimeout(()=>playSound(659,0.1),100);setTimeout(()=>playSound(784,0.2),200);}
+function playError(){playSound(200,0.3,'sawtooth');}
+function playClick(){playSound(500,0.08);}
+
+// === RAIN ===
+const rainEl=document.getElementById('rain');
+for(let i=0;i<25;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s);}
+
+// === NAV ===
+let currentSlide=0;const slides=document.querySelectorAll('.slide');const totalSlides=slides.length;
+function changeSlide(dir){const n=currentSlide+dir;if(n<0||n>=totalSlides)return;slides[currentSlide].classList.remove('active');currentSlide=n;slides[currentSlide].classList.add('active');updateNav();onSlideEnter(currentSlide);}
+function updateNav(){document.getElementById('prevBtn').disabled=currentSlide===0;document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}});
+updateNav();
+
+// === CONFETTI ===
+function spawnConfetti(anchor){const rect=anchor.getBoundingClientRect();const burst=document.createElement('div');burst.className='success-burst';burst.style.left=(rect.left+rect.width/2)+'px';burst.style.top=rect.top+'px';const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<25;i++){const c=document.createElement('div');c.className='confetti';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.left=(Math.random()-0.5)*250+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';burst.appendChild(c);}document.body.appendChild(burst);setTimeout(()=>burst.remove(),2500);}
+
+// === HELPERS ===
+const COLORS={red:'#ff4466',blue:'#4488ff',green:'#39ff14',yellow:'#ffe600',pink:'#ff2eaa',orange:'#ff6b2b'};
+function makeShape(type,color,size='shape-md'){
+    if(type==='triangle'){
+        const sz=size==='shape-sm'?20:size==='shape-lg'?40:30;
+        return `<div style="width:0;height:0;border-left:${sz}px solid transparent;border-right:${sz}px solid transparent;border-bottom:${sz*1.7}px solid ${COLORS[color]||color};display:inline-block;"></div>`;
+    }
+    const cls=type==='circle'?'circle':'square';
+    return `<div class="shape ${cls} ${size}" style="background:${COLORS[color]||color}"></div>`;
+}
+function renderDots(id,total,done,current){
+    const d=document.getElementById(id);d.innerHTML='';
+    for(let i=0;i<total;i++){const dot=document.createElement('div');dot.className='dot';if(i<done)dot.classList.add('done');if(i===current)dot.classList.add('current');d.appendChild(dot);}
+}
+
+// === GENERIC SEQUENCE QUIZ ===
+function createSeqQuiz(cfg){
+    let round=0;
+    function show(){
+        if(round>=cfg.rounds.length){
+            document.getElementById(cfg.seqId).innerHTML='<div style="font-size:5rem;">🏆</div>';
+            document.getElementById(cfg.optsId).innerHTML='';
+            document.getElementById(cfg.fbId).innerHTML='<span style="color:var(--neon-green)">⭐⭐⭐</span>';
+            renderDots(cfg.dotsId,cfg.rounds.length,cfg.rounds.length,-1);
+            return;
+        }
+        const r=cfg.rounds[round];
+        // Render sequence
+        let html='';
+        r.sequence.forEach(item=>{html+='<div class="seq-item">'+cfg.renderItem(item)+'</div>';});
+        html+='<div class="seq-item"><div class="seq-qmark">?</div></div>';
+        document.getElementById(cfg.seqId).innerHTML=html;
+        // Render options
+        const optsEl=document.getElementById(cfg.optsId);optsEl.innerHTML='';
+        r.options.forEach((opt,i)=>{
+            const btn=document.createElement('div');btn.className='opt-btn';
+            btn.innerHTML=cfg.renderItem(opt);
+            btn.onclick=()=>answer(i,btn);
+            optsEl.appendChild(btn);
+        });
+        document.getElementById(cfg.fbId).textContent='';
+        renderDots(cfg.dotsId,cfg.rounds.length,round,round);
+    }
+    function answer(i,btn){
+        const r=cfg.rounds[round];
+        const btns=document.getElementById(cfg.optsId).querySelectorAll('.opt-btn');
+        btns.forEach(b=>b.style.pointerEvents='none');
+        if(i===r.correct){
+            playSuccess();btn.classList.add('correct');
+            document.getElementById(cfg.fbId).innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+            spawnConfetti(btn);
+        }else{
+            playError();btn.classList.add('wrong');btns[r.correct].classList.add('correct');
+            document.getElementById(cfg.fbId).innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+        }
+        round++;
+        setTimeout(show,1200);
+    }
+    return{start:()=>{round=0;show();}};
+}
+
+// === SLIDE 2: Color sequences ===
+const colorQuiz=createSeqQuiz({
+    seqId:'colorSeq',optsId:'colorOpts',fbId:'colorFb',dotsId:'colorDots',
+    renderItem:c=>makeShape('circle',c),
+    rounds:[
+        {sequence:['red','blue','red','blue'],options:['red','green','yellow'],correct:0},
+        {sequence:['green','green','yellow','green','green'],options:['green','yellow','blue'],correct:1},
+        {sequence:['pink','blue','pink','blue'],options:['yellow','pink','green'],correct:1}
+    ]
+});
+
+// === SLIDE 3: Shape sequences ===
+const shapeQuiz=createSeqQuiz({
+    seqId:'shapeSeq',optsId:'shapeOpts',fbId:'shapeFb',dotsId:'shapeDots',
+    renderItem:s=>makeShape(s,'blue'),
+    rounds:[
+        {sequence:['circle','square','circle','square'],options:['triangle','circle','square'],correct:1},
+        {sequence:['triangle','circle','triangle','circle'],options:['triangle','square','circle'],correct:0},
+        {sequence:['square','square','circle','square','square'],options:['square','circle','triangle'],correct:1}
+    ]
+});
+
+// === SLIDE 4: Mixed ===
+const mixQuiz=createSeqQuiz({
+    seqId:'mixSeq',optsId:'mixOpts',fbId:'mixFb',dotsId:'mixDots',
+    renderItem:m=>makeShape(m.shape,m.color),
+    rounds:[
+        {sequence:[{shape:'circle',color:'red'},{shape:'square',color:'blue'},{shape:'circle',color:'red'},{shape:'square',color:'blue'}],
+         options:[{shape:'circle',color:'red'},{shape:'circle',color:'blue'},{shape:'square',color:'red'}],correct:0},
+        {sequence:[{shape:'triangle',color:'green'},{shape:'circle',color:'yellow'},{shape:'triangle',color:'green'},{shape:'circle',color:'yellow'}],
+         options:[{shape:'square',color:'green'},{shape:'triangle',color:'green'},{shape:'circle',color:'green'}],correct:1},
+        {sequence:[{shape:'square',color:'pink'},{shape:'square',color:'blue'},{shape:'square',color:'green'},{shape:'square',color:'pink'}],
+         options:[{shape:'square',color:'blue'},{shape:'circle',color:'pink'},{shape:'square',color:'yellow'}],correct:0}
+    ]
+});
+
+// === SLIDE 5: Size patterns ===
+const sizeQuiz=createSeqQuiz({
+    seqId:'sizeSeq',optsId:'sizeOpts',fbId:'sizeFb',dotsId:'sizeDots',
+    renderItem:s=>{const sz=s==='sm'?'shape-sm':s==='lg'?'shape-lg':'shape-md';return makeShape('circle','blue',sz);},
+    rounds:[
+        {sequence:['sm','md','lg','sm','md'],options:['sm','lg','md'],correct:1},
+        {sequence:['lg','sm','lg','sm'],options:['lg','md','sm'],correct:0},
+        {sequence:['sm','sm','lg','sm','sm'],options:['sm','lg','md'],correct:1}
+    ]
+});
+
+// === SLIDE 6: Rhythm ===
+const rhythmRounds=[
+    {pattern:['big','small','big','small','big','small'],userStart:4},
+    {pattern:['big','big','small','big','big','small'],userStart:4},
+    {pattern:['small','big','big','small','big','big'],userStart:4}
+];
+let rhythmRound=0;
+let rhythmUserState=[];
+function initRhythm(){rhythmRound=0;showRhythm();}
+function showRhythm(){
+    if(rhythmRound>=rhythmRounds.length){
+        document.getElementById('rhythmRow').innerHTML='<div style="font-size:5rem;">🏆</div>';
+        document.getElementById('rhythmFb').innerHTML='<span style="color:var(--neon-green)">⭐⭐⭐</span>';
+        document.getElementById('rhythmPlayBtn').style.display='none';
+        document.getElementById('rhythmCheckBtn').style.display='none';
+        renderDots('rhythmDots',rhythmRounds.length,rhythmRounds.length,-1);
+        return;
+    }
+    const r=rhythmRounds[rhythmRound];
+    rhythmUserState=r.pattern.slice(0,r.userStart).concat(new Array(r.pattern.length-r.userStart).fill('empty'));
+    renderRhythm();
+    renderDots('rhythmDots',rhythmRounds.length,rhythmRound,rhythmRound);
+    document.getElementById('rhythmFb').textContent='';
+    document.getElementById('rhythmPlayBtn').style.display='';
+    document.getElementById('rhythmCheckBtn').style.display='';
+}
+function renderRhythm(){
+    const r=rhythmRounds[rhythmRound];
+    const row=document.getElementById('rhythmRow');row.innerHTML='';
+    rhythmUserState.forEach((state,i)=>{
+        const b=document.createElement('div');b.className='beat '+state;
+        if(i>=r.userStart){
+            b.onclick=()=>{
+                playClick();
+                if(rhythmUserState[i]==='empty')rhythmUserState[i]='big';
+                else if(rhythmUserState[i]==='big')rhythmUserState[i]='small';
+                else rhythmUserState[i]='empty';
+                renderRhythm();
+            };
+        }
+        row.appendChild(b);
+    });
+}
+function playRhythm(){
+    const beats=document.getElementById('rhythmRow').querySelectorAll('.beat');
+    beats.forEach((b,i)=>{
+        setTimeout(()=>{
+            b.classList.add('playing');
+            const state=rhythmUserState[i];
+            if(state==='big')playSound(300,0.15);
+            else if(state==='small')playSound(600,0.1);
+            setTimeout(()=>b.classList.remove('playing'),300);
+        },i*400);
+    });
+}
+function checkRhythm(){
+    const r=rhythmRounds[rhythmRound];
+    const match=r.pattern.every((v,i)=>rhythmUserState[i]===v);
+    if(match){
+        playSuccess();
+        document.getElementById('rhythmFb').innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+        spawnConfetti(document.getElementById('rhythmRow'));
+        rhythmRound++;
+        setTimeout(showRhythm,1500);
+    }else{
+        playError();
+        document.getElementById('rhythmFb').innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+    }
+}
+
+// === SLIDE 7: Grid pattern ===
+const gridColors=['#ff4466','#4488ff','#39ff14','#ffe600'];
+const gridRounds=[
+    {grid:[[0,1,2],[1,2,0],[2,0,-1]],answer:1,options:[0,1,2]},
+    {grid:[[3,3,1],[3,1,3],[1,3,-1]],answer:3,options:[1,3,0]},
+    {grid:[[2,0,2],[0,2,0],[2,0,-1]],answer:2,options:[0,2,3]}
+];
+let gridRound=0;
+function initGrid(){gridRound=0;showGrid();}
+function showGrid(){
+    if(gridRound>=gridRounds.length){
+        document.getElementById('gridArea').innerHTML='<div style="font-size:5rem;">🏆</div>';
+        document.getElementById('gridOpts').innerHTML='';
+        document.getElementById('gridFb').innerHTML='<span style="color:var(--neon-green)">⭐⭐⭐</span>';
+        renderDots('gridDots',gridRounds.length,gridRounds.length,-1);
+        return;
+    }
+    const r=gridRounds[gridRound];
+    const area=document.getElementById('gridArea');area.innerHTML='';
+    const g=document.createElement('div');g.className='mini-grid';g.style.gridTemplateColumns='repeat(3,70px)';
+    r.grid.flat().forEach(v=>{
+        const cell=document.createElement('div');cell.className='mini-cell';
+        cell.style.width='70px';cell.style.height='70px';
+        if(v===-1){cell.style.background='var(--glass)';cell.style.border='3px dashed var(--neon-blue)';cell.innerHTML='<div style="font-size:2rem;display:flex;align-items:center;justify-content:center;height:100%;font-family:Baloo 2;color:var(--neon-blue);">?</div>';}
+        else cell.style.background=gridColors[v];
+        g.appendChild(cell);
+    });
+    area.appendChild(g);
+    // options
+    const optsEl=document.getElementById('gridOpts');optsEl.innerHTML='';
+    r.options.forEach((colorIdx,i)=>{
+        const btn=document.createElement('div');btn.className='opt-btn';
+        btn.innerHTML=`<div style="width:50px;height:50px;border-radius:10px;background:${gridColors[colorIdx]}"></div>`;
+        btn.onclick=()=>{
+            const btns=optsEl.querySelectorAll('.opt-btn');
+            btns.forEach(b=>b.style.pointerEvents='none');
+            if(colorIdx===r.answer){
+                playSuccess();btn.classList.add('correct');
+                document.getElementById('gridFb').innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+                spawnConfetti(btn);
+            }else{
+                playError();btn.classList.add('wrong');
+                document.getElementById('gridFb').innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+            }
+            gridRound++;setTimeout(showGrid,1200);
+        };
+        optsEl.appendChild(btn);
+    });
+    document.getElementById('gridFb').textContent='';
+    renderDots('gridDots',gridRounds.length,gridRound,gridRound);
+}
+
+// === SLIDE 8: Growing patterns ===
+const growQuiz=createSeqQuiz({
+    seqId:'growSeq',optsId:'growOpts',fbId:'growFb',dotsId:'growDots',
+    renderItem:n=>{
+        let html='<div class="block-stack">';
+        for(let i=0;i<n;i++)html+='<div class="block"></div>';
+        html+='</div>';
+        return html;
+    },
+    rounds:[
+        {sequence:[1,3,5],options:[6,7,8],correct:1},
+        {sequence:[2,4,6],options:[7,8,10],correct:1},
+        {sequence:[1,2,4],options:[7,8,6],correct:0}
+    ]
+});
+
+// === SLIDE 9: Create your own ===
+const createPaletteItems=[
+    {shape:'circle',color:'red'},{shape:'square',color:'blue'},{shape:'triangle',color:'green'},
+    {shape:'circle',color:'yellow'},{shape:'square',color:'pink'},{shape:'triangle',color:'orange'}
+];
+let selectedPalette=0;
+const stripSlots=new Array(8).fill(null);
+function initCreate(){
+    const pal=document.getElementById('createPalette');pal.innerHTML='';
+    createPaletteItems.forEach((item,i)=>{
+        const el=document.createElement('div');el.className='pal-item'+(i===0?' selected':'');
+        el.innerHTML=makeShape(item.shape,item.color,'shape-sm');
+        el.onclick=()=>{selectedPalette=i;pal.querySelectorAll('.pal-item').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');playClick();};
+        pal.appendChild(el);
+    });
+    renderStrip();
+}
+function renderStrip(){
+    const s=document.getElementById('createStrip');s.innerHTML='';
+    stripSlots.forEach((item,i)=>{
+        const slot=document.createElement('div');slot.className='strip-slot'+(item!==null?' filled':'');
+        if(item!==null)slot.innerHTML=makeShape(createPaletteItems[item].shape,createPaletteItems[item].color,'shape-sm');
+        slot.onclick=()=>{playClick();stripSlots[i]=selectedPalette;renderStrip();};
+        s.appendChild(slot);
+    });
+}
+function clearStrip(){stripSlots.fill(null);renderStrip();playSound(300,0.2);}
+
+// === SLIDE ENTER ===
+const slideInited={};
+function onSlideEnter(idx){
+    if(slideInited[idx])return;slideInited[idx]=true;
+    if(idx===1)colorQuiz.start();
+    if(idx===2)shapeQuiz.start();
+    if(idx===3)mixQuiz.start();
+    if(idx===4)sizeQuiz.start();
+    if(idx===5)initRhythm();
+    if(idx===6)initGrid();
+    if(idx===7)growQuiz.start();
+    if(idx===8)initCreate();
+    if(idx===9){setTimeout(()=>{const h=document.querySelector('.slide[data-slide="9"] h1');if(h){spawnConfetti(h);setTimeout(()=>spawnConfetti(h),400);}},300);}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krok po Kroku</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:8px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:4.2rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.8rem;margin-bottom:8px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+
+        /* Ordering items */
+        .items-pool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+        .order-item{width:75px;height:75px;border-radius:18px;border:3px solid var(--glass-border);background:var(--glass);font-size:3rem;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none;transition:transform 0.2s,border-color 0.2s}
+        .order-item:hover{transform:scale(1.08)}
+        .order-item.dragging{opacity:0.5;border-color:var(--neon-blue)}
+        .slots-row{display:flex;gap:12px;justify-content:center;margin:10px 0}
+        .order-slot{width:75px;height:75px;border-radius:18px;border:3px dashed var(--glass-border);background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:3rem;transition:all 0.2s;position:relative}
+        .order-slot.over{border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .order-slot.filled{border-style:solid;border-color:var(--neon-green)}
+        .slot-num{position:absolute;top:-18px;font-family:'Baloo 2';font-size:1rem;font-weight:700;color:var(--neon-blue)}
+        .tool-btn{min-width:55px;height:55px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);cursor:pointer;font-size:1.8rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:var(--soft-white)}
+        .tool-btn:hover{border-color:var(--neon-blue);transform:scale(1.05)}
+        .feedback{font-family:'Baloo 2',cursive;font-size:1.8rem;min-height:40px;text-align:center}
+
+        /* Funny result */
+        .funny-stack{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:3rem;margin:10px 0}
+        @keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+        .wobble{animation:wobble 0.5s ease-in-out 3}
+
+        /* Maze */
+        .maze-grid{display:grid;gap:2px;justify-content:center}
+        .maze-cell{border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all 0.3s}
+        .maze-cell.floor{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)}
+        .maze-cell.wall{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2)}
+        .maze-cell.editable{cursor:pointer}
+        .maze-cell.robot{background:rgba(0,212,255,0.15)}
+        @keyframes robotShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+        /* Instruction strip */
+        .instr-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+        .arrow-card{width:55px;height:55px;border-radius:14px;border:3px solid var(--glass-border);background:var(--glass);font-size:2rem;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none;transition:all 0.2s}
+        .arrow-card:hover{transform:scale(1.08);border-color:var(--neon-blue)}
+        .instr-slot{width:55px;height:55px;border-radius:14px;border:3px dashed var(--glass-border);background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all 0.2s;cursor:pointer}
+        .instr-slot.filled{border-style:solid}
+        .instr-slot.over{border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .btn-row{display:flex;gap:10px;justify-content:center;margin:6px 0}
+
+        .success-burst{position:fixed;pointer-events:none;z-index:100}
+        .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:cFall 1.2s ease-out forwards}
+        @keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}100%{transform:translateY(200px) rotate(720deg) scale(0);opacity:0}}
+        @keyframes robotWalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        .title-robot{animation:robotWalk 0.6s ease-in-out infinite;display:inline-block;font-size:6rem}
+        @keyframes danceBounce{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-20px) rotate(-10deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-20px) rotate(10deg)}}
+        .dance{animation:danceBounce 1s ease-in-out infinite}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        @media(max-width:768px){.slide{padding:10px 8px 100px}h1{font-size:2.8rem}h2{font-size:2rem}.order-item,.order-slot{width:60px;height:60px;font-size:2.2rem}.maze-cell{font-size:1.5rem}}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-slide="0">
+    <div class="title-robot">🤖</div>
+    <h1><span class="gradient-text">Krok po Kroku</span></h1>
+    <div style="font-size:2.5rem;">1️⃣ ➡️ 2️⃣ ➡️ 3️⃣</div>
+</div>
+
+<!-- SLIDE 2: Sandwich -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-pink">🥪</span></h2>
+    <div class="items-pool" id="sandwichPool"></div>
+    <div class="slots-row" id="sandwichSlots"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="checkOrder('sandwich')">✅</button><button class="tool-btn" onclick="resetOrder('sandwich')">🔄</button></div>
+    <div class="feedback" id="sandwichFb"></div>
+</div>
+
+<!-- SLIDE 3: Wrong sandwich -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-yellow">😂</span></h2>
+    <div class="funny-stack wobble" id="sandwichFunny"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="changeSlide(-1)">🔄</button><button class="tool-btn" onclick="changeSlide(1)">➡️</button></div>
+</div>
+
+<!-- SLIDE 4: Brushing teeth -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-text">🪥</span></h2>
+    <div class="items-pool" id="teethPool"></div>
+    <div class="slots-row" id="teethSlots"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="checkOrder('teeth')">✅</button><button class="tool-btn" onclick="resetOrder('teeth')">🔄</button></div>
+    <div class="feedback" id="teethFb"></div>
+</div>
+
+<!-- SLIDE 5: Getting dressed -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-pink">👔</span></h2>
+    <div class="items-pool" id="dressPool"></div>
+    <div class="slots-row" id="dressSlots"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="checkOrder('dress')">✅</button><button class="tool-btn" onclick="resetOrder('dress')">🔄</button></div>
+    <div class="feedback" id="dressFb"></div>
+</div>
+
+<!-- SLIDE 6: Wrong outfit -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-yellow">😂</span></h2>
+    <div class="funny-stack wobble" id="dressFunny"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="changeSlide(-1)">🔄</button><button class="tool-btn" onclick="changeSlide(1)">➡️</button></div>
+</div>
+
+<!-- SLIDE 7: Robot maze 3x3 -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-text">🤖➡️⭐</span></h2>
+    <div id="maze3" style="margin:5px 0;"></div>
+    <div style="font-family:'Baloo 2';font-size:1rem;opacity:0.5;margin:3px 0;">👆</div>
+    <div class="instr-row" id="arrows3"></div>
+    <div class="instr-row" id="instrStrip3"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="playMaze('maze3data')">▶️</button><button class="tool-btn" onclick="resetMaze('maze3data')">🔄</button></div>
+    <div class="feedback" id="maze3Fb"></div>
+</div>
+
+<!-- SLIDE 8: Robot maze 4x4 -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-pink">🤖🧱⭐</span></h2>
+    <div id="maze4" style="margin:5px 0;"></div>
+    <div style="font-family:'Baloo 2';font-size:1rem;opacity:0.5;margin:3px 0;">👆</div>
+    <div class="instr-row" id="arrows4"></div>
+    <div class="instr-row" id="instrStrip4"></div>
+    <div class="btn-row"><button class="tool-btn" onclick="playMaze('maze4data')">▶️</button><button class="tool-btn" onclick="resetMaze('maze4data')">🔄</button></div>
+    <div class="feedback" id="maze4Fb"></div>
+</div>
+
+<!-- SLIDE 9: Build your own -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-yellow">🏗️</span></h2>
+    <div id="mazeCustom" style="margin:5px 0;"></div>
+    <div style="font-family:'Baloo 2';font-size:1rem;opacity:0.5;margin:3px 0;">👆</div>
+    <div class="instr-row" id="arrowsCustom"></div>
+    <div class="instr-row" id="instrStripCustom"></div>
+    <div class="btn-row">
+        <button class="tool-btn" onclick="playMaze('mazeCustomData')">▶️</button>
+        <button class="tool-btn" onclick="resetMaze('mazeCustomData')">🔄</button>
+        <button class="tool-btn" onclick="clearCustomWalls()">🗑️</button>
+    </div>
+    <div class="feedback" id="mazeCustomFb"></div>
+</div>
+
+<!-- SLIDE 10: Bravo -->
+<div class="slide" data-slide="9">
+    <div class="dance" style="font-size:7rem;">🤖</div>
+    <h1><span class="gradient-text">Brawo!</span></h1>
+    <div style="font-size:2rem;opacity:0.5;font-family:'Baloo 2';">Coding Tree 🌳</div>
+</div>
+
+</div>
+
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>◀</button>
+    <span class="slide-counter" id="slideCounter">1 / 10</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+// === AUDIO ===
+let audioCtx;
+function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playSound(freq,dur,type='sine'){ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.value=0.25;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}
+function sfxSuccess(){playSound(523,0.1);setTimeout(()=>playSound(659,0.1),100);setTimeout(()=>playSound(784,0.2),200);}
+function sfxError(){playSound(200,0.3,'sawtooth');}
+function sfxClick(){playSound(500,0.08);}
+function sfxDrop(){playSound(600,0.1);}
+
+// === RAIN ===
+const rainEl=document.getElementById('rain');
+for(let i=0;i<25;i++){const s=document.createElement('span');s.textContent=Math.random()>0.5?'1':'0';s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*10)+'s';s.style.animationDelay=Math.random()*8+'s';rainEl.appendChild(s);}
+
+// === NAV ===
+let currentSlide=0;const slides=document.querySelectorAll('.slide');const totalSlides=slides.length;
+function changeSlide(dir){const n=currentSlide+dir;if(n<0||n>=totalSlides)return;slides[currentSlide].classList.remove('active');currentSlide=n;slides[currentSlide].classList.add('active');updateNav();onSlideEnter(currentSlide);}
+function updateNav(){document.getElementById('prevBtn').disabled=currentSlide===0;document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}});
+updateNav();
+
+// === CONFETTI ===
+function spawnConfetti(anchor){const rect=anchor.getBoundingClientRect();const burst=document.createElement('div');burst.className='success-burst';burst.style.left=(rect.left+rect.width/2)+'px';burst.style.top=rect.top+'px';const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];for(let i=0;i<25;i++){const c=document.createElement('div');c.className='confetti';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.left=(Math.random()-0.5)*250+'px';c.style.animationDuration=(0.6+Math.random()*0.8)+'s';c.style.animationDelay=(Math.random()*0.2)+'s';burst.appendChild(c);}document.body.appendChild(burst);setTimeout(()=>burst.remove(),2500);}
+
+// ============================================================
+// ORDERING EXERCISES (click-to-place, not drag - simpler for kids)
+// ============================================================
+const orderConfigs={
+    sandwich:{
+        items:['🍞','🥬','🥩','🧀','🍞'],
+        correct:['🍞','🥬','🥩','🧀','🍞'],
+        poolId:'sandwichPool',slotsId:'sandwichSlots',fbId:'sandwichFb',
+        funnyId:'sandwichFunny',funnySlide:2
+    },
+    teeth:{
+        items:['🦷','💧','😁','🪥','🧴'],
+        correct:['🪥','🧴','🦷','💧','😁'],
+        poolId:'teethPool',slotsId:'teethSlots',fbId:'teethFb',
+        funnyId:null,funnySlide:null
+    },
+    dress:{
+        items:['🎩','👟','👕','👖','🩲'],
+        correct:['🩲','👖','👕','👟','🎩'],
+        poolId:'dressPool',slotsId:'dressSlots',fbId:'dressFb',
+        funnyId:'dressFunny',funnySlide:5
+    }
+};
+const orderStates={};
+
+function initOrder(key){
+    const cfg=orderConfigs[key];
+    const shuffled=[...cfg.items].sort(()=>Math.random()-0.5);
+    orderStates[key]={pool:[...shuffled],slots:new Array(cfg.items.length).fill(null),selected:null};
+    renderOrder(key);
+}
+
+function renderOrder(key){
+    const cfg=orderConfigs[key];
+    const st=orderStates[key];
+    // Pool
+    const pool=document.getElementById(cfg.poolId);pool.innerHTML='';
+    st.pool.forEach((item,i)=>{
+        if(item===null)return;
+        const el=document.createElement('div');el.className='order-item';
+        if(st.selected===i)el.style.borderColor='var(--neon-blue)';
+        el.textContent=item;
+        el.onclick=()=>{sfxClick();st.selected=i;renderOrder(key);};
+        pool.appendChild(el);
+    });
+    // Slots
+    const slotsEl=document.getElementById(cfg.slotsId);slotsEl.innerHTML='';
+    st.slots.forEach((item,i)=>{
+        const slot=document.createElement('div');slot.className='order-slot'+(item?'  filled':'');
+        slot.innerHTML='<span class="slot-num">'+(i+1)+'</span>'+(item||'');
+        slot.onclick=()=>{
+            if(st.selected!==null&&st.pool[st.selected]!==null){
+                // Place item
+                if(item){st.pool.push(item);} // return old item
+                st.slots[i]=st.pool[st.selected];
+                st.pool[st.selected]=null;
+                st.selected=null;
+                sfxDrop();
+            }else if(item){
+                // Remove item back to pool
+                st.pool.push(item);
+                st.slots[i]=null;
+                sfxClick();
+            }
+            renderOrder(key);
+        };
+        slotsEl.appendChild(slot);
+    });
+    document.getElementById(cfg.fbId).textContent='';
+}
+
+function checkOrder(key){
+    const cfg=orderConfigs[key];
+    const st=orderStates[key];
+    if(st.slots.some(s=>s===null)){document.getElementById(cfg.fbId).innerHTML='<span style="color:var(--neon-yellow)">❓</span>';return;}
+    const correct=st.slots.every((s,i)=>s===cfg.correct[i]);
+    if(correct){
+        sfxSuccess();
+        document.getElementById(cfg.fbId).innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+        spawnConfetti(document.getElementById(cfg.slotsId));
+        // Auto advance past funny slide
+        if(cfg.funnySlide!==null){
+            orderStates[key].wasCorrect=true;
+        }
+    }else{
+        sfxError();
+        document.getElementById(cfg.fbId).innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+        if(cfg.funnyId){
+            // Store wrong order for funny display
+            orderStates[key].wrongOrder=[...st.slots];
+        }
+    }
+}
+
+function resetOrder(key){
+    initOrder(key);
+}
+
+function showFunny(key){
+    const cfg=orderConfigs[key];
+    if(!cfg.funnyId)return;
+    const el=document.getElementById(cfg.funnyId);
+    const wrong=orderStates[key].wrongOrder||cfg.items;
+    el.innerHTML=wrong.map(e=>'<div>'+e+'</div>').join('')+'<div style="font-size:2rem;margin-top:5px;">🤔❓</div>';
+    el.classList.remove('wobble');
+    void el.offsetWidth;
+    el.classList.add('wobble');
+}
+
+// ============================================================
+// MAZE
+// ============================================================
+const mazeData={};
+const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+const ARROWS={up:'⬆️',down:'⬇️',left:'⬅️',right:'➡️'};
+
+function initMaze(key,containerId,arrowsId,stripId,fbId,size,walls,maxInstr){
+    const grid=[];
+    for(let y=0;y<size;y++){
+        grid[y]=[];
+        for(let x=0;x<size;x++){
+            grid[y][x]=walls.some(w=>w[0]===x&&w[1]===y)?'wall':'floor';
+        }
+    }
+    mazeData[key]={grid,size,robotPos:{x:0,y:0},starPos:{x:size-1,y:size-1},
+        instructions:[],maxInstr,containerId,arrowsId,stripId,fbId,playing:false,
+        editable:key==='mazeCustomData'};
+    renderMaze(key);
+    renderArrows(key);
+    renderInstrStrip(key);
+}
+
+function renderMaze(key){
+    const d=mazeData[key];
+    const el=document.getElementById(d.containerId);el.innerHTML='';
+    const cellSize=d.size<=3?70:60;
+    const g=document.createElement('div');g.className='maze-grid';
+    g.style.gridTemplateColumns=`repeat(${d.size},${cellSize}px)`;
+    for(let y=0;y<d.size;y++)for(let x=0;x<d.size;x++){
+        const cell=document.createElement('div');cell.className='maze-cell';
+        cell.style.width=cellSize+'px';cell.style.height=cellSize+'px';
+        if(d.grid[y][x]==='wall'){cell.classList.add('wall');}
+        else{cell.classList.add('floor');}
+        if(d.robotPos.x===x&&d.robotPos.y===y){cell.textContent='🤖';cell.classList.add('robot');}
+        else if(d.starPos.x===x&&d.starPos.y===y)cell.textContent='⭐';
+        if(d.editable&&!(x===0&&y===0)&&!(x===d.size-1&&y===d.size-1)){
+            cell.classList.add('editable');
+            cell.onclick=(()=>{const cx=x,cy=y;return()=>{
+                d.grid[cy][cx]=d.grid[cy][cx]==='wall'?'floor':'wall';
+                sfxClick();renderMaze(key);
+            }})();
+        }
+        g.appendChild(cell);
+    }
+    el.appendChild(g);
+}
+
+function renderArrows(key){
+    const d=mazeData[key];
+    const el=document.getElementById(d.arrowsId);el.innerHTML='';
+    ['up','down','left','right'].forEach(dir=>{
+        const card=document.createElement('div');card.className='arrow-card';
+        card.textContent=ARROWS[dir];
+        card.onclick=()=>{
+            if(d.instructions.length<d.maxInstr){
+                d.instructions.push(dir);sfxClick();renderInstrStrip(key);
+            }
+        };
+        el.appendChild(card);
+    });
+}
+
+function renderInstrStrip(key){
+    const d=mazeData[key];
+    const el=document.getElementById(d.stripId);el.innerHTML='';
+    for(let i=0;i<d.maxInstr;i++){
+        const slot=document.createElement('div');slot.className='instr-slot'+(d.instructions[i]?' filled':'');
+        if(d.instructions[i])slot.textContent=ARROWS[d.instructions[i]];
+        slot.onclick=(()=>{const idx=i;return()=>{
+            if(d.instructions[idx]){d.instructions.splice(idx,1);sfxClick();renderInstrStrip(key);}
+        }})();
+        el.appendChild(slot);
+    }
+}
+
+function resetMaze(key){
+    const d=mazeData[key];
+    d.robotPos={x:0,y:0};
+    d.instructions=[];
+    d.playing=false;
+    renderMaze(key);renderInstrStrip(key);
+    document.getElementById(d.fbId).textContent='';
+}
+
+function playMaze(key){
+    const d=mazeData[key];
+    if(d.playing||d.instructions.length===0)return;
+    d.playing=true;
+    d.robotPos={x:0,y:0};
+    renderMaze(key);
+    document.getElementById(d.fbId).textContent='';
+    let step=0;
+    function doStep(){
+        if(step>=d.instructions.length){
+            // Check if at star
+            if(d.robotPos.x===d.starPos.x&&d.robotPos.y===d.starPos.y){
+                sfxSuccess();
+                document.getElementById(d.fbId).innerHTML='<span style="color:var(--neon-green)">🎉</span>';
+                spawnConfetti(document.getElementById(d.containerId));
+            }else{
+                sfxError();
+                document.getElementById(d.fbId).innerHTML='<span style="color:var(--neon-pink)">😅</span>';
+            }
+            d.playing=false;
+            return;
+        }
+        const dir=DIRS[d.instructions[step]];
+        const nx=d.robotPos.x+dir[0];
+        const ny=d.robotPos.y+dir[1];
+        if(nx<0||nx>=d.size||ny<0||ny>=d.size||d.grid[ny][nx]==='wall'){
+            // Hit wall!
+            sfxError();
+            const cells=document.getElementById(d.containerId).querySelectorAll('.maze-cell');
+            const robotCell=cells[d.robotPos.y*d.size+d.robotPos.x];
+            robotCell.style.animation='robotShake 0.3s ease';
+            setTimeout(()=>robotCell.style.animation='',300);
+            document.getElementById(d.fbId).innerHTML='<span style="color:var(--neon-pink)">💥</span>';
+            d.playing=false;
+            return;
+        }
+        d.robotPos={x:nx,y:ny};
+        sfxClick();
+        renderMaze(key);
+        step++;
+        setTimeout(doStep,500);
+    }
+    setTimeout(doStep,300);
+}
+
+function clearCustomWalls(){
+    const d=mazeData['mazeCustomData'];
+    for(let y=0;y<d.size;y++)for(let x=0;x<d.size;x++)d.grid[y][x]='floor';
+    d.instructions=[];d.robotPos={x:0,y:0};
+    renderMaze('mazeCustomData');renderInstrStrip('mazeCustomData');
+    document.getElementById(d.fbId).textContent='';
+}
+
+// === SLIDE ENTER ===
+const slideInited={};
+function onSlideEnter(idx){
+    if(idx===1&&!slideInited[1]){slideInited[1]=true;initOrder('sandwich');}
+    if(idx===2){showFunny('sandwich');if(orderStates.sandwich&&orderStates.sandwich.wasCorrect){changeSlide(1);return;}}
+    if(idx===3&&!slideInited[3]){slideInited[3]=true;initOrder('teeth');}
+    if(idx===4&&!slideInited[4]){slideInited[4]=true;initOrder('dress');}
+    if(idx===5){showFunny('dress');if(orderStates.dress&&orderStates.dress.wasCorrect){changeSlide(1);return;}}
+    if(idx===6&&!slideInited[6]){slideInited[6]=true;initMaze('maze3data','maze3','arrows3','instrStrip3','maze3Fb',3,[],6);}
+    if(idx===7&&!slideInited[7]){slideInited[7]=true;initMaze('maze4data','maze4','arrows4','instrStrip4','maze4Fb',4,[[1,1],[2,2],[1,3]],8);}
+    if(idx===8&&!slideInited[8]){slideInited[8]=true;initMaze('mazeCustomData','mazeCustom','arrowsCustom','instrStripCustom','mazeCustomFb',4,[],10);}
+    if(idx===9&&!slideInited[9]){slideInited[9]=true;setTimeout(()=>{const h=document.querySelector('.slide[data-slide="9"] h1');if(h){spawnConfetti(h);setTimeout(()=>spawnConfetti(h),400);}},300);}
+}
+</script>
+</body>
+</html>

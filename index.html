@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coding Tree - Prezentacje</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -18,7 +14,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 40px 20px;
         }
         h1 {
@@ -29,14 +24,69 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .subtitle {
-            color: #bdc3c7;
-            margin-bottom: 50px;
-            font-size: 1.2rem;
+        .subtitle { color: #bdc3c7; margin-bottom: 30px; font-size: 1.2rem; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
+        .tab-btn {
+            padding: 12px 28px;
+            border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .tab-btn.active {
+            background: rgba(255,171,25,0.15);
+            border-color: #FFAB19;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255,171,25,0.15);
+        }
+        .tab-emoji { font-size: 1.4rem; }
+
+        /* Tag filters */
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 36px;
+        }
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            color: #888;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover { color: #bdc3c7; border-color: rgba(255,255,255,0.2); }
+        .filter-btn.active {
+            background: rgba(255,171,25,0.2);
+            border-color: rgba(255,171,25,0.4);
+            color: #fff;
+        }
+
+        /* Cards */
         .presentations {
             display: grid;
-            gap: 25px;
+            gap: 20px;
             max-width: 800px;
             width: 100%;
         }
@@ -44,42 +94,64 @@
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             text-decoration: none;
             color: #fff;
             transition: all 0.3s ease;
+            opacity: 1;
         }
         .card:hover {
             background: rgba(255,255,255,0.1);
-            transform: translateY(-5px);
+            transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .card.hidden {
+            display: none;
+        }
+        .card.fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+        }
         .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
-        .card p {
-            color: #bdc3c7;
-            font-size: 1rem;
-        }
-        .emoji {
-            font-size: 2.5rem;
-        }
+        .card p { color: #bdc3c7; font-size: 0.95rem; }
+        .emoji { font-size: 2.2rem; }
+        .tags { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
         .tag {
             display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        .tag-level {
             background: rgba(255,171,25,0.3);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            margin-top: 15px;
+        }
+        .tag-topic {
+            background: rgba(0,212,255,0.2);
+        }
+        .tag-lang {
+            background: rgba(57,255,20,0.2);
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+            display: none;
         }
         footer {
-            margin-top: 60px;
+            margin-top: 50px;
             color: #666;
             font-size: 0.9rem;
+        }
+        @media(max-width:600px) {
+            h1 { font-size: 2rem; }
+            .tab-btn { padding: 10px 18px; font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -87,69 +159,223 @@
     <h1>Coding Tree</h1>
     <p class="subtitle">Prezentacje dla szkoly programowania</p>
 
-    <div class="presentations">
-        <a href="binary-code-pl.html" class="card">
-            <h2><span class="emoji">💻</span> Kod Binarny (PL)</h2>
-            <p>Interaktywna prezentacja o kodzie binarnym z ćwiczeniami - żarówki, licznik, dekoder, pixel art i quiz!</p>
-            <span class="tag">Polski</span>
-            <span class="tag">Interaktywna</span>
-            <span class="tag">Beginner 6-9</span>
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="malusi" onclick="switchTab('malusi')">
+            <span class="tab-emoji">🌱</span> Malusi (6-9)
+        </button>
+        <button class="tab-btn" data-tab="starsi" onclick="switchTab('starsi')">
+            <span class="tab-emoji">🌳</span> Starsi (9-12)
+        </button>
+        <button class="tab-btn" data-tab="scratch" onclick="switchTab('scratch')">
+            <span class="tab-emoji">🐱</span> Scratch
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" id="filters"></div>
+
+    <!-- Cards -->
+    <div class="presentations" id="cards">
+
+        <!-- MALUSI -->
+        <a href="wlacz-wylacz-pl.html" class="card" data-tab="malusi" data-tags="Klikaj,Logika">
+            <h2><span class="emoji">💡</span> Wlacz / Wylacz</h2>
+            <p>ON/OFF, przelaczniki, wzorce swiatla i tajne litery - nauka binarnego myslenia!</p>
+            <div class="tags">
+                <span class="tag tag-level">Malusi 6-9</span>
+                <span class="tag tag-topic">Klikaj</span>
+                <span class="tag tag-topic">Logika</span>
+            </div>
         </a>
 
-        <a href="binary-arithmetic-pl.html" class="card">
-            <h2><span class="emoji">🧮</span> Arytmetyka Binarna (PL)</h2>
-            <p>Dodawanie, odejmowanie, przesunięcia bitów, kalkulator binarny i wyzwanie na czas!</p>
-            <span class="tag">Polski</span>
-            <span class="tag">Interaktywna</span>
-            <span class="tag">Intermediate 9-12</span>
+        <a href="wzorce-pl.html" class="card" data-tab="malusi" data-tags="Klikaj,Wzorce">
+            <h2><span class="emoji">🔴</span> Wzorce i Sekwencje</h2>
+            <p>Kolory, ksztalty, rozmiary, rytm i siatka - rozpoznawanie wzorcow!</p>
+            <div class="tags">
+                <span class="tag tag-level">Malusi 6-9</span>
+                <span class="tag tag-topic">Klikaj</span>
+                <span class="tag tag-topic">Wzorce</span>
+            </div>
         </a>
 
-        <a href="ascii-text-pl.html" class="card">
-            <h2><span class="emoji">📝</span> Jak Komputer Przechowuje Tekst (PL)</h2>
+        <a href="pikselki-pl.html" class="card" data-tab="malusi" data-tags="Klikaj,Wzorce">
+            <h2><span class="emoji">🎨</span> Pikselki</h2>
+            <p>Co to piksel? Kolorowanie siatek, kopiowanie, lustro i wolne rysowanie!</p>
+            <div class="tags">
+                <span class="tag tag-level">Malusi 6-9</span>
+                <span class="tag tag-topic">Klikaj</span>
+                <span class="tag tag-topic">Wzorce</span>
+            </div>
+        </a>
+
+        <a href="algorytmy-pl.html" class="card" data-tab="malusi" data-tags="Przeciagaj,Logika">
+            <h2><span class="emoji">🤖</span> Krok po Kroku</h2>
+            <p>Kanapka, mycie zebow, ubieranie i labirynty - algorytmy krok po kroku!</p>
+            <div class="tags">
+                <span class="tag tag-level">Malusi 6-9</span>
+                <span class="tag tag-topic">Przeciagaj</span>
+                <span class="tag tag-topic">Logika</span>
+            </div>
+        </a>
+
+        <!-- STARSI -->
+        <a href="binary-code-pl.html" class="card" data-tab="starsi" data-tags="Binarny">
+            <h2><span class="emoji">💻</span> Kod Binarny</h2>
+            <p>Interaktywna prezentacja o kodzie binarnym z cwiczeniami - zarowki, licznik, dekoder, pixel art i quiz!</p>
+            <div class="tags">
+                <span class="tag tag-level">Starsi 9-12</span>
+                <span class="tag tag-topic">Binarny</span>
+            </div>
+        </a>
+
+        <a href="binary-arithmetic-pl.html" class="card" data-tab="starsi" data-tags="Binarny">
+            <h2><span class="emoji">🧮</span> Arytmetyka Binarna</h2>
+            <p>Dodawanie, odejmowanie, przesuniecia bitow, kalkulator binarny i wyzwanie na czas!</p>
+            <div class="tags">
+                <span class="tag tag-level">Starsi 9-12</span>
+                <span class="tag tag-topic">Binarny</span>
+            </div>
+        </a>
+
+        <a href="ascii-text-pl.html" class="card" data-tab="starsi" data-tags="Tekst">
+            <h2><span class="emoji">📝</span> Jak Komputer Przechowuje Tekst</h2>
             <p>Tabela ASCII, enkoder/dekoder, tajny szyfr, flip-the-bit i Unicode!</p>
-            <span class="tag">Polski</span>
-            <span class="tag">Interaktywna</span>
-            <span class="tag">Intermediate 9-12</span>
+            <div class="tags">
+                <span class="tag tag-level">Starsi 9-12</span>
+                <span class="tag tag-topic">Tekst</span>
+            </div>
         </a>
 
-        <a href="logic-gates-pl.html" class="card">
-            <h2><span class="emoji">🧠</span> Bramki Logiczne (PL)</h2>
-            <p>AND, OR, NOT, XOR - interaktywne bramki, budowanie obwodów i quiz!</p>
-            <span class="tag">Polski</span>
-            <span class="tag">Interaktywna</span>
-            <span class="tag">Intermediate 9-12</span>
+        <a href="logic-gates-pl.html" class="card" data-tab="starsi" data-tags="Logika">
+            <h2><span class="emoji">🧠</span> Bramki Logiczne</h2>
+            <p>AND, OR, NOT, XOR - interaktywne bramki, budowanie obwodow i quiz!</p>
+            <div class="tags">
+                <span class="tag tag-level">Starsi 9-12</span>
+                <span class="tag tag-topic">Logika</span>
+            </div>
         </a>
 
-        <a href="pixels-rgb-pl.html" class="card">
-            <h2><span class="emoji">🎨</span> Od Bitów do Pikseli (PL)</h2>
-            <p>Piksele, odcienie szarości, kolory RGB, hex, mikser kolorów i pikselowy edytor!</p>
-            <span class="tag">Polski</span>
-            <span class="tag">Interaktywna</span>
-            <span class="tag">Intermediate 9-12</span>
+        <a href="pixels-rgb-pl.html" class="card" data-tab="starsi" data-tags="Grafika">
+            <h2><span class="emoji">🎨</span> Od Bitow do Pikseli</h2>
+            <p>Piksele, odcienie szarosci, kolory RGB, hex, mikser kolorow i pikselowy edytor!</p>
+            <div class="tags">
+                <span class="tag tag-level">Starsi 9-12</span>
+                <span class="tag tag-topic">Grafika</span>
+            </div>
         </a>
 
-        <a href="mini-szachy-bloki-pl.html" class="card">
-            <h2><span class="emoji">&#9819;</span> Mini Szachy - Bloki Scratch (PL)</h2>
+        <!-- SCRATCH -->
+        <a href="mini-szachy-bloki-pl.html" class="card" data-tab="scratch" data-tags="Polski">
+            <h2><span class="emoji">♛</span> Mini Szachy - Bloki Scratch</h2>
             <p>Prezentacja po polsku z wizualnymi blokami Scratch. Idealna do nauki!</p>
-            <span class="tag">Polski</span>
-            <span class="tag">Bloki wizualne</span>
+            <div class="tags">
+                <span class="tag tag-level">Scratch</span>
+                <span class="tag tag-lang">Polski</span>
+            </div>
         </a>
 
-        <a href="mini-chess-blocks-presentation.html" class="card">
-            <h2><span class="emoji">&#9819;</span> Mini Chess - Scratch Blocks (EN)</h2>
+        <a href="mini-chess-blocks-presentation.html" class="card" data-tab="scratch" data-tags="English">
+            <h2><span class="emoji">♛</span> Mini Chess - Scratch Blocks</h2>
             <p>English presentation with visual Scratch blocks.</p>
-            <span class="tag">English</span>
-            <span class="tag">Visual blocks</span>
+            <div class="tags">
+                <span class="tag tag-level">Scratch</span>
+                <span class="tag tag-lang">English</span>
+            </div>
         </a>
 
-        <a href="mini-chess-presentation.html" class="card">
-            <h2><span class="emoji">&#9819;</span> Mini Chess - Code (EN)</h2>
+        <a href="mini-chess-presentation.html" class="card" data-tab="scratch" data-tags="English">
+            <h2><span class="emoji">♛</span> Mini Chess - Code</h2>
             <p>English presentation with code snippets instead of visual blocks.</p>
-            <span class="tag">English</span>
-            <span class="tag">Code</span>
+            <div class="tags">
+                <span class="tag tag-level">Scratch</span>
+                <span class="tag tag-lang">English</span>
+            </div>
         </a>
     </div>
 
+    <div class="no-results" id="noResults">Brak prezentacji dla wybranych filtrow 🤔</div>
+
     <footer>Coding Tree - Szkola Programowania dla Dzieci</footer>
+
+<script>
+    const TAB_FILTERS = {
+        malusi: ['Klikaj', 'Przeciagaj', 'Wzorce', 'Logika'],
+        starsi: ['Binarny', 'Tekst', 'Grafika', 'Logika'],
+        scratch: ['Polski', 'English']
+    };
+
+    let activeTab = 'malusi';
+    let activeFilters = new Set();
+
+    // Read tab from URL hash
+    const hash = window.location.hash.replace('#', '');
+    if (TAB_FILTERS[hash]) activeTab = hash;
+
+    function switchTab(tab) {
+        activeTab = tab;
+        activeFilters.clear();
+        window.location.hash = tab;
+
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+
+        renderFilters();
+        filterCards();
+    }
+
+    function toggleFilter(tag) {
+        if (activeFilters.has(tag)) activeFilters.delete(tag);
+        else activeFilters.add(tag);
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.toggle('active', activeFilters.has(btn.dataset.tag));
+        });
+
+        filterCards();
+    }
+
+    function renderFilters() {
+        const el = document.getElementById('filters');
+        el.innerHTML = '';
+        TAB_FILTERS[activeTab].forEach(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.dataset.tag = tag;
+            btn.textContent = tag;
+            btn.onclick = () => toggleFilter(tag);
+            el.appendChild(btn);
+        });
+    }
+
+    function filterCards() {
+        const cards = document.querySelectorAll('.card');
+        let visible = 0;
+
+        cards.forEach(card => {
+            const cardTab = card.dataset.tab;
+            const cardTags = card.dataset.tags.split(',');
+
+            let show = cardTab === activeTab;
+            if (show && activeFilters.size > 0) {
+                show = [...activeFilters].some(f => cardTags.includes(f));
+            }
+
+            if (show) {
+                card.classList.remove('hidden');
+                visible++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    // Init
+    switchTab(activeTab);
+</script>
 </body>
 </html>
