@@ -30,7 +30,7 @@
         .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
 
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -233,11 +233,11 @@
 <!-- SLIDE 3: Item class -->
 <div class="slide" data-slide="2">
     <h2><span class="gradient-text">&#x1F4E6; Item &#x2014; bazowy przedmiot</span></h2>
-    <div class="code-block" style="max-width:600px;">
+    <div class="code-block" style="">
 <span class="kw">public class</span> <span class="tp">Item</span> {
-    <span class="kw">private final</span> <span class="tp">String</span> name;      <span class="cm">// niezmienne!</span>
-    <span class="kw">private final double</span> weight;     <span class="cm">// waga</span>
-    <span class="kw">private final</span> <span class="tp">Rarity</span> rarity;     <span class="cm">// rzadkość</span>
+    <span class="kw">private final</span> <span class="tp">String</span> name <span class="cm">// niezmienne!</span>
+    <span class="kw">private final double</span> weight <span class="cm">// waga</span>
+    <span class="kw">private final</span> <span class="tp">Rarity</span> rarity <span class="cm">// rzadkość</span>
 
     <span class="kw">public</span> <span class="tp">Item</span>(<span class="tp">String</span> name, <span class="kw">double</span> w, <span class="tp">Rarity</span> r) {
         <span class="kw">this</span>.name = name;
@@ -287,7 +287,7 @@
             </div>
         </div>
     </div>
-    <div class="code-block" style="max-width:600px;">
+    <div class="code-block" style="">
 <span class="kw">public class</span> <span class="tp">Weapon</span> <span class="kw">extends</span> <span class="tp">Item</span> {
     <span class="kw">private final int</span> damage;
 
@@ -337,7 +337,7 @@
 <div class="slide" data-slide="5">
     <h2><span class="gradient-pink">&#x1F392; Inventory&lt;T extends Item&gt;</span></h2>
     <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:start">
-        <div class="code-block" style="max-width:420px;">
+        <div class="code-block" style="">
 <span class="kw">public class</span> <span class="tp">Inventory</span>&lt;<span class="tp">T</span> <span class="kw">extends</span> <span class="tp">Item</span>&gt; {
     <span class="kw">private</span> <span class="tp">List</span>&lt;<span class="tp">T</span>&gt; items = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
 
@@ -399,7 +399,7 @@
 <!-- SLIDE 8: Recipe -->
 <div class="slide" data-slide="7">
     <h2><span class="gradient-text">&#x1F4DC; Recipe &#x2014; przepis na crafting</span></h2>
-    <div class="code-block" style="max-width:550px;">
+    <div class="code-block" style="">
 <span class="kw">public class</span> <span class="tp">Recipe</span> {
     <span class="kw">private final</span> <span class="tp">List</span>&lt;<span class="tp">Item</span>&gt; ingredients;
     <span class="kw">private final</span> <span class="tp">Item</span> result;
@@ -449,7 +449,7 @@
             <div id="craftResult" style="text-align:center;min-height:50px;margin-top:4px"></div>
         </div>
     </div>
-    <div class="code-block" style="max-width:500px;margin-top:6px;">
+    <div class="code-block" style="margin-top:6px;">
 <span class="kw">public class</span> <span class="tp">CraftingTable</span> {
     <span class="kw">public</span> <span class="tp">Item</span> <span class="tp">craft</span>(<span class="tp">Recipe</span> recipe, <span class="tp">Inventory</span>&lt;?&gt; inv) {
         <span class="kw">if</span> (!recipe.canCraft(inv)) <span class="kw">throw new</span> ...;

@@ -29,7 +29,7 @@
         .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -257,7 +257,7 @@
 
     <p style="font-size:0.95rem;opacity:0.7;margin-bottom:8px">&#x1F446; Kliknij interfejsy, żeby je podłączyć!</p>
 
-    <div class="code-block" id="entityCode" style="max-width:600px;transition:all 0.3s">
+    <div class="code-block" id="entityCode" style="transition:all 0.3s">
         <span class="kw">public class</span> <span class="tp">Entity</span> {<br>
         &nbsp;&nbsp;<span class="cm">// czeka na interfejsy...</span><br>
         }
@@ -285,7 +285,7 @@
         <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="clearWorld()">&#x1F5D1;&#xFE0F; Wyczyść</button>
     </div>
 
-    <div class="code-block" style="max-width:550px;">
+    <div class="code-block" style="">
         <span class="kw">public class</span> <span class="tp">GameWorld</span> {<br>
         &nbsp;&nbsp;<span class="kw">private</span> List&lt;<span class="tp">Entity</span>&gt; entities = <span class="kw">new</span> ArrayList&lt;&gt;();<br><br>
         &nbsp;&nbsp;<span class="kw">void</span> <span class="str">addEntity</span>(<span class="tp">Entity</span> e) { entities.add(e); }<br>
@@ -311,11 +311,11 @@
             <div class="loop-center" id="loopCenter">&#x1F504;</div>
         </div>
 
-        <div class="code-block" style="max-width:340px;">
+        <div class="code-block" style="">
             <span class="kw">while</span> (running) {<br>
             &nbsp;&nbsp;<span class="str">processInput</span>(); <span class="cm">// klawiatura</span><br>
-            &nbsp;&nbsp;<span class="str">update</span>(dt);      <span class="cm">// fizyka, AI</span><br>
-            &nbsp;&nbsp;<span class="str">render</span>();        <span class="cm">// rysowanie</span><br>
+            &nbsp;&nbsp;<span class="str">update</span>(dt) <span class="cm">// fizyka, AI</span><br>
+            &nbsp;&nbsp;<span class="str">render</span>() <span class="cm">// rysowanie</span><br>
             }
         </div>
     </div>
@@ -350,7 +350,7 @@
         <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="resetDtDemo()">&#x1F504; Reset</button>
     </div>
 
-    <div class="code-block" style="max-width:500px;">
+    <div class="code-block" style="">
         <span class="cm">// Zawsze używaj deltaTime!</span><br>
         position += speed * <span class="ann">deltaTime</span>;<br><br>
         <span class="cm">// deltaTime = czas między klatkami (w sekundach)</span><br>
@@ -363,7 +363,7 @@
 <div class="slide" id="slide7">
     <h2><span class="gradient-text">InputHandler &#x2328;&#xFE0F;</span></h2>
 
-    <div class="code-block" style="max-width:500px;margin-bottom:12px;">
+    <div class="code-block" style="margin-bottom:12px;">
         <span class="kw">public interface</span> <span class="tp">InputHandler</span> {<br>
         &nbsp;&nbsp;<span class="kw">void</span> <span class="str">onKey</span>(<span class="tp">String</span> key);<br>
         }
@@ -410,7 +410,7 @@
 <div class="slide" id="slide8">
     <h2><span class="gradient-pink">Java Record &#x2014; GameConfig &#x1F4CB;</span></h2>
 
-    <div class="code-block" style="max-width:600px;margin-bottom:10px">
+    <div class="code-block" style="margin-bottom:10px">
         <span class="kw">record</span> <span class="tp">GameConfig</span>(<br>
         &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">int</span> worldWidth,<br>
         &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">int</span> worldHeight,<br>

@@ -31,7 +31,7 @@
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
 
         /* Code blocks */
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -230,7 +230,7 @@
             <span style="opacity:0.4;font-size:1rem;">kliknij przycisk!</span>
         </div>
     </div>
-    <div class="code-block" style="margin-top:12px;max-width:600px;">
+    <div class="code-block" style="margin-top:12px;">
 <span class="tp">Entity</span> rycerz = <span class="kw">new</span> <span class="tp">Entity</span>(<span class="str">"Rycerz"</span>, <span class="num">100</span>, <span class="num">15</span>);
     </div>
     <div id="spawnMsg" style="font-family:'Baloo 2';font-size:1rem;min-height:24px;color:var(--neon-green);margin-top:4px;"></div>
@@ -239,15 +239,15 @@
 <!-- SLIDE 5: Entity class -->
 <div class="slide" data-slide="4">
     <h2><span class="gradient-pink">&#x1F9EC; Klasa Entity</span></h2>
-    <div class="code-block" style="max-width:620px;">
+    <div class="code-block" style="">
 <span class="kw">public class</span> <span class="tp">Entity</span> {
-    <span class="kw">private</span> <span class="tp">String</span> name;         <span class="cm">// pole (field)</span>
-    <span class="kw">private int</span> health;           <span class="cm">// pole</span>
-    <span class="kw">private int</span> attackPower;      <span class="cm">// pole</span>
+    <span class="kw">private</span> <span class="tp">String</span> name <span class="cm">// pole (field)</span>
+    <span class="kw">private int</span> health <span class="cm">// pole</span>
+    <span class="kw">private int</span> attackPower <span class="cm">// pole</span>
 
     <span class="cm">// Konstruktor — tworzy obiekt</span>
     <span class="kw">public</span> <span class="tp">Entity</span>(<span class="tp">String</span> name, <span class="kw">int</span> health, <span class="kw">int</span> attackPower) {
-        <span class="kw">this</span>.name = name;         <span class="cm">// this = ten obiekt</span>
+        <span class="kw">this</span>.name = name <span class="cm">// this = ten obiekt</span>
         <span class="kw">this</span>.health = health;
         <span class="kw">this</span>.attackPower = attackPower;
     }
@@ -264,7 +264,7 @@
 <!-- SLIDE 6: Metody -->
 <div class="slide" data-slide="5">
     <h2><span class="gradient-yellow">&#x2694;&#xFE0F; Metody — co Entity umie?</span></h2>
-    <div class="code-block" style="max-width:620px;">
+    <div class="code-block" style="">
 <span class="kw">public void</span> <span class="tp">attack</span>(<span class="tp">Entity</span> target) {
     target.<span class="tp">takeDamage</span>(<span class="kw">this</span>.attackPower);
 }
@@ -303,7 +303,7 @@
         <div class="tree-arrow">&#x2B07;&#xFE0F; extends</div>
         <div class="glass-card tree-node" style="border-color:var(--neon-green);">&#x1F9D1;&#x200D;&#x2694;&#xFE0F; Player<br><span style="opacity:0.6;">+ level, experience</span></div>
     </div>
-    <div class="code-block" style="max-width:620px;">
+    <div class="code-block" style="">
 <span class="kw">public class</span> <span class="tp">Player</span> <span class="kw">extends</span> <span class="tp">Entity</span> {
     <span class="kw">private int</span> level;
     <span class="kw">private int</span> experience;
@@ -337,7 +337,7 @@
             </div>
         </div>
     </div>
-    <div class="code-block" style="max-width:600px;">
+    <div class="code-block" style="">
 <span class="ann">@Override</span>
 <span class="kw">public void</span> <span class="tp">attack</span>(<span class="tp">Entity</span> target) {
     <span class="kw">int</span> fireDamage = getAttackPower() * <span class="num">2</span>;
@@ -406,7 +406,7 @@
 <!-- SLIDE 11: @Override i toString() -->
 <div class="slide" data-slide="10">
     <h2><span class="gradient-text">&#x1F4DD; @Override i toString()</span></h2>
-    <div class="code-block" style="max-width:620px;">
+    <div class="code-block" style="">
 <span class="ann">@Override</span>
 <span class="kw">public</span> <span class="tp">String</span> <span class="tp">toString</span>() {
     <span class="kw">return</span> name + <span class="str">" [HP: "</span> + health + <span class="str">"/"</span> + maxHealth

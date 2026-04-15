@@ -29,7 +29,7 @@
         .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -195,7 +195,7 @@
         <p style="font-size:0.9rem;opacity:0.7;margin-top:4px">SLF4J + Logback = standardowa para w świecie Java</p>
     </div>
 
-    <div class="code-block" style="max-width:550px;">
+    <div class="code-block" style="">
         <span class="kw">private static final</span> <span class="tp">Logger</span> logger =<br>
         &nbsp;&nbsp;&nbsp;&nbsp;<span class="tp">LoggerFactory</span>.<span class="str">getLogger</span>(Game.<span class="kw">class</span>);
     </div>
@@ -249,7 +249,7 @@
         <button class="config-btn" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="setLogLevel('WARN')" id="cfgWarn">WARN</button>
     </div>
 
-    <div class="code-block" style="max-width:620px;" id="logbackCode">
+    <div class="code-block" style="" id="logbackCode">
         <span class="cm">&lt;!-- logback.xml --&gt;</span><br>
         <span class="kw">&lt;configuration&gt;</span><br>
         &nbsp;&nbsp;<span class="kw">&lt;appender</span> name=<span class="str">"CONSOLE"</span> class=<span class="str">"...ConsoleAppender"</span><span class="kw">&gt;</span><br>
@@ -376,7 +376,7 @@
 <div class="slide" id="slide7">
     <h2><span class="gradient-yellow">Stream w akcji</span> &#x1F3AE;</h2>
 
-    <div class="code-block" style="max-width:600px;">
+    <div class="code-block" style="">
         inventory.<span class="str">getItems</span>().<span class="str">stream</span>()<br>
         &nbsp;&nbsp;.<span class="str">filter</span>(i <span class="kw">-&gt;</span> i.<span class="str">getRarity</span>() == Rarity.<span class="ann" id="filterRarity">LEGENDARY</span>)<br>
         &nbsp;&nbsp;.<span class="str">map</span>(<span class="tp">Item</span>::<span class="str">getName</span>)<br>
@@ -505,7 +505,7 @@
         <p style="font-size:0.9rem;opacity:0.8">&#x1F4A1; filter() potrzebuje Predicate, forEach() potrzebuje Consumer, map() potrzebuje Function</p>
     </div>
 
-    <div class="code-block" style="max-width:600px;margin-top:6px">
+    <div class="code-block" style="margin-top:6px">
         <span class="cm">// Wszystko się łączy!</span><br>
         monsters.stream()<br>
         &nbsp;&nbsp;.<span class="str">filter</span>(<span class="tp">Entity</span>::<span class="str">isAlive</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Predicate</span><br>
@@ -587,7 +587,7 @@
         </div>
     </div>
 
-    <div class="code-block" style="max-width:600px;margin-top:8px">
+    <div class="code-block" style="margin-top:8px">
         <span class="cm">// Przykład:</span><br>
         <span class="kw">int</span> totalDmg = rounds.stream()<br>
         &nbsp;&nbsp;.<span class="str">mapToInt</span>(<span class="tp">Round</span>::<span class="str">getDamage</span>)<br>
