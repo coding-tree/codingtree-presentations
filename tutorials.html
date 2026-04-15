@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Tree - Tutoriale</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .content{position:relative;z-index:1;max-width:900px;width:100%}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.5rem;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .subtitle{color:#bdc3c7;margin-bottom:10px;font-size:1.2rem;text-align:center}
+        .back-link{text-align:center;margin-bottom:30px}
+        .back-link a{color:var(--neon-blue);text-decoration:none;font-size:0.95rem;transition:color 0.2s}
+        .back-link a:hover{color:var(--neon-green)}
+
+        .course{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:30px;backdrop-filter:blur(10px);margin-bottom:30px}
+        .course-header{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+        .course-icon{font-size:3rem}
+        .course-title{font-family:'Baloo 2',cursive;font-weight:700;font-size:2rem;background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .course-desc{color:#bdc3c7;margin-bottom:20px;line-height:1.6}
+        .course-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+        .meta-tag{padding:4px 14px;border-radius:10px;font-size:0.85rem;font-weight:600}
+        .meta-lang{background:rgba(57,255,20,0.15);color:var(--neon-green);border:1px solid rgba(57,255,20,0.3)}
+        .meta-tool{background:rgba(0,212,255,0.15);color:var(--neon-blue);border:1px solid rgba(0,212,255,0.3)}
+        .meta-level{background:rgba(255,230,0,0.15);color:var(--neon-yellow);border:1px solid rgba(255,230,0,0.3)}
+
+        .sessions{display:flex;flex-direction:column;gap:12px}
+        .session-card{display:flex;align-items:center;gap:15px;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);transition:all 0.3s;text-decoration:none;color:var(--soft-white)}
+        .session-card:hover{background:rgba(255,255,255,0.08);border-color:var(--neon-blue);transform:translateX(5px);box-shadow:0 0 20px rgba(0,212,255,0.1)}
+        .session-num{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.8rem;color:var(--neon-blue);min-width:40px;text-align:center}
+        .session-info{flex:1}
+        .session-name{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.3rem;margin-bottom:2px}
+        .session-topics{font-size:0.9rem;color:#888}
+        .session-arrow{font-size:1.5rem;color:var(--neon-blue);opacity:0.5;transition:opacity 0.3s}
+        .session-card:hover .session-arrow{opacity:1}
+
+        .download-section{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08)}
+        .download-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:14px;background:rgba(57,255,20,0.1);border:2px solid rgba(57,255,20,0.3);color:var(--neon-green);font-size:1rem;font-weight:700;text-decoration:none;transition:all 0.3s}
+        .download-btn:hover{background:rgba(57,255,20,0.2);border-color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.15)}
+        .download-hint{font-size:0.85rem;color:#666;margin-top:8px}
+
+        footer{margin-top:40px;color:#555;font-size:0.9rem;text-align:center}
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow g1"></div>
+    <div class="bg-glow g2"></div>
+
+    <div class="content">
+        <h1>Tutoriale</h1>
+        <p class="subtitle">Kursy programowania krok po kroku</p>
+        <div class="back-link"><a href="index.html">&larr; Powrot do prezentacji</a></div>
+
+        <!-- Java na Luzie -->
+        <div class="course">
+            <div class="course-header">
+                <span class="course-icon">☕</span>
+                <span class="course-title">Java na Luzie</span>
+            </div>
+            <p class="course-desc">
+                Szybki kurs Javy dla programistow Pythona. 4 sesje — od obiektow przez silnik gry
+                po streamy i lambdy. Cel: budowa wlasnego Minecrafta z LWJGL!
+            </p>
+            <div class="course-meta">
+                <span class="meta-tag meta-lang">Java 17+</span>
+                <span class="meta-tag meta-tool">Maven + IntelliJ</span>
+                <span class="meta-tag meta-level">Zaawansowany</span>
+            </div>
+
+            <div class="sessions">
+                <a href="https://github.com/coding-tree/codingtree-presentations/blob/main/tutorials/java-na-luzie/session-01/README.md" class="session-card" target="_blank">
+                    <span class="session-num">01</span>
+                    <div class="session-info">
+                        <div class="session-name">Stworz Swoj Swiat</div>
+                        <div class="session-topics">Entity, Player, Monster, Dragon, Arena — OOP i dziedziczenie</div>
+                    </div>
+                    <span class="session-arrow">&rarr;</span>
+                </a>
+                <a href="https://github.com/coding-tree/codingtree-presentations/blob/main/tutorials/java-na-luzie/session-02/README.md" class="session-card" target="_blank">
+                    <span class="session-num">02</span>
+                    <div class="session-info">
+                        <div class="session-name">Ekwipunek Bohatera</div>
+                        <div class="session-topics">Enumy, generyki, Inventory, Recipe, CraftingTable — kompozycja</div>
+                    </div>
+                    <span class="session-arrow">&rarr;</span>
+                </a>
+                <a href="https://github.com/coding-tree/codingtree-presentations/blob/main/tutorials/java-na-luzie/session-03/README.md" class="session-card" target="_blank">
+                    <span class="session-num">03</span>
+                    <div class="session-info">
+                        <div class="session-name">Silnik Gry</div>
+                        <div class="session-topics">Interfejsy, GameLoop, GameWorld, Record — architektura silnika</div>
+                    </div>
+                    <span class="session-arrow">&rarr;</span>
+                </a>
+                <a href="https://github.com/coding-tree/codingtree-presentations/blob/main/tutorials/java-na-luzie/session-04/README.md" class="session-card" target="_blank">
+                    <span class="session-num">04</span>
+                    <div class="session-info">
+                        <div class="session-name">Supermoc Javy</div>
+                        <div class="session-topics">SLF4J, lambdy, streamy, Optional — nowoczesna Java</div>
+                    </div>
+                    <span class="session-arrow">&rarr;</span>
+                </a>
+            </div>
+
+            <div class="download-section">
+                <a href="https://github.com/coding-tree/codingtree-presentations/tree/main/tutorials/java-na-luzie/project" class="download-btn" target="_blank">
+                    <span>📦</span> Projekt Maven na GitHub
+                </a>
+                <p class="download-hint">Otworz w IntelliJ IDEA lub pobierz jako ZIP (Code &rarr; Download ZIP)</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>Coding Tree — Szkola Programowania dla Dzieci</footer>
+</body>
+</html>
