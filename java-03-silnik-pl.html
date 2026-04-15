@@ -29,7 +29,7 @@
         .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -73,7 +73,7 @@
         .usb-device{padding:10px 16px;border:2px solid var(--glass-border);border-radius:14px;font-size:1.5rem;cursor:pointer;transition:all 0.2s;text-align:center;background:var(--glass)}
         .usb-device:hover{transform:scale(1.1);border-color:var(--neon-yellow)}
         .usb-device.active{border-color:var(--neon-green);background:rgba(57,255,20,0.1)}
-        .usb-device .dev-name{font-size:0.75rem;font-family:'Baloo 2';font-weight:700;display:block;margin-top:2px}
+        .usb-device .dev-name{font-family:'Baloo 2';font-weight:700;display:block;margin-top:2px}
 
         /* Slide 4: Plug interface */
         .plug-diagram{display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap}
@@ -127,7 +127,7 @@
         .record-demo{max-width:500px;width:100%}
         .record-fields{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
         .record-field{padding:8px 16px;border-radius:12px;border:1px solid var(--neon-blue);background:rgba(0,212,255,0.06);font-family:'Baloo 2';font-weight:700;text-align:center}
-        .record-field .field-name{font-size:0.8rem;color:var(--neon-blue)}
+        .record-field .field-name{color:var(--neon-blue)}
         .record-field .field-val{font-size:1.1rem}
         .immutable-btn{font-family:'Baloo 2';font-size:1rem;font-weight:700;padding:10px 24px;border-radius:14px;border:2px solid var(--neon-pink);background:rgba(255,46,170,0.1);color:var(--neon-pink);cursor:pointer;transition:all 0.2s}
         .immutable-btn:hover{background:rgba(255,46,170,0.2);transform:scale(1.05)}
@@ -189,7 +189,7 @@
     </div>
 
     <div class="glass-card" style="max-width:600px;text-align:center;margin:8px 0">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.15rem;color:var(--neon-yellow)">Interfejs = kontrakt. Obiecujesz ze cos umiesz.</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.15rem;color:var(--neon-yellow)">Interfejs = kontrakt. Obiecujesz że coś umiesz.</p>
     </div>
 
     <div class="code-block" style="max-width:500px">
@@ -199,7 +199,7 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;margin-top:6px;padding:12px 16px">
-        <p style="font-size:0.9rem;opacity:0.7">&#x1F40D; Python nie ma interfejsow &#x2014; po prostu masz nadzieje ze metoda istnieje (duck typing)</p>
+        <p style="font-size:0.9rem;opacity:0.7">&#x1F40D; Python nie ma interfejsów &#x2014; po prostu masz nadzieję że metoda istnieje (duck typing)</p>
     </div>
 </div>
 
@@ -211,8 +211,8 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-green)">
                 <div class="compare-label" style="color:var(--neon-green)">&#x1F441;&#xFE0F; Renderable</div>
-                <p style="text-align:center;margin-bottom:10px;font-style:italic;opacity:0.8">"Umiem sie narysowac"</p>
-                <div class="code-block" style="max-width:100%;font-size:0.85rem">
+                <p style="text-align:center;margin-bottom:10px;font-style:italic;opacity:0.8">"Umiem się narysować"</p>
+                <div class="code-block" style="max-width:100%;">
                     <span class="kw">public interface</span> <span class="tp">Renderable</span> {<br>
                     &nbsp;&nbsp;<span class="kw">void</span> <span class="str">render</span>();<br>
                     }
@@ -222,8 +222,8 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-blue)">
                 <div class="compare-label" style="color:var(--neon-blue)">&#x1F504; Updatable</div>
-                <p style="text-align:center;margin-bottom:10px;font-style:italic;opacity:0.8">"Umiem sie zaktualizowac"</p>
-                <div class="code-block" style="max-width:100%;font-size:0.85rem">
+                <p style="text-align:center;margin-bottom:10px;font-style:italic;opacity:0.8">"Umiem się zaktualizować"</p>
+                <div class="code-block" style="max-width:100%;">
                     <span class="kw">public interface</span> <span class="tp">Updatable</span> {<br>
                     &nbsp;&nbsp;<span class="kw">void</span> <span class="str">update</span>(<span class="kw">double</span> <span class="num">dt</span>);<br>
                     }
@@ -233,7 +233,7 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;padding:14px 20px;border-color:var(--neon-yellow)">
-        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.3rem">Proste? <span style="color:var(--neon-green)">TAK.</span> Potezne? <span class="gradient-pink" style="font-size:1.5rem">MEGA.</span></p>
+        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.3rem">Proste? <span style="color:var(--neon-green)">TAK.</span> Potężne? <span class="gradient-pink" style="font-size:1.5rem">MEGA.</span></p>
     </div>
 </div>
 
@@ -255,7 +255,7 @@
         </div>
     </div>
 
-    <p style="font-size:0.95rem;opacity:0.7;margin-bottom:8px">&#x1F446; Kliknij interfejsy, zeby je podlaczyc!</p>
+    <p style="font-size:0.95rem;opacity:0.7;margin-bottom:8px">&#x1F446; Kliknij interfejsy, żeby je podłączyć!</p>
 
     <div class="code-block" id="entityCode" style="max-width:600px;transition:all 0.3s">
         <span class="kw">public class</span> <span class="tp">Entity</span> {<br>
@@ -264,13 +264,13 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;margin-top:8px">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.05rem">Jedna klasa moze implementowac <span style="color:var(--neon-pink)">WIELE</span> interfejsow!</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.05rem">Jedna klasa może implementować <span style="color:var(--neon-pink)">WIELE</span> interfejsów!</p>
     </div>
 </div>
 
 <!-- SLIDE 5: GameWorld -->
 <div class="slide" id="slide4">
-    <h2><span class="gradient-text">GameWorld &#x2014; twoj swiat</span></h2>
+    <h2><span class="gradient-text">GameWorld &#x2014; twój świat</span></h2>
 
     <div class="game-world-box" id="gameWorld">
         <div class="world-label">&#x1F30D; GameWorld</div>
@@ -282,10 +282,10 @@
         <button class="add-entity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink)" onclick="spawnEntity('&#x1F47A;','Goblin')">+ &#x1F47A; Goblin</button>
         <button class="add-entity-btn" style="border-color:var(--neon-orange);color:var(--neon-orange)" onclick="spawnEntity('&#x1F432;','Smok')">+ &#x1F432; Smok</button>
         <button class="add-entity-btn" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="spawnEntity('&#x1FA99;','Moneta')">+ &#x1FA99; Moneta</button>
-        <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="clearWorld()">&#x1F5D1;&#xFE0F; Wyczysc</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="clearWorld()">&#x1F5D1;&#xFE0F; Wyczyść</button>
     </div>
 
-    <div class="code-block" style="max-width:550px;font-size:0.85rem">
+    <div class="code-block" style="max-width:550px;">
         <span class="kw">public class</span> <span class="tp">GameWorld</span> {<br>
         &nbsp;&nbsp;<span class="kw">private</span> List&lt;<span class="tp">Entity</span>&gt; entities = <span class="kw">new</span> ArrayList&lt;&gt;();<br><br>
         &nbsp;&nbsp;<span class="kw">void</span> <span class="str">addEntity</span>(<span class="tp">Entity</span> e) { entities.add(e); }<br>
@@ -298,7 +298,7 @@
 
 <!-- SLIDE 6: Game Loop - HIGHLIGHT -->
 <div class="slide" id="slide5">
-    <h2><span class="gradient-pink">Game Loop &#x2014; serce kazdej gry &#x2764;&#xFE0F;</span></h2>
+    <h2><span class="gradient-pink">Game Loop &#x2014; serce każdej gry &#x2764;&#xFE0F;</span></h2>
 
     <div style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;justify-content:center;margin:8px 0">
         <div class="loop-container" id="loopVis">
@@ -311,7 +311,7 @@
             <div class="loop-center" id="loopCenter">&#x1F504;</div>
         </div>
 
-        <div class="code-block" style="max-width:340px;font-size:0.85rem">
+        <div class="code-block" style="max-width:340px;">
             <span class="kw">while</span> (running) {<br>
             &nbsp;&nbsp;<span class="str">processInput</span>(); <span class="cm">// klawiatura</span><br>
             &nbsp;&nbsp;<span class="str">update</span>(dt);      <span class="cm">// fizyka, AI</span><br>
@@ -326,13 +326,13 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;margin-top:8px;padding:12px">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem">Ta petla kreci sie <span style="color:var(--neon-green)">60 razy na sekunde</span> w Minecraft! &#x26CF;&#xFE0F;</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem">Ta pętla kręci się <span style="color:var(--neon-green)">60 razy na sekundę</span> w Minecraft! &#x26CF;&#xFE0F;</p>
     </div>
 </div>
 
 <!-- SLIDE 7: deltaTime -->
 <div class="slide" id="slide6">
-    <h2><span class="gradient-yellow">deltaTime &#x2014; plynny ruch &#x1F3C3;</span></h2>
+    <h2><span class="gradient-yellow">deltaTime &#x2014; płynny ruch &#x1F3C3;</span></h2>
 
     <div class="dt-demo">
         <div class="dt-lane" style="border-color:var(--neon-pink)">
@@ -346,16 +346,16 @@
     </div>
 
     <div style="display:flex;gap:12px;margin:12px 0;justify-content:center">
-        <button class="add-entity-btn" style="border-color:var(--neon-green);color:var(--neon-green)" id="dtBtn" onclick="startDtDemo()">&#x25B6;&#xFE0F; Porownaj!</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-green);color:var(--neon-green)" id="dtBtn" onclick="startDtDemo()">&#x25B6;&#xFE0F; Porównaj!</button>
         <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="resetDtDemo()">&#x1F504; Reset</button>
     </div>
 
-    <div class="code-block" style="max-width:500px;font-size:0.9rem">
-        <span class="cm">// Zawsze uzywaj deltaTime!</span><br>
+    <div class="code-block" style="max-width:500px;">
+        <span class="cm">// Zawsze używaj deltaTime!</span><br>
         position += speed * <span class="ann">deltaTime</span>;<br><br>
-        <span class="cm">// deltaTime = czas miedzy klatkami (w sekundach)</span><br>
+        <span class="cm">// deltaTime = czas między klatkami (w sekundach)</span><br>
         <span class="cm">// Szybki PC: dt = 0.004s, Wolny PC: dt = 0.033s</span><br>
-        <span class="cm">// Efekt: ta sama predkosc na obu!</span>
+        <span class="cm">// Efekt: ta sama prędkość na obu!</span>
     </div>
 </div>
 
@@ -363,13 +363,13 @@
 <div class="slide" id="slide7">
     <h2><span class="gradient-text">InputHandler &#x2328;&#xFE0F;</span></h2>
 
-    <div class="code-block" style="max-width:500px;margin-bottom:12px;font-size:0.85rem">
+    <div class="code-block" style="max-width:500px;margin-bottom:12px;">
         <span class="kw">public interface</span> <span class="tp">InputHandler</span> {<br>
         &nbsp;&nbsp;<span class="kw">void</span> <span class="str">onKey</span>(<span class="tp">String</span> key);<br>
         }
     </div>
 
-    <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">&#x1F447; Kliknij klawisze albo uzyj klawiatury (W/A/S/D)!</p>
+    <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">&#x1F447; Kliknij klawisze albo użyj klawiatury (W/A/S/D)!</p>
 
     <div class="keyboard-vis" style="margin-bottom:6px">
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
@@ -382,13 +382,13 @@
         </div>
     </div>
 
-    <div class="key-output" id="keyOutput">Nacisnij klawisz...</div>
+    <div class="key-output" id="keyOutput">Naciśnij klawisz...</div>
 
     <div class="compare-row" style="margin-top:12px;max-width:700px">
         <div class="compare-col">
             <div class="glass-card" style="padding:14px;border-color:var(--neon-yellow)">
                 <div class="compare-label" style="color:var(--neon-yellow);font-size:1rem">&#x1F4BB; Teraz (konsola)</div>
-                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                <div class="code-block" style="max-width:100%;padding:10px">
                     Scanner sc = <span class="kw">new</span> Scanner(...);<br>
                     String key = sc.nextLine();
                 </div>
@@ -396,8 +396,8 @@
         </div>
         <div class="compare-col">
             <div class="glass-card" style="padding:14px;border-color:var(--neon-green)">
-                <div class="compare-label" style="color:var(--neon-green);font-size:1rem">&#x1F3AE; Pozniej (LWJGL)</div>
-                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                <div class="compare-label" style="color:var(--neon-green);font-size:1rem">&#x1F3AE; Później (LWJGL)</div>
+                <div class="code-block" style="max-width:100%;padding:10px">
                     <span class="kw">if</span> (glfwGetKey(window,<br>
                     &nbsp;&nbsp;GLFW_KEY_W) == PRESS)
                 </div>
@@ -431,13 +431,13 @@
         </div>
 
         <div style="text-align:center;margin:10px 0">
-            <button class="immutable-btn" onclick="tryMutateRecord()">&#x270F;&#xFE0F; Zmien worldWidth na 1024!</button>
+            <button class="immutable-btn" onclick="tryMutateRecord()">&#x270F;&#xFE0F; Zmień worldWidth na 1024!</button>
         </div>
         <div class="immutable-result" id="immutableResult"></div>
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;padding:12px;margin-top:6px">
-        <p style="font-size:0.9rem;opacity:0.7">&#x1F40D; Python: <code>@dataclass(frozen=True)</code> lub <code>namedtuple</code> &#x2014; ten sam pomysl!</p>
+        <p style="font-size:0.9rem;opacity:0.7">&#x1F40D; Python: <code>@dataclass(frozen=True)</code> lub <code>namedtuple</code> &#x2014; ten sam pomysł!</p>
     </div>
 </div>
 
@@ -464,7 +464,7 @@
     <div class="tick-counter" id="tickCounter"></div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;padding:12px;margin-top:6px">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.05rem">Masz silnik gry! <span style="color:var(--neon-green)">Minecraft zaczal tak samo.</span> &#x26CF;&#xFE0F;</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.05rem">Masz silnik gry! <span style="color:var(--neon-green)">Minecraft zaczął tak samo.</span> &#x26CF;&#xFE0F;</p>
     </div>
 </div>
 
@@ -483,24 +483,24 @@
         <div class="tl-item">
             <div class="tl-dot" style="background:var(--neon-blue);box-shadow:0 0 12px var(--neon-blue)"></div>
             <div>
-                <div class="tl-content" style="color:var(--neon-blue)">&#x1F5BC;&#xFE0F; NASTEPNE: LWJGL + OpenGL</div>
+                <div class="tl-content" style="color:var(--neon-blue)">&#x1F5BC;&#xFE0F; NASTĘPNE: LWJGL + OpenGL</div>
                 <div class="tl-sub">Okno, piksele, tekstury, duszki 2D</div>
             </div>
         </div>
         <div class="tl-item">
             <div class="tl-dot" style="background:var(--neon-pink);box-shadow:0 0 12px var(--neon-pink)"></div>
             <div>
-                <div class="tl-content" style="color:var(--neon-pink)">&#x1F30D; POZNIEJ: Swiat 3D</div>
-                <div class="tl-sub">Klon Minecrafta! Voxele, kamery, oswietlenie</div>
+                <div class="tl-content" style="color:var(--neon-pink)">&#x1F30D; PÓŹNIEJ: Świat 3D</div>
+                <div class="tl-sub">Klon Minecrafta! Voxele, kamery, oświetlenie</div>
             </div>
         </div>
     </div>
 
     <div class="glass-card" style="max-width:600px;text-align:center;padding:16px;margin-top:12px;border-color:var(--neon-green)">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-green);margin-bottom:8px">Te same interfejsy! Zmienisz tylko implementacje render().</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-green);margin-bottom:8px">Te same interfejsy! Zmienisz tylko implementację render().</p>
         <div class="compare-row" style="max-width:100%">
             <div class="compare-col" style="min-width:200px">
-                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                <div class="code-block" style="max-width:100%;padding:10px">
                     <span class="cm">// Teraz</span><br>
                     <span class="kw">class</span> <span class="tp">ConsoleRenderer</span><br>
                     &nbsp;&nbsp;<span class="kw">implements</span> <span class="tp">Renderable</span> {<br>
@@ -509,8 +509,8 @@
                 </div>
             </div>
             <div class="compare-col" style="min-width:200px">
-                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
-                    <span class="cm">// Pozniej</span><br>
+                <div class="code-block" style="max-width:100%;padding:10px">
+                    <span class="cm">// Później</span><br>
                     <span class="kw">class</span> <span class="tp">OpenGLRenderer</span><br>
                     &nbsp;&nbsp;<span class="kw">implements</span> <span class="tp">Renderable</span> {<br>
                     &nbsp;&nbsp;glDrawArrays(...);<br>
@@ -526,19 +526,19 @@
     <h2><span class="gradient-pink">&#x1F47E; Boss Fight Challenge!</span></h2>
 
     <div class="glass-card quest-card" style="margin-top:10px">
-        <div class="quest-title gradient-yellow">&#x2694;&#xFE0F; Stworz interfejs Collidable!</div>
+        <div class="quest-title gradient-yellow">&#x2694;&#xFE0F; Stwórz interfejs Collidable!</div>
 
-        <div class="quest-item">&#x1F4CC; <b>1.</b> Stworz <code style="color:var(--neon-blue)">public interface Collidable</code></div>
+        <div class="quest-item">&#x1F4CC; <b>1.</b> Stwórz <code style="color:var(--neon-blue)">public interface Collidable</code></div>
         <div class="quest-item">&#x1F4CC; <b>2.</b> Dodaj metody:<br>
-            <div class="code-block" style="max-width:100%;margin:8px 0;font-size:0.82rem">
+            <div class="code-block" style="max-width:100%;margin:8px 0;">
                 <span class="kw">int</span> <span class="str">getX</span>();<br>
                 <span class="kw">int</span> <span class="str">getY</span>();<br>
                 <span class="kw">int</span> <span class="str">getWidth</span>();<br>
                 <span class="kw">int</span> <span class="str">getHeight</span>();
             </div>
         </div>
-        <div class="quest-item">&#x1F4CC; <b>3.</b> Napisz metode default:<br>
-            <div class="code-block" style="max-width:100%;margin:8px 0;font-size:0.82rem">
+        <div class="quest-item">&#x1F4CC; <b>3.</b> Napisz metodę default:<br>
+            <div class="code-block" style="max-width:100%;margin:8px 0;">
                 <span class="kw">default boolean</span> <span class="str">collidesWith</span>(<span class="tp">Collidable</span> other) {<br>
                 &nbsp;&nbsp;<span class="kw">return</span> getX() &lt; other.getX() + other.getWidth()<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; getX() + getWidth() &gt; other.getX()<br>
@@ -558,20 +558,20 @@
     <div class="glass-card" style="max-width:550px;padding:20px 28px">
         <ul class="checklist">
             <li><span class="check">&#x2705;</span> <b>Interfejsy</b> &#x2014; kontrakt, nie implementacja</li>
-            <li><span class="check">&#x2705;</span> <b>implements</b> &#x2014; klasa spelnia obietnice</li>
+            <li><span class="check">&#x2705;</span> <b>implements</b> &#x2014; klasa spełnia obietnicę</li>
             <li><span class="check">&#x2705;</span> <b>Game Loop</b> &#x2014; input &#x2192; update &#x2192; render</li>
-            <li><span class="check">&#x2705;</span> <b>deltaTime</b> &#x2014; plynny ruch niezaleznie od FPS</li>
+            <li><span class="check">&#x2705;</span> <b>deltaTime</b> &#x2014; płynny ruch niezależnie od FPS</li>
             <li><span class="check">&#x2705;</span> <b>GameWorld</b> &#x2014; kontener na encje (scene graph)</li>
-            <li><span class="check">&#x2705;</span> <b>InputHandler</b> &#x2014; abstrakcja nad klawiatura</li>
+            <li><span class="check">&#x2705;</span> <b>InputHandler</b> &#x2014; abstrakcja nad klawiaturą</li>
             <li><span class="check">&#x2705;</span> <b>Record</b> &#x2014; dane bez boilerplate</li>
-            <li><span class="check">&#x2705;</span> <b>final</b> &#x2014; niemutowalnosc = bezpieczenstwo</li>
+            <li><span class="check">&#x2705;</span> <b>final</b> &#x2014; niemutowalność = bezpieczeństwo</li>
         </ul>
     </div>
 
     <div style="margin-top:16px;text-align:center">
         <div style="font-size:3rem;margin-bottom:8px">&#x1F680;</div>
-        <h3><span class="gradient-pink">Nastepna sesja: Supermoc Javy!</span></h3>
-        <p style="opacity:0.7;font-size:1rem">Generics, kolekcje, Optional i wiecej...</p>
+        <h3><span class="gradient-pink">Następna sesja: Supermoc Javy!</span></h3>
+        <p style="opacity:0.7;font-size:1rem">Generics, kolekcje, Optional i więcej...</p>
     </div>
 </div>
 
@@ -695,7 +695,7 @@ function updateEntityCode(){
     let implStr=impl.length?' <span class="kw">implements</span> '+impl.join(', '):'';
     let body='';
     if(pluggedR) body+='&nbsp;&nbsp;<span class="ann">@Override</span><br>&nbsp;&nbsp;<span class="kw">public void</span> <span class="str">render</span>() {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="str">"Rysuje!"</span>);<br>&nbsp;&nbsp;}<br>';
-    if(pluggedU) body+='&nbsp;&nbsp;<span class="ann">@Override</span><br>&nbsp;&nbsp;<span class="kw">public void</span> <span class="str">update</span>(<span class="kw">double</span> <span class="num">dt</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// aktualizuj logike</span><br>&nbsp;&nbsp;}<br>';
+    if(pluggedU) body+='&nbsp;&nbsp;<span class="ann">@Override</span><br>&nbsp;&nbsp;<span class="kw">public void</span> <span class="str">update</span>(<span class="kw">double</span> <span class="num">dt</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// aktualizuj logikę</span><br>&nbsp;&nbsp;}<br>';
     if(!body) body='&nbsp;&nbsp;<span class="cm">// czeka na interfejsy...</span><br>';
     el.innerHTML='<span class="kw">public class</span> <span class="tp">Entity</span>'+implStr+' {<br>'+body+'}';
     if(pluggedR&&pluggedU){
@@ -842,7 +842,7 @@ function startDtDemo(){
             dtAnimId=requestAnimationFrame(step);
         } else {
             dtRunning=false;
-            document.getElementById('dtBtn').innerHTML='&#x25B6;&#xFE0F; Porownaj!';
+            document.getElementById('dtBtn').innerHTML='&#x25B6;&#xFE0F; Porównaj!';
             document.getElementById('dtBtn').disabled=false;
         }
     }
@@ -854,7 +854,7 @@ function resetDtDemo(){
     if(dtAnimId) cancelAnimationFrame(dtAnimId);
     document.getElementById('dtCharBad').style.left='10px';
     document.getElementById('dtCharGood').style.left='10px';
-    document.getElementById('dtBtn').innerHTML='&#x25B6;&#xFE0F; Porownaj!';
+    document.getElementById('dtBtn').innerHTML='&#x25B6;&#xFE0F; Porównaj!';
     document.getElementById('dtBtn').disabled=false;
 }
 
@@ -865,7 +865,7 @@ function pressKey(key){
     el.classList.add('pressed');
     setTimeout(()=>el.classList.remove('pressed'),200);
 
-    const dirs={W:'GORA &#x2B06;&#xFE0F;',A:'LEWO &#x2B05;&#xFE0F;',S:'DOL &#x2B07;&#xFE0F;',D:'PRAWO &#x27A1;&#xFE0F;'};
+    const dirs={W:'GÓRA &#x2B06;&#xFE0F;',A:'LEWO &#x2B05;&#xFE0F;',S:'DÓŁ &#x2B07;&#xFE0F;',D:'PRAWO &#x27A1;&#xFE0F;'};
     const output=document.getElementById('keyOutput');
     output.innerHTML='<span style="color:var(--neon-green)">onKey("'+key+'")  &#x2192;  '+dirs[key]+'</span>';
     output.style.borderColor='var(--neon-green)';
@@ -879,10 +879,10 @@ function tryMutateRecord(){
     mutateAttempts++;
     const el=document.getElementById('immutableResult');
     const msgs=[
-        '<span style="color:var(--neon-pink)">&#x274C; BLAD! Record jest immutable (niemutowalny)!</span>',
-        '<span style="color:var(--neon-pink)">&#x274C; Nie da sie! Pola w record sa final!</span>',
-        '<span style="color:var(--neon-pink)">&#x274C; Serio nie mozna! Stworz nowy record zamiast tego.</span>',
-        '<span style="color:var(--neon-orange)">&#x1F605; Daj spokoj, records sa IMMUTABLE na zawsze!</span>'
+        '<span style="color:var(--neon-pink)">&#x274C; BŁĄD! Record jest immutable (niemutowalny)!</span>',
+        '<span style="color:var(--neon-pink)">&#x274C; Nie da się! Pola w record są final!</span>',
+        '<span style="color:var(--neon-pink)">&#x274C; Serio nie można! Stwórz nowy record zamiast tego.</span>',
+        '<span style="color:var(--neon-orange)">&#x1F605; Daj spokój, records są IMMUTABLE na zawsze!</span>'
     ];
     el.innerHTML=msgs[Math.min(mutateAttempts-1,msgs.length-1)];
     el.style.animation='shake 0.4s ease';

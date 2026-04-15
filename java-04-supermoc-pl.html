@@ -29,7 +29,7 @@
         .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -126,7 +126,7 @@
         .fi-card .fi-emoji{font-size:2.2rem;margin-bottom:4px}
         .fi-card .fi-name{font-family:'Baloo 2';font-weight:800;font-size:1.1rem}
         .fi-card .fi-desc{font-size:0.85rem;opacity:0.7;margin:4px 0}
-        .fi-card .fi-code{font-family:'Courier New',monospace;font-size:0.8rem;color:var(--neon-green);margin-top:6px}
+        .fi-card .fi-code{font-family:'Courier New',monospace;color:var(--neon-green);margin-top:6px}
 
         /* Slide 12: Before/After */
         .line-count{font-family:'Baloo 2';font-weight:800;font-size:2rem;text-align:center;margin-top:6px}
@@ -172,30 +172,30 @@
     <div class="compare-row" style="margin:10px 0">
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-pink)">
-                <div class="compare-label" style="color:var(--neon-pink)">&#x274C; Stary sposob</div>
-                <div class="code-block crossed-out" style="max-width:100%;font-size:0.85rem">
-                    System.out.<span class="str">println</span>(<span class="str">"cos tam"</span>);
+                <div class="compare-label" style="color:var(--neon-pink)">&#x274C; Stary sposób</div>
+                <div class="code-block crossed-out" style="max-width:100%;">
+                    System.out.<span class="str">println</span>(<span class="str">"coś tam"</span>);
                 </div>
-                <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.6">Brak poziomow, brak formatu, brak kontroli</p>
+                <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.6">Brak poziomów, brak formatu, brak kontroli</p>
             </div>
         </div>
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.1)">
-                <div class="compare-label" style="color:var(--neon-green)">&#x2705; Nowy sposob</div>
-                <div class="code-block" style="max-width:100%;font-size:0.85rem;border-color:var(--neon-green)">
-                    logger.<span class="str">info</span>(<span class="str">"cos tam: {}"</span>, value);
+                <div class="compare-label" style="color:var(--neon-green)">&#x2705; Nowy sposób</div>
+                <div class="code-block" style="max-width:100%;border-color:var(--neon-green)">
+                    logger.<span class="str">info</span>(<span class="str">"coś tam: {}"</span>, value);
                 </div>
-                <p style="text-align:center;margin-top:8px;font-size:0.85rem;color:var(--neon-green)">Poziomy, formatowanie, kontrola wyjscia!</p>
+                <p style="text-align:center;margin-top:8px;font-size:0.85rem;color:var(--neon-green)">Poziomy, formatowanie, kontrola wyjścia!</p>
             </div>
         </div>
     </div>
 
     <div class="glass-card" style="max-width:600px;text-align:center;padding:14px 20px;border-color:var(--neon-yellow)">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.15rem;color:var(--neon-yellow)">&#x1F3AF; Kazdy powazny projekt Java uzywa loggerow!</p>
-        <p style="font-size:0.9rem;opacity:0.7;margin-top:4px">SLF4J + Logback = standardowa para w swiecie Java</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.15rem;color:var(--neon-yellow)">&#x1F3AF; Każdy poważny projekt Java używa loggerów!</p>
+        <p style="font-size:0.9rem;opacity:0.7;margin-top:4px">SLF4J + Logback = standardowa para w świecie Java</p>
     </div>
 
-    <div class="code-block" style="max-width:550px;font-size:0.85rem">
+    <div class="code-block" style="max-width:550px;">
         <span class="kw">private static final</span> <span class="tp">Logger</span> logger =<br>
         &nbsp;&nbsp;&nbsp;&nbsp;<span class="tp">LoggerFactory</span>.<span class="str">getLogger</span>(Game.<span class="kw">class</span>);
     </div>
@@ -204,31 +204,31 @@
 <!-- SLIDE 3: Poziomy logowania -->
 <div class="slide" id="slide2">
     <h2><span class="gradient-text">Poziomy logowania</span> &#x1F4CA;</h2>
-    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Kliknij poziom, zeby zobaczyc przyklad!</p>
+    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Kliknij poziom, żeby zobaczyć przykład!</p>
 
     <div style="display:flex;flex-direction:column;gap:8px;max-width:600px;width:100%">
         <div class="log-level-card" style="border-color:#888;color:#aaa" onclick="toggleLogLevel(this,0)">
-            <div class="log-level-name">&#x1F50D; DEBUG <span style="font-size:0.8rem;opacity:0.6">— szczegoly dla programisty</span></div>
+            <div class="log-level-name">&#x1F50D; DEBUG <span style="opacity:0.6">— szczegóły dla programisty</span></div>
             <div class="log-level-example">
-                <span style="color:#888">DEBUG</span> Obliczam obrazenia: atak=15, obrona=8, wynik=<span class="num">7</span>
+                <span style="color:#888">DEBUG</span> Obliczam obrażenia: atak=15, obrona=8, wynik=<span class="num">7</span>
             </div>
         </div>
         <div class="log-level-card" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="toggleLogLevel(this,1)">
-            <div class="log-level-name">&#x2139;&#xFE0F; INFO <span style="font-size:0.8rem;opacity:0.6">— zdarzenia w grze</span></div>
+            <div class="log-level-name">&#x2139;&#xFE0F; INFO <span style="opacity:0.6">— zdarzenia w grze</span></div>
             <div class="log-level-example">
-                <span style="color:var(--neon-blue)">INFO</span> Gracz wszedl do lokacji: <span class="str">Ciemna Jaskinia</span>
+                <span style="color:var(--neon-blue)">INFO</span> Gracz wszedł do lokacji: <span class="str">Ciemna Jaskinia</span>
             </div>
         </div>
         <div class="log-level-card" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="toggleLogLevel(this,2)">
-            <div class="log-level-name">&#x26A0;&#xFE0F; WARN <span style="font-size:0.8rem;opacity:0.6">— uwaga, cos nie tak</span></div>
+            <div class="log-level-name">&#x26A0;&#xFE0F; WARN <span style="opacity:0.6">— uwaga, coś nie tak</span></div>
             <div class="log-level-example">
                 <span style="color:var(--neon-yellow)">WARN</span> Zdrowie gracza niskie: <span class="num">12</span>/<span class="num">100</span> HP!
             </div>
         </div>
         <div class="log-level-card" style="border-color:var(--neon-pink);color:var(--neon-pink)" onclick="toggleLogLevel(this,3)">
-            <div class="log-level-name">&#x1F4A5; ERROR <span style="font-size:0.8rem;opacity:0.6">— cos sie zepsulo!</span></div>
+            <div class="log-level-name">&#x1F4A5; ERROR <span style="opacity:0.6">— coś się zepsuło!</span></div>
             <div class="log-level-example">
-                <span style="color:var(--neon-pink)">ERROR</span> Nie mozna zaladowac mapy: <span class="str">FileNotFoundException</span>
+                <span style="color:var(--neon-pink)">ERROR</span> Nie można załadować mapy: <span class="str">FileNotFoundException</span>
             </div>
         </div>
     </div>
@@ -249,7 +249,7 @@
         <button class="config-btn" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="setLogLevel('WARN')" id="cfgWarn">WARN</button>
     </div>
 
-    <div class="code-block" style="max-width:620px;font-size:0.8rem" id="logbackCode">
+    <div class="code-block" style="max-width:620px;" id="logbackCode">
         <span class="cm">&lt;!-- logback.xml --&gt;</span><br>
         <span class="kw">&lt;configuration&gt;</span><br>
         &nbsp;&nbsp;<span class="kw">&lt;appender</span> name=<span class="str">"CONSOLE"</span> class=<span class="str">"...ConsoleAppender"</span><span class="kw">&gt;</span><br>
@@ -264,8 +264,8 @@
     </div>
 
     <div style="max-width:620px;width:100%;margin-top:6px">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.95rem;margin-bottom:4px">Wyjscie konsoli:</p>
-        <div class="code-block" style="max-width:100%;font-size:0.8rem;min-height:90px" id="logOutput">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.95rem;margin-bottom:4px">Wyjście konsoli:</p>
+        <div class="code-block" style="max-width:100%;min-height:90px" id="logOutput">
             <span style="color:#888">14:23:01 DEBUG Obliczam: atak=15</span><br>
             <span style="color:var(--neon-blue)">14:23:01 INFO  Gracz atakuje Goblina</span><br>
             <span style="color:var(--neon-yellow)">14:23:02 WARN  Niskie HP: 12/100</span><br>
@@ -282,7 +282,7 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-yellow)">
                 <div class="compare-label" style="color:var(--neon-yellow)">&#x1F40D; Python</div>
-                <div class="code-block" style="max-width:100%;font-size:0.9rem">
+                <div class="code-block" style="max-width:100%;">
                     <span class="kw">lambda</span> x: x + <span class="num">1</span>
                 </div>
             </div>
@@ -290,7 +290,7 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-green)">
                 <div class="compare-label" style="color:var(--neon-green)">&#x2615; Java</div>
-                <div class="code-block" style="max-width:100%;font-size:0.9rem">
+                <div class="code-block" style="max-width:100%;">
                     x <span class="kw">-&gt;</span> x + <span class="num">1</span>
                 </div>
             </div>
@@ -300,8 +300,8 @@
     <p style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-green);text-align:center">Prawie to samo! Java jest nowoczesna. &#x1F60E;</p>
 
     <div class="glass-card" style="max-width:650px;text-align:center;padding:14px">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">Kliknij, zeby zobaczyc transformacje!</p>
-        <div class="code-block" style="max-width:100%;font-size:0.82rem;transition:all 0.5s" id="lambdaCode">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">Kliknij, żeby zobaczyć transformację!</p>
+        <div class="code-block" style="max-width:100%;transition:all 0.5s" id="lambdaCode">
             <span class="cm">// Stara Java &#x2014; anonymous class &#x1F634;</span><br>
             <span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt; comp =<br>
             &nbsp;&nbsp;<span class="kw">new</span> <span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt;() {<br>
@@ -312,17 +312,17 @@
             &nbsp;&nbsp;};<br>
             <span class="cm">// 8 linii kodu... &#x1F62B;</span>
         </div>
-        <button class="transform-btn" style="margin-top:10px" id="lambdaBtn" onclick="transformLambda()">&#x26A1; Zamien na lambde!</button>
+        <button class="transform-btn" style="margin-top:10px" id="lambdaBtn" onclick="transformLambda()">&#x26A1; Zamień na lambdę!</button>
     </div>
 </div>
 
 <!-- SLIDE 6: forEach -->
 <div class="slide" id="slide5">
-    <h2><span class="gradient-pink">forEach &#x2014; koniec petli for</span> &#x1F44B;</h2>
+    <h2><span class="gradient-pink">forEach &#x2014; koniec pętli for</span> &#x1F44B;</h2>
 
     <div class="glass-card" style="max-width:650px;text-align:center;padding:16px">
-        <div class="code-block" style="max-width:100%;font-size:0.88rem;transition:all 0.5s" id="forEachCode">
-            <span class="cm">// Stary sposob &#x1F634;</span><br>
+        <div class="code-block" style="max-width:100%;transition:all 0.5s" id="forEachCode">
+            <span class="cm">// Stary sposób &#x1F634;</span><br>
             <span class="kw">for</span> (<span class="tp">Monster</span> m : monsters) {<br>
             &nbsp;&nbsp;&nbsp;&nbsp;System.out.<span class="str">println</span>(m);<br>
             }
@@ -331,8 +331,8 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;margin-top:8px;padding:12px">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem">&#x1F4A1; forEach = wywolaj funkcje na kazdym elemencie</p>
-        <p style="font-size:0.85rem;opacity:0.7;margin-top:4px">Czytelniej, krocej, nowoczesniej!</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem">&#x1F4A1; forEach = wywołaj funkcję na każdym elemencie</p>
+        <p style="font-size:0.85rem;opacity:0.7;margin-top:4px">Czytelniej, krócej, nowocześniej!</p>
     </div>
 </div>
 
@@ -342,24 +342,24 @@
 
     <div class="pipeline-container">
         <div class="pipe-stage" style="border-color:var(--neon-yellow);color:var(--neon-yellow);background:rgba(255,230,0,0.08)" id="pipeSource">
-            &#x1F4E6; Source<br><span style="font-size:0.75rem;opacity:0.7">lista przedmiotow</span>
+            &#x1F4E6; Source<br><span style="opacity:0.7">lista przedmiotów</span>
         </div>
         <div class="pipe-arrow" id="pa0">&#x27A1;&#xFE0F;</div>
         <div class="pipe-stage" style="border-color:var(--neon-pink);color:var(--neon-pink);background:rgba(255,46,170,0.08)" id="pipeFilter">
-            &#x1F6A7; .filter()<br><span style="font-size:0.75rem;opacity:0.7">przepuszcza tylko pasujace</span>
+            &#x1F6A7; .filter()<br><span style="opacity:0.7">przepuszcza tylko pasujące</span>
         </div>
         <div class="pipe-arrow" id="pa1">&#x27A1;&#xFE0F;</div>
         <div class="pipe-stage" style="border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,212,255,0.08)" id="pipeMap">
-            &#x1F504; .map()<br><span style="font-size:0.75rem;opacity:0.7">przeksztalca kazdy element</span>
+            &#x1F504; .map()<br><span style="opacity:0.7">przekształca każdy element</span>
         </div>
         <div class="pipe-arrow" id="pa2">&#x27A1;&#xFE0F;</div>
         <div class="pipe-stage" style="border-color:var(--neon-green);color:var(--neon-green);background:rgba(57,255,20,0.08)" id="pipeCollect">
-            &#x1F3AF; .collect()<br><span style="font-size:0.75rem;opacity:0.7">zbiera wyniki</span>
+            &#x1F3AF; .collect()<br><span style="opacity:0.7">zbiera wyniki</span>
         </div>
     </div>
 
     <div style="max-width:700px;width:100%">
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.9rem;text-align:center;margin-bottom:4px" id="pipelineLabel">Kliknij Start, zeby zobaczyc potok w akcji!</p>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.9rem;text-align:center;margin-bottom:4px" id="pipelineLabel">Kliknij Start, żeby zobaczyć potok w akcji!</p>
         <div class="pipe-items" id="pipelineItems">
             <!-- Items will be populated by JS -->
         </div>
@@ -368,7 +368,7 @@
     <button class="transform-btn" style="margin-top:6px" id="pipelineBtn" onclick="startPipeline()">&#x25B6;&#xFE0F; Start potoku!</button>
 
     <div class="glass-card" style="max-width:500px;text-align:center;padding:10px 16px;margin-top:4px">
-        <p style="font-size:0.9rem;opacity:0.8">&#x1F3ED; Jak tasma produkcyjna &#x2014; kazdy krok robi jedna rzecz!</p>
+        <p style="font-size:0.9rem;opacity:0.8">&#x1F3ED; Jak taśma produkcyjna &#x2014; każdy krok robi jedną rzecz!</p>
     </div>
 </div>
 
@@ -376,7 +376,7 @@
 <div class="slide" id="slide7">
     <h2><span class="gradient-yellow">Stream w akcji</span> &#x1F3AE;</h2>
 
-    <div class="code-block" style="max-width:600px;font-size:0.82rem">
+    <div class="code-block" style="max-width:600px;">
         inventory.<span class="str">getItems</span>().<span class="str">stream</span>()<br>
         &nbsp;&nbsp;.<span class="str">filter</span>(i <span class="kw">-&gt;</span> i.<span class="str">getRarity</span>() == Rarity.<span class="ann" id="filterRarity">LEGENDARY</span>)<br>
         &nbsp;&nbsp;.<span class="str">map</span>(<span class="tp">Item</span>::<span class="str">getName</span>)<br>
@@ -406,9 +406,9 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-pink)">
                 <div class="compare-label" style="color:var(--neon-pink)">&#x1F40D; Python &#x274C;</div>
-                <div class="code-block" style="max-width:100%;font-size:0.82rem">
+                <div class="code-block" style="max-width:100%;">
                     result = find_monster(<span class="str">"Smaug"</span>)<br>
-                    <span class="cm"># moze byc None... CRASH! &#x1F4A5;</span><br>
+                    <span class="cm"># może być None... CRASH! &#x1F4A5;</span><br>
                     result.attack() <span class="cm"># &#x1F480; NoneType!</span>
                 </div>
             </div>
@@ -416,7 +416,7 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-green)">
                 <div class="compare-label" style="color:var(--neon-green)">&#x2615; Java &#x2705;</div>
-                <div class="code-block" style="max-width:100%;font-size:0.82rem">
+                <div class="code-block" style="max-width:100%;">
                     <span class="tp">Optional</span>&lt;<span class="tp">Monster</span>&gt; found =<br>
                     &nbsp;&nbsp;<span class="str">findMonster</span>(<span class="str">"Smaug"</span>);<br>
                     found.<span class="str">ifPresent</span>(m <span class="kw">-&gt;</span><br>
@@ -439,7 +439,7 @@
 <!-- SLIDE 10: Referencje do metod -->
 <div class="slide" id="slide9">
     <h2><span class="gradient-pink">Referencje do metod</span> &#x1F3AF;</h2>
-    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Skrot zamiast lambdy! Kliknij, zeby zamienic.</p>
+    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Skrót zamiast lambdy! Kliknij, żeby zamienić.</p>
 
     <div style="display:flex;flex-direction:column;gap:10px;max-width:650px;width:100%">
         <div class="ref-card glass-card" onclick="swapRef(this)" style="padding:12px 20px">
@@ -481,23 +481,23 @@
         <div class="fi-card glass-card" style="border-color:var(--neon-green)" onclick="highlightFI(this)">
             <div class="fi-emoji">&#x2705;</div>
             <div class="fi-name" style="color:var(--neon-green)">Predicate&lt;T&gt;</div>
-            <div class="fi-desc">"sprawdza prawde"</div>
+            <div class="fi-desc">"sprawdza prawdę"</div>
             <div class="fi-code">Entity::isAlive</div>
-            <div style="font-size:0.75rem;opacity:0.5;margin-top:4px">T &#x2192; boolean</div>
+            <div style="opacity:0.5;margin-top:4px">T &#x2192; boolean</div>
         </div>
         <div class="fi-card glass-card" style="border-color:var(--neon-pink)" onclick="highlightFI(this)">
             <div class="fi-emoji">&#x1F37D;&#xFE0F;</div>
             <div class="fi-name" style="color:var(--neon-pink)">Consumer&lt;T&gt;</div>
-            <div class="fi-desc">"zjada wartosc"</div>
+            <div class="fi-desc">"zjada wartość"</div>
             <div class="fi-code">logger::info</div>
-            <div style="font-size:0.75rem;opacity:0.5;margin-top:4px">T &#x2192; void</div>
+            <div style="opacity:0.5;margin-top:4px">T &#x2192; void</div>
         </div>
         <div class="fi-card glass-card" style="border-color:var(--neon-blue)" onclick="highlightFI(this)">
             <div class="fi-emoji">&#x1F504;</div>
             <div class="fi-name" style="color:var(--neon-blue)">Function&lt;T,R&gt;</div>
-            <div class="fi-desc">"przeksztalca"</div>
+            <div class="fi-desc">"przekształca"</div>
             <div class="fi-code">Item::getName</div>
-            <div style="font-size:0.75rem;opacity:0.5;margin-top:4px">T &#x2192; R</div>
+            <div style="opacity:0.5;margin-top:4px">T &#x2192; R</div>
         </div>
     </div>
 
@@ -505,8 +505,8 @@
         <p style="font-size:0.9rem;opacity:0.8">&#x1F4A1; filter() potrzebuje Predicate, forEach() potrzebuje Consumer, map() potrzebuje Function</p>
     </div>
 
-    <div class="code-block" style="max-width:600px;font-size:0.82rem;margin-top:6px">
-        <span class="cm">// Wszystko sie laczy!</span><br>
+    <div class="code-block" style="max-width:600px;margin-top:6px">
+        <span class="cm">// Wszystko się łączy!</span><br>
         monsters.stream()<br>
         &nbsp;&nbsp;.<span class="str">filter</span>(<span class="tp">Entity</span>::<span class="str">isAlive</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Predicate</span><br>
         &nbsp;&nbsp;.<span class="str">map</span>(<span class="tp">Entity</span>::<span class="str">getName</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Function</span><br>
@@ -522,7 +522,7 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-pink)">
                 <div class="compare-label" style="color:var(--neon-pink)">&#x1F634; Stary styl</div>
-                <div class="code-block" style="max-width:100%;font-size:0.78rem">
+                <div class="code-block" style="max-width:100%;">
                     List&lt;<span class="tp">String</span>&gt; names = <span class="kw">new</span> ArrayList&lt;&gt;();<br>
                     <span class="kw">for</span> (<span class="tp">Item</span> item : inventory) {<br>
                     &nbsp;&nbsp;<span class="kw">if</span> (item != <span class="kw">null</span>) {<br>
@@ -543,7 +543,7 @@
         <div class="compare-col">
             <div class="glass-card" style="border-color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.1)">
                 <div class="compare-label" style="color:var(--neon-green)">&#x1F60E; Nowy styl</div>
-                <div class="code-block" style="max-width:100%;font-size:0.78rem">
+                <div class="code-block" style="max-width:100%;">
                     inventory.stream()<br>
                     &nbsp;&nbsp;.<span class="str">filter</span>(Objects::<span class="str">nonNull</span>)<br>
                     &nbsp;&nbsp;.<span class="str">filter</span>(i <span class="kw">-&gt;</span> i.getRarity() == LEGENDARY)<br>
@@ -558,7 +558,7 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;padding:14px 20px;border-color:var(--neon-yellow)">
-        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.4rem">Mniej kodu = mniej bugow! &#x1F41B;&#x274C;</p>
+        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.4rem">Mniej kodu = mniej bugów! &#x1F41B;&#x274C;</p>
     </div>
 </div>
 
@@ -569,16 +569,16 @@
     <div class="quest-card glass-card">
         <div class="quest-title" style="color:var(--neon-orange)">&#x2694;&#xFE0F; QUEST: Klasa Statistics</div>
         <div class="quest-item">
-            <p>&#x1F4E6; <b>Stworz klase <span style="color:var(--neon-blue)">Statistics</span></b></p>
+            <p>&#x1F4E6; <b>Stwórz klasę <span style="color:var(--neon-blue)">Statistics</span></b></p>
             <p style="opacity:0.7;font-size:0.9rem;margin-left:24px">Podsumowanie po walce!</p>
         </div>
         <div class="quest-item" style="margin-top:8px">
-            <p>&#x1F300; <b>Uzyj streams do:</b></p>
+            <p>&#x1F300; <b>Użyj streams do:</b></p>
             <ul style="margin-left:32px;font-size:0.95rem;line-height:1.8">
                 <li>&#x1F4A5; Total damage dealt</li>
-                <li>&#x1F432; Najsilniejszy potwor (max HP)</li>
-                <li>&#x1F48E; Przedmioty pogrupowane wg rzadkosci</li>
-                <li>&#x1F4CA; Srednie obrazenia na runde</li>
+                <li>&#x1F432; Najsilniejszy potwór (max HP)</li>
+                <li>&#x1F48E; Przedmioty pogrupowane wg rzadkości</li>
+                <li>&#x1F4CA; Średnie obrażenia na rundę</li>
             </ul>
         </div>
         <div class="quest-item" style="margin-top:8px">
@@ -587,12 +587,12 @@
         </div>
     </div>
 
-    <div class="code-block" style="max-width:600px;font-size:0.8rem;margin-top:8px">
-        <span class="cm">// Przyklad:</span><br>
+    <div class="code-block" style="max-width:600px;margin-top:8px">
+        <span class="cm">// Przykład:</span><br>
         <span class="kw">int</span> totalDmg = rounds.stream()<br>
         &nbsp;&nbsp;.<span class="str">mapToInt</span>(<span class="tp">Round</span>::<span class="str">getDamage</span>)<br>
         &nbsp;&nbsp;.<span class="str">sum</span>();<br>
-        logger.<span class="str">info</span>(<span class="str">"Laczne obrazenia: {}"</span>, totalDmg);
+        logger.<span class="str">info</span>(<span class="str">"Łączne obrażenia: {}"</span>, totalDmg);
     </div>
 </div>
 
@@ -603,7 +603,7 @@
     <div style="font-size:2.5rem;margin-bottom:6px">&#x1F389;&#x1F38A;&#x1F680;</div>
 
     <div class="glass-card" style="max-width:550px;text-align:center;padding:16px 20px;border-color:var(--neon-green)">
-        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.3rem;color:var(--neon-green);margin-bottom:8px">Masz wszystkie narzedzia!</p>
+        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.3rem;color:var(--neon-green);margin-bottom:8px">Masz wszystkie narzędzia!</p>
         <ul class="celebration-checklist" id="celebrationList">
             <li><span class="check">&#x2705;</span> <b>OOP</b> &#x2014; klasy, dziedziczenie, polimorfizm</li>
             <li><span class="check">&#x2705;</span> <b>Generyki</b> &#x2014; typowane kolekcje</li>
@@ -620,8 +620,8 @@
     </div>
 
     <div class="glass-card" style="max-width:500px;text-align:center;padding:14px 20px;border-color:var(--neon-pink)">
-        <h3><span class="gradient-pink">Nastepny krok:</span></h3>
-        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.2rem;margin-top:4px">Otwieramy okno z LWJGL i rysujemy pierwszy trojkat! &#x1F4D0;</p>
+        <h3><span class="gradient-pink">Następny krok:</span></h3>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.2rem;margin-top:4px">Otwieramy okno z LWJGL i rysujemy pierwszy trójkąt! &#x1F4D0;</p>
     </div>
 </div>
 
@@ -732,7 +732,7 @@ function setLogLevel(level){
     const minIdx=levels.indexOf(level);
     const visible=lines.filter((_,i)=>i>=minIdx);
     output.innerHTML=visible.map(l=>l.html).join('<br>');
-    if(visible.length===0) output.innerHTML='<span style="opacity:0.4">(brak wiadomosci)</span>';
+    if(visible.length===0) output.innerHTML='<span style="opacity:0.4">(brak wiadomości)</span>';
 }
 
 // === SLIDE 5: Lambda transformation ===
@@ -750,7 +750,7 @@ function transformLambda(){
             '<span class="cm">// 2 linie! &#x1F525;</span>';
         code.style.borderColor='var(--neon-green)';
         code.style.boxShadow='0 0 20px rgba(57,255,20,0.15)';
-        btn.textContent='&#x1F504; Pokaz stary kod';
+        btn.textContent='&#x1F504; Pokaż stary kod';
         btn.style.borderColor='var(--neon-pink)';
         btn.style.color='var(--neon-pink)';
         spawnConfetti(code);
@@ -766,7 +766,7 @@ function transformLambda(){
             '<span class="cm">// 8 linii kodu... &#x1F62B;</span>';
         code.style.borderColor='var(--glass-border)';
         code.style.boxShadow='';
-        btn.innerHTML='&#x26A1; Zamien na lambde!';
+        btn.innerHTML='&#x26A1; Zamień na lambdę!';
         btn.style.borderColor='var(--neon-green)';
         btn.style.color='var(--neon-green)';
     }
@@ -781,16 +781,16 @@ function upgradeForEach(){
     const btn=document.getElementById('forEachBtn');
 
     if(forEachUpgraded){
-        code.innerHTML='<span class="cm">// Nowy sposob &#x1F60E;</span><br>'+
+        code.innerHTML='<span class="cm">// Nowy sposób &#x1F60E;</span><br>'+
             'monsters.<span class="str">forEach</span>(m <span class="kw">-&gt;</span> logger.<span class="str">info</span>(<span class="str">"{}"</span>, m));';
         code.style.borderColor='var(--neon-green)';
         code.style.boxShadow='0 0 20px rgba(57,255,20,0.15)';
-        btn.innerHTML='&#x1F504; Pokaz stary kod';
+        btn.innerHTML='&#x1F504; Pokaż stary kod';
         btn.style.borderColor='var(--neon-pink)';
         btn.style.color='var(--neon-pink)';
         spawnConfetti(code);
     } else {
-        code.innerHTML='<span class="cm">// Stary sposob &#x1F634;</span><br>'+
+        code.innerHTML='<span class="cm">// Stary sposób &#x1F634;</span><br>'+
             '<span class="kw">for</span> (<span class="tp">Monster</span> m : monsters) {<br>'+
             '&nbsp;&nbsp;&nbsp;&nbsp;System.out.<span class="str">println</span>(m);<br>'+
             '}';
@@ -807,9 +807,9 @@ const pipeItems=[
     {name:'Miecz Ognia',emoji:'&#x1F525;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
     {name:'Drewniany Kij',emoji:'&#x1FAB5;',rarity:'COMMON',color:'#888'},
     {name:'Tarcza Smoka',emoji:'&#x1F6E1;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
-    {name:'Skorzane Buty',emoji:'&#x1F462;',rarity:'COMMON',color:'#888'},
-    {name:'Elficki Luk',emoji:'&#x1F3F9;',rarity:'RARE',color:'var(--neon-pink)'},
-    {name:'Rozdzka Mocy',emoji:'&#x1FA84;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
+    {name:'Skórzane Buty',emoji:'&#x1F462;',rarity:'COMMON',color:'#888'},
+    {name:'Elficki Łuk',emoji:'&#x1F3F9;',rarity:'RARE',color:'var(--neon-pink)'},
+    {name:'Różdżka Mocy',emoji:'&#x1FA84;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
 ];
 
 let pipelineRunning=false;
@@ -829,7 +829,7 @@ function resetPipeline(){
     });
     document.querySelectorAll('.pipe-arrow').forEach(a=>a.classList.remove('active-pipe'));
     document.querySelectorAll('.pipe-stage').forEach(s=>{s.style.boxShadow='';s.style.transform='';});
-    document.getElementById('pipelineLabel').textContent='Kliknij Start, zeby zobaczyc potok w akcji!';
+    document.getElementById('pipelineLabel').textContent='Kliknij Start, żeby zobaczyć potok w akcji!';
     const btn=document.getElementById('pipelineBtn');
     btn.innerHTML='&#x25B6;&#xFE0F; Start potoku!';
     btn.disabled=false;
@@ -846,7 +846,7 @@ function startPipeline(){
         if(!pipelineRunning) return;
         sfx(400,0.1);
         document.getElementById('pipeSource').style.boxShadow='0 0 25px rgba(255,230,0,0.4)';
-        document.getElementById('pipelineLabel').textContent='&#x1F4E6; Zrodlo: 6 przedmiotow w ekwipunku';
+        document.getElementById('pipelineLabel').textContent='&#x1F4E6; Źródło: 6 przedmiotów w ekwipunku';
         document.getElementById('pa0').classList.add('active-pipe');
     },300);
 
@@ -870,7 +870,7 @@ function startPipeline(){
         if(!pipelineRunning) return;
         sfx(600,0.15);
         document.getElementById('pipeMap').style.boxShadow='0 0 25px rgba(0,212,255,0.4)';
-        document.getElementById('pipelineLabel').textContent='&#x1F504; .map() &#x2014; wyciagam nazwy przedmiotow!';
+        document.getElementById('pipelineLabel').textContent='&#x1F504; .map() &#x2014; wyciągam nazwy przedmiotów!';
         document.getElementById('pa2').classList.add('active-pipe');
         pipeItems.forEach((item,i)=>{
             const el=document.getElementById('pitem'+i);
@@ -909,11 +909,11 @@ const inventoryData=[
     {name:'Miecz Ognia',emoji:'&#x1F525;',rarity:'LEGENDARY'},
     {name:'Drewniany Kij',emoji:'&#x1FAB5;',rarity:'COMMON'},
     {name:'Tarcza Smoka',emoji:'&#x1F6E1;',rarity:'LEGENDARY'},
-    {name:'Skorzane Buty',emoji:'&#x1F462;',rarity:'COMMON'},
-    {name:'Elficki Luk',emoji:'&#x1F3F9;',rarity:'RARE'},
-    {name:'Rozdzka Mocy',emoji:'&#x1FA84;',rarity:'LEGENDARY'},
-    {name:'Srebrny Pierscien',emoji:'&#x1F48D;',rarity:'RARE'},
-    {name:'Zelazny Helm',emoji:'&#x1FA96;',rarity:'COMMON'},
+    {name:'Skórzane Buty',emoji:'&#x1F462;',rarity:'COMMON'},
+    {name:'Elficki Łuk',emoji:'&#x1F3F9;',rarity:'RARE'},
+    {name:'Różdżka Mocy',emoji:'&#x1FA84;',rarity:'LEGENDARY'},
+    {name:'Srebrny Pierścień',emoji:'&#x1F48D;',rarity:'RARE'},
+    {name:'Żelazny Helm',emoji:'&#x1FA96;',rarity:'COMMON'},
 ];
 
 const rarityColors={LEGENDARY:'var(--neon-yellow)',RARE:'var(--neon-pink)',COMMON:'#888'};
@@ -959,7 +959,7 @@ function searchMonster(e){
     const found=knownMonsters.find(m=>m.toLowerCase()===query.toLowerCase());
 
     if(found){
-        result.innerHTML='<span style="color:var(--neon-green)">&#x2705; Optional.of(<span style="color:var(--neon-blue)">Monster{"'+found+'"}</span>)</span><br><span style="font-size:0.85rem;opacity:0.8">Znaleziono potwora! ifPresent() wykona lambde.</span>';
+        result.innerHTML='<span style="color:var(--neon-green)">&#x2705; Optional.of(<span style="color:var(--neon-blue)">Monster{"'+found+'"}</span>)</span><br><span style="font-size:0.85rem;opacity:0.8">Znaleziono potwora! ifPresent() wykona lambdę.</span>';
         result.style.background='rgba(57,255,20,0.08)';
         result.style.border='1px solid var(--neon-green)';
         spawnConfetti(result);

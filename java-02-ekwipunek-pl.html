@@ -30,7 +30,7 @@
         .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
         .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
 
-        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:20px 24px;font-family:'Courier New',monospace;font-size:1.05rem;line-height:1.7;text-align:left;overflow-x:auto;max-width:820px;width:100%;white-space:pre}
         .kw{color:var(--neon-pink);font-weight:700}
         .tp{color:var(--neon-blue)}
         .str{color:var(--neon-green)}
@@ -99,7 +99,7 @@
         .item-card:hover{transform:translateY(-4px)}
         .item-card .item-emoji{font-size:2.5rem;margin-bottom:4px}
         .item-card .item-name{font-family:'Baloo 2';font-weight:700;font-size:1rem}
-        .item-card .item-stats{font-size:0.8rem;opacity:0.7;margin-top:2px}
+        .item-card .item-stats{opacity:0.7;margin-top:2px}
 
         /* Inheritance diagram */
         .tree-container{display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -167,7 +167,7 @@
         @media(max-width:768px){
             .slide{padding:10px 8px 100px}
             h1{font-size:2.6rem}h2{font-size:1.8rem}
-            .code-block{font-size:0.75rem;padding:10px 12px}
+            .code-block{padding:10px 12px}
             .features-grid{grid-template-columns:1fr;gap:10px}
             .compare-row{flex-direction:column}
             .compare-col{min-width:auto}
@@ -196,7 +196,7 @@
 
 <!-- SLIDE 2: Enum -->
 <div class="slide" data-slide="1">
-    <h2><span class="gradient-pink">&#x1F48E; Enum &#x2014; lepszy niz String</span></h2>
+    <h2><span class="gradient-pink">&#x1F48E; Enum &#x2014; lepszy niż String</span></h2>
     <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:8px">
         <button class="rarity-btn" data-r="COMMON" onclick="showRarity(this)">COMMON</button>
         <button class="rarity-btn" data-r="UNCOMMON" onclick="showRarity(this)">UNCOMMON</button>
@@ -204,26 +204,26 @@
         <button class="rarity-btn" data-r="EPIC" onclick="showRarity(this)">EPIC</button>
         <button class="rarity-btn" data-r="LEGENDARY" onclick="showRarity(this)">LEGENDARY</button>
     </div>
-    <div id="rarityDisplay" style="font-family:'Baloo 2';font-size:1.4rem;min-height:36px;text-align:center;margin:4px 0">&#x1F447; Kliknij rzadkosc!</div>
+    <div id="rarityDisplay" style="font-family:'Baloo 2';font-size:1.4rem;min-height:36px;text-align:center;margin:4px 0">&#x1F447; Kliknij rzadkość!</div>
     <div class="compare-row" style="margin-top:4px">
         <div class="compare-col">
             <div class="glass-card">
                 <div class="compare-label" style="color:var(--neon-green)">&#x1F40D; Python</div>
-                <div class="code-block" style="font-size:0.8rem;">
-<span class="tp">rarity</span> = <span class="str">"rare"</span>    <span class="cm"># literowka? brak bledu!</span>
-<span class="tp">rarity</span> = <span class="str">"rrae"</span>    <span class="cm"># &#x1F4A5; ups, zla wartosc</span>
+                <div class="code-block" style="">
+<span class="tp">rarity</span> = <span class="str">"rare"</span>    <span class="cm"># literówka? brak błędu!</span>
+<span class="tp">rarity</span> = <span class="str">"rrae"</span>    <span class="cm"># &#x1F4A5; ups, zła wartość</span>
                 </div>
             </div>
         </div>
         <div class="compare-col">
             <div class="glass-card">
                 <div class="compare-label" style="color:var(--neon-blue)">&#9749;&#xFE0F; Java</div>
-                <div class="code-block" style="font-size:0.8rem;">
+                <div class="code-block" style="">
 <span class="kw">enum</span> <span class="tp">Rarity</span> {
     COMMON, UNCOMMON, RARE,
     EPIC, LEGENDARY
 }
-<span class="tp">Rarity</span> r = <span class="tp">Rarity</span>.RRAE; <span class="cm">// &#x274C; blad kompilacji!</span>
+<span class="tp">Rarity</span> r = <span class="tp">Rarity</span>.RRAE; <span class="cm">// &#x274C; błąd kompilacji!</span>
                 </div>
             </div>
         </div>
@@ -237,7 +237,7 @@
 <span class="kw">public class</span> <span class="tp">Item</span> {
     <span class="kw">private final</span> <span class="tp">String</span> name;      <span class="cm">// niezmienne!</span>
     <span class="kw">private final double</span> weight;     <span class="cm">// waga</span>
-    <span class="kw">private final</span> <span class="tp">Rarity</span> rarity;     <span class="cm">// rzadkosc</span>
+    <span class="kw">private final</span> <span class="tp">Rarity</span> rarity;     <span class="cm">// rzadkość</span>
 
     <span class="kw">public</span> <span class="tp">Item</span>(<span class="tp">String</span> name, <span class="kw">double</span> w, <span class="tp">Rarity</span> r) {
         <span class="kw">this</span>.name = name;
@@ -268,7 +268,7 @@
             <div class="item-stats">1.2 kg | LEGENDARY</div>
         </div>
     </div>
-    <div style="font-size:0.95rem;opacity:0.7;margin-top:6px"><code style="color:var(--neon-yellow)">final</code> = nie mozna zmienic po utworzeniu! Przedmiot jest niezmienny &#x1F512;</div>
+    <div style="font-size:0.95rem;opacity:0.7;margin-top:6px"><code style="color:var(--neon-yellow)">final</code> = nie można zmienić po utworzeniu! Przedmiot jest niezmienny &#x1F512;</div>
 </div>
 
 <!-- SLIDE 4: Weapon i Armor -->
@@ -279,15 +279,15 @@
         <div style="display:flex;gap:60px;margin-top:4px">
             <div style="text-align:center">
                 <div class="tree-arrow">&#x2B07;&#xFE0F;</div>
-                <div class="tree-node glass-card" style="border-color:var(--neon-pink);color:var(--neon-pink)">&#x2694;&#xFE0F; Weapon<br><span style="font-size:0.8rem;opacity:0.7">+damage</span></div>
+                <div class="tree-node glass-card" style="border-color:var(--neon-pink);color:var(--neon-pink)">&#x2694;&#xFE0F; Weapon<br><span style="opacity:0.7">+damage</span></div>
             </div>
             <div style="text-align:center">
                 <div class="tree-arrow">&#x2B07;&#xFE0F;</div>
-                <div class="tree-node glass-card" style="border-color:var(--neon-green);color:var(--neon-green)">&#x1F6E1;&#xFE0F; Armor<br><span style="font-size:0.8rem;opacity:0.7">+defense</span></div>
+                <div class="tree-node glass-card" style="border-color:var(--neon-green);color:var(--neon-green)">&#x1F6E1;&#xFE0F; Armor<br><span style="opacity:0.7">+defense</span></div>
             </div>
         </div>
     </div>
-    <div class="code-block" style="max-width:600px;font-size:0.82rem;">
+    <div class="code-block" style="max-width:600px;">
 <span class="kw">public class</span> <span class="tp">Weapon</span> <span class="kw">extends</span> <span class="tp">Item</span> {
     <span class="kw">private final int</span> damage;
 
@@ -298,8 +298,8 @@
 }
     </div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px">
-        <button class="rarity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink);font-size:0.9rem" onclick="spawnEquip('weapon')">&#x2694;&#xFE0F; Stworz bron</button>
-        <button class="rarity-btn" style="border-color:var(--neon-green);color:var(--neon-green);font-size:0.9rem" onclick="spawnEquip('armor')">&#x1F6E1;&#xFE0F; Stworz zbroje</button>
+        <button class="rarity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink);font-size:0.9rem" onclick="spawnEquip('weapon')">&#x2694;&#xFE0F; Stwórz broń</button>
+        <button class="rarity-btn" style="border-color:var(--neon-green);color:var(--neon-green);font-size:0.9rem" onclick="spawnEquip('armor')">&#x1F6E1;&#xFE0F; Stwórz zbroję</button>
     </div>
     <div id="equipArea" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px;min-height:60px"></div>
 </div>
@@ -307,21 +307,21 @@
 <!-- SLIDE 5: Co to generyki? -->
 <div class="slide" data-slide="4">
     <h2><span class="gradient-text">&#x1F4E6; Co to generyki?</span></h2>
-    <div style="font-size:1.05rem;opacity:0.8;margin-bottom:8px;text-align:center">Python: lista moze miec wszystko. Java: <strong style="color:var(--neon-green)">TY decydujesz</strong>.</div>
+    <div style="font-size:1.05rem;opacity:0.8;margin-bottom:8px;text-align:center">Python: lista może mieć wszystko. Java: <strong style="color:var(--neon-green)">TY decydujesz</strong>.</div>
     <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:start">
         <div>
             <div class="gen-box" style="border-color:var(--neon-pink)" id="weaponBox">
                 <span class="box-label" style="color:var(--neon-pink)">Inventory&lt;Weapon&gt;</span>
                 <div class="box-items" id="weaponBoxItems"></div>
             </div>
-            <div style="text-align:center;font-size:0.8rem;opacity:0.6;margin-top:4px">Tylko bronie!</div>
+            <div style="text-align:center;opacity:0.6;margin-top:4px">Tylko bronie!</div>
         </div>
         <div>
             <div class="gen-box" style="border-color:var(--neon-blue)" id="itemBox">
                 <span class="box-label" style="color:var(--neon-blue)">Inventory&lt;Item&gt;</span>
                 <div class="box-items" id="itemBoxItems"></div>
             </div>
-            <div style="text-align:center;font-size:0.8rem;opacity:0.6;margin-top:4px">Wszystko!</div>
+            <div style="text-align:center;opacity:0.6;margin-top:4px">Wszystko!</div>
         </div>
     </div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px">
@@ -337,7 +337,7 @@
 <div class="slide" data-slide="5">
     <h2><span class="gradient-pink">&#x1F392; Inventory&lt;T extends Item&gt;</span></h2>
     <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:start">
-        <div class="code-block" style="max-width:420px;font-size:0.82rem;">
+        <div class="code-block" style="max-width:420px;">
 <span class="kw">public class</span> <span class="tp">Inventory</span>&lt;<span class="tp">T</span> <span class="kw">extends</span> <span class="tp">Item</span>&gt; {
     <span class="kw">private</span> <span class="tp">List</span>&lt;<span class="tp">T</span>&gt; items = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
 
@@ -364,7 +364,7 @@
             </div>
         </div>
     </div>
-    <div style="font-size:0.95rem;opacity:0.7;margin-top:6px;text-align:center"><span class="tp">T</span> = dowolny typ dziedziczacy po <span class="tp">Item</span>. Kompilator pilnuje!</div>
+    <div style="font-size:0.95rem;opacity:0.7;margin-top:6px;text-align:center"><span class="tp">T</span> = dowolny typ dziedziczący po <span class="tp">Item</span>. Kompilator pilnuje!</div>
 </div>
 
 <!-- SLIDE 7: Kompozycja vs Dziedziczenie -->
@@ -385,21 +385,21 @@
                 <div class="compare-label" style="color:var(--neon-green)">Kompozycja: "MA" (HAS-A)</div>
                 <div class="comp-node glass-card" style="border-color:var(--neon-yellow);font-size:0.95rem">&#x1F9D1;&#x200D;&#x2694;&#xFE0F; Player <span style="color:var(--neon-green)">MA</span> Inventory</div>
                 <div class="comp-node glass-card" style="border-color:var(--neon-orange);font-size:0.95rem;margin-top:6px">&#x1F4DC; Recipe <span style="color:var(--neon-green)">MA</span> List&lt;Item&gt;</div>
-                <div style="font-size:0.85rem;opacity:0.7;text-align:center;margin-top:6px">Elastyczna &#x2014; mozna wymienic!</div>
+                <div style="font-size:0.85rem;opacity:0.7;text-align:center;margin-top:6px">Elastyczna &#x2014; można wymienić!</div>
             </div>
         </div>
     </div>
     <div class="glass-card" style="max-width:600px;text-align:center;margin-top:8px;padding:14px;border-color:var(--neon-yellow)">
-        <div style="font-family:'Baloo 2';font-size:1.1rem;font-weight:700;color:var(--neon-yellow)">&#x1F4A1; Zlota zasada</div>
-        <div style="font-size:1rem">"Nie wszystko musi dziedziczyc! Czasem lepiej <strong style="color:var(--neon-green)">MIEC</strong> niz <strong style="color:var(--neon-pink)">BYC</strong>."</div>
-        <div style="font-size:0.85rem;opacity:0.6;margin-top:4px">Python: duck typing &#x2014; wszystko pasuje. Java: TY wybierasz relacje.</div>
+        <div style="font-family:'Baloo 2';font-size:1.1rem;font-weight:700;color:var(--neon-yellow)">&#x1F4A1; Złota zasada</div>
+        <div style="font-size:1rem">"Nie wszystko musi dziedziczyć! Czasem lepiej <strong style="color:var(--neon-green)">MIEĆ</strong> niż <strong style="color:var(--neon-pink)">BYĆ</strong>."</div>
+        <div style="font-size:0.85rem;opacity:0.6;margin-top:4px">Python: duck typing &#x2014; wszystko pasuje. Java: TY wybierasz relację.</div>
     </div>
 </div>
 
 <!-- SLIDE 8: Recipe -->
 <div class="slide" data-slide="7">
     <h2><span class="gradient-text">&#x1F4DC; Recipe &#x2014; przepis na crafting</span></h2>
-    <div class="code-block" style="max-width:550px;font-size:0.82rem;">
+    <div class="code-block" style="max-width:550px;">
 <span class="kw">public class</span> <span class="tp">Recipe</span> {
     <span class="kw">private final</span> <span class="tp">List</span>&lt;<span class="tp">Item</span>&gt; ingredients;
     <span class="kw">private final</span> <span class="tp">Item</span> result;
@@ -421,8 +421,8 @@
             <span style="font-size:2rem;margin:0 8px">&#x27A1;&#xFE0F;</span>
             <div class="craft-slot" id="recResult" style="border-color:var(--neon-orange);font-size:2rem;opacity:0.3">&#x2694;&#xFE0F;</div>
         </div>
-        <div style="font-size:0.85rem;opacity:0.6;margin-top:6px">Drewno + Zelazko + Stary Miecz = &#x2694;&#xFE0F; Smoczomiecz!</div>
-        <button class="craft-btn" style="margin-top:8px;font-size:0.95rem;padding:8px 20px" onclick="animateRecipe()">&#x2728; Pokaz crafting!</button>
+        <div style="font-size:0.85rem;opacity:0.6;margin-top:6px">Drewno + Żelazko + Stary Miecz = &#x2694;&#xFE0F; Smoczomiecz!</div>
+        <button class="craft-btn" style="margin-top:8px;font-size:0.95rem;padding:8px 20px" onclick="animateRecipe()">&#x2728; Pokaż crafting!</button>
     </div>
 </div>
 
@@ -431,14 +431,14 @@
     <h2><span class="gradient-pink">&#x1F3ED; CraftingTable &#x2014; craftujemy!</span></h2>
     <div class="craft-area">
         <div class="glass-card" style="padding:14px">
-            <div style="font-family:'Baloo 2';font-weight:700;color:var(--neon-green);margin-bottom:6px;text-align:center">&#x1F392; Twoj ekwipunek:</div>
+            <div style="font-family:'Baloo 2';font-weight:700;color:var(--neon-green);margin-bottom:6px;text-align:center">&#x1F392; Twój ekwipunek:</div>
             <div class="craft-inv" id="craftInv"></div>
             <div style="text-align:center;margin:8px 0">
-                <div style="font-family:'Baloo 2';font-weight:700;color:var(--neon-yellow);font-size:0.9rem;margin-bottom:4px">&#x1F4DC; Dostepne przepisy:</div>
+                <div style="font-family:'Baloo 2';font-weight:700;color:var(--neon-yellow);font-size:0.9rem;margin-bottom:4px">&#x1F4DC; Dostępne przepisy:</div>
                 <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-                    <button class="rarity-btn" style="font-size:0.8rem;padding:6px 12px" id="recipe1Btn" onclick="selectRecipe(0)">&#x1FAB5;+&#x26CF;&#xFE0F;+&#x1F5E1;&#xFE0F; = &#x2694;&#xFE0F;</button>
-                    <button class="rarity-btn" style="font-size:0.8rem;padding:6px 12px" id="recipe2Btn" onclick="selectRecipe(1)">&#x1F6E1;&#xFE0F;+&#x1F48E; = &#x1F530;</button>
-                    <button class="rarity-btn" style="font-size:0.8rem;padding:6px 12px" id="recipe3Btn" onclick="selectRecipe(2)">&#x1F9EA;+&#x1F33F; = &#x2764;&#xFE0F;</button>
+                    <button class="rarity-btn" style="padding:6px 12px" id="recipe1Btn" onclick="selectRecipe(0)">&#x1FAB5;+&#x26CF;&#xFE0F;+&#x1F5E1;&#xFE0F; = &#x2694;&#xFE0F;</button>
+                    <button class="rarity-btn" style="padding:6px 12px" id="recipe2Btn" onclick="selectRecipe(1)">&#x1F6E1;&#xFE0F;+&#x1F48E; = &#x1F530;</button>
+                    <button class="rarity-btn" style="padding:6px 12px" id="recipe3Btn" onclick="selectRecipe(2)">&#x1F9EA;+&#x1F33F; = &#x2764;&#xFE0F;</button>
                 </div>
             </div>
             <div style="text-align:center">
@@ -449,7 +449,7 @@
             <div id="craftResult" style="text-align:center;min-height:50px;margin-top:4px"></div>
         </div>
     </div>
-    <div class="code-block" style="max-width:500px;margin-top:6px;font-size:0.78rem;">
+    <div class="code-block" style="max-width:500px;margin-top:6px;">
 <span class="kw">public class</span> <span class="tp">CraftingTable</span> {
     <span class="kw">public</span> <span class="tp">Item</span> <span class="tp">craft</span>(<span class="tp">Recipe</span> recipe, <span class="tp">Inventory</span>&lt;?&gt; inv) {
         <span class="kw">if</span> (!recipe.canCraft(inv)) <span class="kw">throw new</span> ...;
@@ -471,28 +471,28 @@
     </div>
     <div style="display:flex;gap:12px;justify-content:center;margin:8px 0">
         <button class="rarity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink);font-size:0.9rem" onclick="showEquals('ref')">== (referencja)</button>
-        <button class="rarity-btn" style="border-color:var(--neon-green);color:var(--neon-green);font-size:0.9rem" onclick="showEquals('val')">.equals() (wartosc)</button>
+        <button class="rarity-btn" style="border-color:var(--neon-green);color:var(--neon-green);font-size:0.9rem" onclick="showEquals('val')">.equals() (wartość)</button>
     </div>
     <div class="glass-card eq-result" id="eqResult" style="max-width:550px"></div>
     <div class="compare-row" style="margin-top:8px">
         <div class="compare-col">
             <div class="glass-card" style="padding:12px">
                 <div class="compare-label" style="color:var(--neon-green);font-size:1.1rem">&#x1F40D; Python</div>
-                <div style="font-size:0.9rem"><code style="color:var(--neon-yellow)">==</code> porownuje wartosci</div>
+                <div style="font-size:0.9rem"><code style="color:var(--neon-yellow)">==</code> porównuje wartości</div>
             </div>
         </div>
         <div class="compare-col">
             <div class="glass-card" style="padding:12px">
                 <div class="compare-label" style="color:var(--neon-blue);font-size:1.1rem">&#9749;&#xFE0F; Java</div>
-                <div style="font-size:0.9rem">Musisz powiedziec <strong style="color:var(--neon-yellow)">CO</strong> porownywac!</div>
+                <div style="font-size:0.9rem">Musisz powiedzieć <strong style="color:var(--neon-yellow)">CO</strong> porównywać!</div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- SLIDE 11: Caly system razem -->
+<!-- SLIDE 11: Cały system razem -->
 <div class="slide" data-slide="10">
-    <h2><span class="gradient-text">&#x1F3AE; Caly system razem</span></h2>
+    <h2><span class="gradient-text">&#x1F3AE; Cały system razem</span></h2>
     <div class="flow-container" id="flowContainer">
         <div class="glass-card flow-step" id="flow0">
             <div class="flow-emoji">&#x1F9D1;&#x200D;&#x2694;&#xFE0F;</div>
@@ -524,8 +524,8 @@
             <div class="flow-label">Epicki item!</div>
         </div>
     </div>
-    <button class="craft-btn" style="margin-top:16px" id="flowBtn" onclick="startFlow()">&#x25B6;&#xFE0F; Pokaz przeplyw!</button>
-    <div style="font-size:0.9rem;opacity:0.6;margin-top:6px;text-align:center">Enumy + Klasy + Generyki + Kompozycja = pelny system!</div>
+    <button class="craft-btn" style="margin-top:16px" id="flowBtn" onclick="startFlow()">&#x25B6;&#xFE0F; Pokaż przepływ!</button>
+    <div style="font-size:0.9rem;opacity:0.6;margin-top:6px;text-align:center">Enumy + Klasy + Generyki + Kompozycja = pełny system!</div>
 </div>
 
 <!-- SLIDE 12: Boss Fight Challenge -->
@@ -533,16 +533,16 @@
     <h2><span class="gradient-pink">&#x1F525; Boss Fight Challenge</span></h2>
     <div class="glass-card quest-card">
         <div class="quest-title"><span class="gradient-yellow">&#x1F3AF; Quest: StackableItem</span></div>
-        <div class="quest-item">1. &#x2694;&#xFE0F; Stworz klase <code style="color:var(--neon-blue)">StackableItem extends Item</code></div>
+        <div class="quest-item">1. &#x2694;&#xFE0F; Stwórz klasę <code style="color:var(--neon-blue)">StackableItem extends Item</code></div>
         <div class="quest-item">2. &#x1F522; Dodaj pole <code style="color:var(--neon-green)">int quantity</code></div>
-        <div class="quest-item">3. &#x1F392; Zaktualizuj <code style="color:var(--neon-yellow)">Inventory</code> zeby stackowal zamiast dodawac duplikaty</div>
-        <div class="quest-item">4. &#x1F4A1; Pomysl: 64 cobblestone jak w Minecraft!</div>
+        <div class="quest-item">3. &#x1F392; Zaktualizuj <code style="color:var(--neon-yellow)">Inventory</code> żeby stackował zamiast dodawać duplikaty</div>
+        <div class="quest-item">4. &#x1F4A1; Pomyśl: 64 cobblestone jak w Minecraft!</div>
         <div style="margin-top:12px;text-align:center">
-            <div class="code-block" style="font-size:0.8rem;text-align:left;display:inline-block">
+            <div class="code-block" style="text-align:left;display:inline-block">
 <span class="kw">public class</span> <span class="tp">StackableItem</span> <span class="kw">extends</span> <span class="tp">Item</span> {
     <span class="kw">private int</span> quantity;
     <span class="kw">private final int</span> maxStack = <span class="num">64</span>;
-    <span class="cm">// Twoj kod tutaj!</span>
+    <span class="cm">// Twój kod tutaj!</span>
 }
             </div>
         </div>
@@ -555,16 +555,16 @@
     <h2><span class="gradient-text">&#x1F3C6; Podsumowanie</span></h2>
     <div class="glass-card" style="max-width:500px">
         <ul class="checklist">
-            <li><span class="check">&#x2705;</span> <strong>Enumy</strong> &#x2014; bezpieczne stale (Rarity)</li>
+            <li><span class="check">&#x2705;</span> <strong>Enumy</strong> &#x2014; bezpieczne stałe (Rarity)</li>
             <li><span class="check">&#x2705;</span> <strong>Dziedziczenie</strong> &#x2014; Weapon/Armor extends Item</li>
             <li><span class="check">&#x2705;</span> <strong>Generyki</strong> &#x2014; Inventory&lt;T extends Item&gt;</li>
             <li><span class="check">&#x2705;</span> <strong>Kompozycja</strong> &#x2014; "MA" vs "JEST"</li>
             <li><span class="check">&#x2705;</span> <strong>Recipe &amp; CraftingTable</strong> &#x2014; system craftingu</li>
-            <li><span class="check">&#x2705;</span> <strong>equals() &amp; hashCode()</strong> &#x2014; porownywanie obiektow</li>
+            <li><span class="check">&#x2705;</span> <strong>equals() &amp; hashCode()</strong> &#x2014; porównywanie obiektów</li>
         </ul>
     </div>
     <div style="font-size:1.4rem;font-family:'Baloo 2';font-weight:700;margin-top:14px;">
-        <span class="gradient-pink">Nastepna sesja: Silnik Gry! &#x1F3AE;&#x1F680;</span>
+        <span class="gradient-pink">Następna sesja: Silnik Gry! &#x1F3AE;&#x1F680;</span>
     </div>
     <div style="font-size:3rem;margin-top:8px;" class="bounce">&#x1F389;</div>
 </div>
@@ -657,7 +657,7 @@ function showRarity(btn){
     document.querySelectorAll('.rarity-btn[data-r]').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const r=btn.dataset.r;
-    const names={COMMON:'Zwykly (bialy)',UNCOMMON:'Niezwykly (zielony)',RARE:'Rzadki (niebieski)',EPIC:'Epicki (fioletowy)',LEGENDARY:'Legendarny (pomaranczowy)'};
+    const names={COMMON:'Zwykły (biały)',UNCOMMON:'Niezwykły (zielony)',RARE:'Rzadki (niebieski)',EPIC:'Epicki (fioletowy)',LEGENDARY:'Legendarny (pomarańczowy)'};
     const cls={COMMON:'rarity-common',UNCOMMON:'rarity-uncommon',RARE:'rarity-rare',EPIC:'rarity-epic',LEGENDARY:'rarity-legendary'};
     const disp=document.getElementById('rarityDisplay');
     disp.className=cls[r];
@@ -667,9 +667,9 @@ function showRarity(btn){
 // === SLIDE 4: Spawn equipment ===
 const weaponData=[
     {name:'Miecz',emoji:'&#x2694;&#xFE0F;',dmg:15,rarity:'RARE',rcls:'rarity-rare'},
-    {name:'Topor',emoji:'&#x1FA93;',dmg:20,rarity:'EPIC',rcls:'rarity-epic'},
-    {name:'Luk',emoji:'&#x1F3F9;',dmg:12,rarity:'UNCOMMON',rcls:'rarity-uncommon'},
-    {name:'Rozdzka',emoji:'&#x1FA84;',dmg:25,rarity:'LEGENDARY',rcls:'rarity-legendary'}
+    {name:'Topór',emoji:'&#x1FA93;',dmg:20,rarity:'EPIC',rcls:'rarity-epic'},
+    {name:'Łuk',emoji:'&#x1F3F9;',dmg:12,rarity:'UNCOMMON',rcls:'rarity-uncommon'},
+    {name:'Różdżka',emoji:'&#x1FA84;',dmg:25,rarity:'LEGENDARY',rcls:'rarity-legendary'}
 ];
 const armorData=[
     {name:'Tarcza',emoji:'&#x1F6E1;&#xFE0F;',def:10,rarity:'UNCOMMON',rcls:'rarity-uncommon'},
@@ -879,11 +879,11 @@ function showEquals(mode){
     if(mode==='ref'){
         op.textContent='==';
         res.style.borderColor='var(--neon-pink)';
-        res.innerHTML='<div style="color:var(--neon-pink);font-family:\'Baloo 2\';font-size:1.2rem;font-weight:700">&#x274C; false!</div><div style="font-size:0.9rem;margin-top:4px"><code>==</code> sprawdza adres w pamieci (czy to TEN SAM obiekt?)<br>Dwa rozne <code>new Weapon(...)</code> = dwa rozne adresy!</div>';
+        res.innerHTML='<div style="color:var(--neon-pink);font-family:\'Baloo 2\';font-size:1.2rem;font-weight:700">&#x274C; false!</div><div style="font-size:0.9rem;margin-top:4px"><code>==</code> sprawdza adres w pamięci (czy to TEN SAM obiekt?)<br>Dwa różne <code>new Weapon(...)</code> = dwa różne adresy!</div>';
     } else {
         op.textContent='.equals()';
         res.style.borderColor='var(--neon-green)';
-        res.innerHTML='<div style="color:var(--neon-green);font-family:\'Baloo 2\';font-size:1.2rem;font-weight:700">&#x2705; true!</div><div style="font-size:0.9rem;margin-top:4px"><code>.equals()</code> sprawdza zawartosc (te same staty?)<br>Ale musisz sam napisac metode <code>equals()</code> i <code>hashCode()</code>!</div>';
+        res.innerHTML='<div style="color:var(--neon-green);font-family:\'Baloo 2\';font-size:1.2rem;font-weight:700">&#x2705; true!</div><div style="font-size:0.9rem;margin-top:4px"><code>.equals()</code> sprawdza zawartość (te same staty?)<br>Ale musisz sam napisać metodę <code>equals()</code> i <code>hashCode()</code>!</div>';
     }
 }
 
@@ -896,7 +896,7 @@ function resetFlow(){
         if(i<5) document.getElementById('flowA'+i).classList.remove('active');
     }
     const btn=document.getElementById('flowBtn');
-    if(btn){btn.disabled=false;btn.textContent='\u25B6\uFE0F Pokaz przeplyw!';}
+    if(btn){btn.disabled=false;btn.textContent='\u25B6\uFE0F Pokaż przepływ!';}
 }
 
 function startFlow(){
@@ -915,7 +915,7 @@ function startFlow(){
             if(i>0) document.getElementById('flowA'+(i-1)).classList.add('active');
             if(i===5){
                 spawnConfetti(document.getElementById('flow5'));
-                document.getElementById('flowBtn').textContent='\u25B6\uFE0F Pokaz ponownie!';
+                document.getElementById('flowBtn').textContent='\u25B6\uFE0F Pokaż ponownie!';
                 document.getElementById('flowBtn').disabled=false;
                 flowRunning=false;
             }
