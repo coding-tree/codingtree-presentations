@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stworz Swoj Swiat - Java na Luzie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:8px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.8rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.4rem;margin-bottom:8px;text-align:center}
+        h3{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.6rem;margin-bottom:4px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+        .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
+
+        /* Code blocks */
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .kw{color:var(--neon-pink);font-weight:700}
+        .tp{color:var(--neon-blue)}
+        .str{color:var(--neon-green)}
+        .num{color:var(--neon-orange)}
+        .cm{color:rgba(255,255,255,0.35);font-style:italic}
+        .ann{color:var(--neon-yellow)}
+
+        /* Comparison */
+        .compare-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:900px;width:100%}
+        .compare-col{flex:1;min-width:280px}
+        .compare-col .glass-card{height:100%}
+        .compare-label{font-family:'Baloo 2';font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:8px}
+
+        /* Feature cards */
+        .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:700px;width:100%}
+        .feature-card{text-align:center;padding:16px 12px}
+        .feature-card .emoji{font-size:2.5rem;margin-bottom:6px}
+        .feature-card .feat-title{font-family:'Baloo 2';font-weight:700;font-size:1.1rem;margin-bottom:4px}
+        .feature-card .feat-desc{font-size:0.9rem;opacity:0.7}
+
+        /* Blueprint interactive */
+        .blueprint-area{display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap}
+        .blueprint-box{padding:24px;text-align:center;min-width:200px;border:2px dashed var(--neon-blue);position:relative}
+        .blueprint-box .emoji{font-size:3rem}
+        .objects-area{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;min-height:80px;align-items:center}
+        .spawned-obj{font-size:2.5rem;animation:popIn 0.4s ease;cursor:default}
+        @keyframes popIn{from{transform:scale(0) rotate(-180deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+        .spawn-btn{font-family:'Baloo 2';font-size:1rem;font-weight:700;padding:10px 24px;border-radius:14px;border:2px solid var(--neon-green);background:rgba(57,255,20,0.1);color:var(--neon-green);cursor:pointer;transition:all 0.2s}
+        .spawn-btn:hover{background:rgba(57,255,20,0.2);transform:scale(1.05)}
+
+        /* Inheritance tree */
+        .tree-container{display:flex;flex-direction:column;align-items:center;gap:4px}
+        .tree-node{padding:10px 20px;border-radius:14px;font-family:'Baloo 2';font-weight:700;font-size:1.1rem;text-align:center}
+        .tree-arrow{font-size:1.5rem;color:var(--neon-blue);opacity:0.6}
+        .tree-row{display:flex;gap:20px;align-items:start;justify-content:center}
+
+        /* Entity attack interactive */
+        .entity-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+        .entity-box{padding:16px;text-align:center;min-width:140px;cursor:pointer;transition:all 0.2s}
+        .entity-box:hover{transform:scale(1.05);border-color:var(--neon-blue)}
+        .entity-emoji{font-size:3rem;margin-bottom:6px}
+        .entity-name{font-family:'Baloo 2';font-weight:700;font-size:1.1rem}
+        .attack-msg{font-family:'Baloo 2';font-size:1.2rem;min-height:50px;text-align:center;margin-top:8px;color:var(--neon-yellow)}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+        @keyframes fireBreath{0%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:0.8}100%{transform:scale(0.5);opacity:0}}
+
+        /* Dragon fire */
+        .fire-container{position:relative;display:inline-block}
+        .fire-particle{position:absolute;font-size:1.5rem;animation:fireFloat 0.8s ease-out forwards;pointer-events:none}
+        @keyframes fireFloat{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--fx),var(--fy)) scale(0);opacity:0}}
+
+        /* Arena battle */
+        .arena-container{max-width:600px;width:100%}
+        .arena-fighters{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .arena-fighter{text-align:center;flex:1}
+        .arena-fighter .emoji{font-size:3.5rem;display:inline-block}
+        .arena-fighter .name{font-family:'Baloo 2';font-weight:700;font-size:1.2rem;margin-top:4px}
+        .hp-bar-bg{width:100%;height:20px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden;margin-top:6px}
+        .hp-bar-fill{height:100%;border-radius:10px;transition:width 0.5s ease;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue))}
+        .hp-bar-fill.low{background:linear-gradient(90deg,var(--neon-orange),var(--neon-pink))}
+        .hp-text{font-family:'Baloo 2';font-size:0.9rem;margin-top:2px;opacity:0.8}
+        .arena-vs{font-size:2rem;font-family:'Baloo 2';font-weight:800;color:var(--neon-pink)}
+        .arena-log{max-height:120px;overflow-y:auto;font-size:0.85rem;line-height:1.5;padding:10px;margin-top:8px;text-align:left;scrollbar-width:thin;scrollbar-color:var(--glass-border) transparent}
+        .arena-log::-webkit-scrollbar{width:6px}
+        .arena-log::-webkit-scrollbar-thumb{background:var(--glass-border);border-radius:3px}
+        .arena-result{font-family:'Baloo 2';font-size:1.8rem;text-align:center;min-height:40px;margin-top:8px}
+        .fight-btn{font-family:'Baloo 2';font-size:1.2rem;font-weight:700;padding:12px 36px;border-radius:16px;border:2px solid var(--neon-pink);background:rgba(255,46,170,0.15);color:var(--neon-pink);cursor:pointer;transition:all 0.2s;margin-top:8px}
+        .fight-btn:hover{background:rgba(255,46,170,0.3);transform:scale(1.05)}
+        .fight-btn:disabled{opacity:0.4;cursor:default;transform:none}
+
+        /* Checklist */
+        .checklist{list-style:none;text-align:left;font-size:1.15rem;line-height:2}
+        .checklist li{padding-left:8px}
+        .check{color:var(--neon-green);font-weight:700;margin-right:8px}
+
+        /* Quest card */
+        .quest-card{max-width:600px;width:100%;border:2px solid var(--neon-orange);position:relative;overflow:hidden}
+        .quest-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,107,43,0.08),rgba(255,46,170,0.05));pointer-events:none}
+        .quest-title{font-family:'Baloo 2';font-weight:800;font-size:1.6rem;text-align:center;margin-bottom:12px}
+        .quest-item{font-size:1.05rem;line-height:1.8;padding-left:4px}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        .bounce{animation:bounce 1s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .pulse{animation:pulse 1.5s ease-in-out infinite}
+        @keyframes hitFlash{0%{filter:brightness(1)}50%{filter:brightness(2) hue-rotate(40deg)}100%{filter:brightness(1)}}
+
+        @media(max-width:768px){
+            .slide{padding:10px 8px 100px}
+            h1{font-size:2.6rem}h2{font-size:1.8rem}
+            .code-block{font-size:0.75rem;padding:10px 12px}
+            .features-grid{grid-template-columns:1fr;gap:10px}
+            .compare-row{flex-direction:column}
+            .compare-col{min-width:auto}
+        }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-slide="0">
+    <div style="font-size:5rem;" class="bounce">&#9749;&#xFE0F;&#x2694;&#xFE0F;</div>
+    <h1><span class="gradient-text">Stworz Swoj Swiat</span></h1>
+    <div style="font-size:1.6rem;font-family:'Baloo 2';font-weight:700;opacity:0.7;">Java na Luzie - Sesja 1</div>
+    <div class="subtitle" style="margin-top:12px;">Od Pythona do Javy — zaczynamy! &#x1F680;</div>
+</div>
+
+<!-- SLIDE 2: Python vs Java -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-pink">&#x1F40D; Python vs Java &#9749;&#xFE0F;</span></h2>
+    <div style="font-size:1.1rem;opacity:0.7;margin-bottom:4px;">w 60 sekund!</div>
+    <div class="compare-row">
+        <div class="compare-col">
+            <div class="glass-card">
+                <div class="compare-label" style="color:var(--neon-green)">&#x1F40D; Python</div>
+                <div class="code-block" style="font-size:0.8rem;">
+<span class="kw">def</span> <span class="tp">attack</span>(<span class="tp">self</span>, target):
+    target.health -= <span class="tp">self</span>.power
+                </div>
+                <div style="margin-top:10px;font-size:0.9rem;line-height:1.8;">
+                    &#x1F3AF; Typy dynamiczne<br>
+                    &#x1F40D; Interpreter<br>
+                    &#x1F4CF; Wciecia = struktura
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card">
+                <div class="compare-label" style="color:var(--neon-blue)">&#9749;&#xFE0F; Java</div>
+                <div class="code-block" style="font-size:0.8rem;">
+<span class="kw">public void</span> <span class="tp">attack</span>(<span class="tp">Entity</span> target) {
+    target.health -= <span class="kw">this</span>.power;
+}
+                </div>
+                <div style="margin-top:10px;font-size:0.9rem;line-height:1.8;">
+                    &#x1F6E1;&#xFE0F; Typy statyczne<br>
+                    &#x1F680; JVM compiler<br>
+                    &#x1F4CE; Klamry { } = struktura
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: Dlaczego Java? -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-yellow">Dlaczego Java? &#x1F914;</span></h2>
+    <div class="features-grid">
+        <div class="glass-card feature-card">
+            <div class="emoji">&#x1F680;</div>
+            <div class="feat-title gradient-text">Szybkosc</div>
+            <div class="feat-desc">JVM jest super szybka — Twoja gra bedzie latac!</div>
+        </div>
+        <div class="glass-card feature-card">
+            <div class="emoji">&#x1F6E1;&#xFE0F;</div>
+            <div class="feat-title gradient-pink">Typy</div>
+            <div class="feat-desc">Kompilator lapie bledy ZANIM uruchomisz kod!</div>
+        </div>
+        <div class="glass-card feature-card">
+            <div class="emoji">&#x26CF;&#xFE0F;</div>
+            <div class="feat-title gradient-yellow">Minecraft</div>
+            <div class="feat-desc">Napisany w Javie! Tak, TEN Minecraft!</div>
+        </div>
+        <div class="glass-card feature-card">
+            <div class="emoji">&#x1F3AE;</div>
+            <div class="feat-title gradient-text">LWJGL</div>
+            <div class="feat-desc">Twoj silnik gry czeka — napiszemy gre!</div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: Klasa = Plan, Obiekt = Rzecz -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-text">Klasa = Plan &#x1F4D0;, Obiekt = Rzecz &#x1F3E0;</span></h2>
+    <div class="blueprint-area">
+        <div class="glass-card blueprint-box">
+            <div style="color:var(--neon-blue);font-family:'Baloo 2';font-weight:700;font-size:1.1rem;">&#x1F4D0; KLASA Entity</div>
+            <div style="font-size:0.85rem;opacity:0.7;margin:6px 0;">name, health, attackPower</div>
+            <button class="spawn-btn" onclick="spawnEntity()">&#x2728; new Entity()</button>
+        </div>
+        <div style="font-size:2rem;color:var(--neon-blue);">&#x27A1;&#xFE0F;</div>
+        <div class="objects-area" id="objectsArea">
+            <span style="opacity:0.4;font-size:1rem;">kliknij przycisk!</span>
+        </div>
+    </div>
+    <div class="code-block" style="margin-top:12px;max-width:600px;">
+<span class="tp">Entity</span> rycerz = <span class="kw">new</span> <span class="tp">Entity</span>(<span class="str">"Rycerz"</span>, <span class="num">100</span>, <span class="num">15</span>);
+    </div>
+    <div id="spawnMsg" style="font-family:'Baloo 2';font-size:1rem;min-height:24px;color:var(--neon-green);margin-top:4px;"></div>
+</div>
+
+<!-- SLIDE 5: Entity class -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-pink">&#x1F9EC; Klasa Entity</span></h2>
+    <div class="code-block" style="max-width:620px;">
+<span class="kw">public class</span> <span class="tp">Entity</span> {
+    <span class="kw">private</span> <span class="tp">String</span> name;         <span class="cm">// pole (field)</span>
+    <span class="kw">private int</span> health;           <span class="cm">// pole</span>
+    <span class="kw">private int</span> attackPower;      <span class="cm">// pole</span>
+
+    <span class="cm">// Konstruktor — tworzy obiekt</span>
+    <span class="kw">public</span> <span class="tp">Entity</span>(<span class="tp">String</span> name, <span class="kw">int</span> health, <span class="kw">int</span> attackPower) {
+        <span class="kw">this</span>.name = name;         <span class="cm">// this = ten obiekt</span>
+        <span class="kw">this</span>.health = health;
+        <span class="kw">this</span>.attackPower = attackPower;
+    }
+}
+    </div>
+    <div class="glass-card" style="margin-top:10px;max-width:620px;padding:12px 16px;">
+        <div style="font-size:0.95rem;">
+            &#x1F40D; W Pythonie: <code style="color:var(--neon-green)">self</code> &#x27A1;&#xFE0F; &#9749;&#xFE0F; W Javie: <code style="color:var(--neon-blue)">this</code><br>
+            &#x1F40D; <code style="color:var(--neon-green)">def __init__(self)</code> &#x27A1;&#xFE0F; &#9749;&#xFE0F; konstruktor = <code style="color:var(--neon-blue)">public Entity(...)</code>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: Metody -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-yellow">&#x2694;&#xFE0F; Metody — co Entity umie?</span></h2>
+    <div class="code-block" style="max-width:620px;font-size:0.82rem;">
+<span class="kw">public void</span> <span class="tp">attack</span>(<span class="tp">Entity</span> target) {
+    target.<span class="tp">takeDamage</span>(<span class="kw">this</span>.attackPower);
+}
+
+<span class="kw">public void</span> <span class="tp">takeDamage</span>(<span class="kw">int</span> damage) {
+    <span class="kw">this</span>.health -= damage;
+    <span class="kw">if</span> (<span class="kw">this</span>.health < <span class="num">0</span>) <span class="kw">this</span>.health = <span class="num">0</span>;
+}
+
+<span class="kw">public boolean</span> <span class="tp">isAlive</span>() {
+    <span class="kw">return this</span>.health > <span class="num">0</span>;
+}
+    </div>
+    <div style="margin-top:10px;font-size:1rem;text-align:center;opacity:0.8;">Kliknij wojownika zeby zaatakowac! &#x1F447;</div>
+    <div class="entity-row" id="attackDemo">
+        <div class="glass-card entity-box" onclick="demoAttack('knight','goblin')">
+            <div class="entity-emoji" id="knightEmoji">&#x1F9D1;&#x200D;&#x2694;&#xFE0F;</div>
+            <div class="entity-name">Rycerz</div>
+            <div style="font-size:0.85rem;color:var(--neon-green);" id="knightHp">HP: 100</div>
+        </div>
+        <div style="font-size:2rem;align-self:center;">&#x2694;&#xFE0F;</div>
+        <div class="glass-card entity-box" onclick="demoAttack('goblin','knight')">
+            <div class="entity-emoji" id="goblinEmoji">&#x1F47A;</div>
+            <div class="entity-name">Goblin</div>
+            <div style="font-size:0.85rem;color:var(--neon-green);" id="goblinHp">HP: 60</div>
+        </div>
+    </div>
+    <div class="attack-msg" id="attackMsg"></div>
+</div>
+
+<!-- SLIDE 7: Dziedziczenie - Player -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-text">&#x1F4A1; Dziedziczenie — Player</span></h2>
+    <div class="tree-container" style="margin-bottom:10px;">
+        <div class="glass-card tree-node" style="border-color:var(--neon-blue);">&#x1F9EC; Entity<br><span style="font-size:0.8rem;opacity:0.6;">name, health, attackPower</span></div>
+        <div class="tree-arrow">&#x2B07;&#xFE0F; extends</div>
+        <div class="glass-card tree-node" style="border-color:var(--neon-green);">&#x1F9D1;&#x200D;&#x2694;&#xFE0F; Player<br><span style="font-size:0.8rem;opacity:0.6;">+ level, experience</span></div>
+    </div>
+    <div class="code-block" style="max-width:620px;font-size:0.82rem;">
+<span class="kw">public class</span> <span class="tp">Player</span> <span class="kw">extends</span> <span class="tp">Entity</span> {
+    <span class="kw">private int</span> level;
+    <span class="kw">private int</span> experience;
+
+    <span class="kw">public</span> <span class="tp">Player</span>(<span class="tp">String</span> name, <span class="kw">int</span> health, <span class="kw">int</span> power) {
+        <span class="kw">super</span>(name, health, power);  <span class="cm">// wywolaj konstruktor Entity!</span>
+        <span class="kw">this</span>.level = <span class="num">1</span>;
+        <span class="kw">this</span>.experience = <span class="num">0</span>;
+    }
+}
+    </div>
+    <div class="glass-card" style="margin-top:8px;padding:10px 16px;max-width:620px;">
+        <span style="font-size:1rem;">&#x1F4AA; Player MA wszystko co Entity + wiecej!</span>
+    </div>
+</div>
+
+<!-- SLIDE 8: Monster i Dragon -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-pink">&#x1F432; Monster i Dragon</span></h2>
+    <div class="tree-container" style="margin-bottom:10px;">
+        <div class="glass-card tree-node" style="border-color:var(--neon-blue);padding:8px 16px;">&#x1F9EC; Entity</div>
+        <div class="tree-arrow">&#x2B07;&#xFE0F;</div>
+        <div class="tree-row">
+            <div>
+                <div class="glass-card tree-node" style="border-color:var(--neon-pink);padding:8px 16px;">&#x1F47E; Monster</div>
+                <div class="tree-arrow">&#x2B07;&#xFE0F;</div>
+                <div class="glass-card tree-node" style="border-color:var(--neon-orange);padding:8px 16px;cursor:pointer;" onclick="dragonFire(this)">&#x1F432; Dragon<br><span style="font-size:0.8rem;color:var(--neon-orange);">kliknij mnie!</span></div>
+            </div>
+            <div>
+                <div class="glass-card tree-node" style="border-color:var(--neon-green);padding:8px 16px;">&#x1F9D1;&#x200D;&#x2694;&#xFE0F; Player</div>
+            </div>
+        </div>
+    </div>
+    <div class="code-block" style="max-width:600px;font-size:0.82rem;">
+<span class="ann">@Override</span>
+<span class="kw">public void</span> <span class="tp">attack</span>(<span class="tp">Entity</span> target) {
+    <span class="kw">int</span> fireDamage = getAttackPower() * <span class="num">2</span>;
+    target.<span class="tp">takeDamage</span>(fireDamage);
+    <span class="cm">// Dragon zieje ogniem!</span>
+}
+    </div>
+    <div id="dragonMsg" style="font-family:'Baloo 2';font-size:1.4rem;min-height:36px;text-align:center;color:var(--neon-orange);"></div>
+</div>
+
+<!-- SLIDE 9: Polimorfizm -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-yellow">&#x1F3AD; Polimorfizm</span></h2>
+    <div class="subtitle" style="margin-bottom:10px;">Ta sama metoda <code style="color:var(--neon-pink)">attack()</code> — inny efekt!</div>
+    <div class="entity-row" id="polyDemo">
+        <div class="glass-card entity-box" onclick="polyAttack('player')">
+            <div class="entity-emoji">&#x1F9D1;&#x200D;&#x2694;&#xFE0F;</div>
+            <div class="entity-name" style="color:var(--neon-green);">Player</div>
+            <div style="font-size:0.8rem;opacity:0.7;">attack()</div>
+        </div>
+        <div class="glass-card entity-box" onclick="polyAttack('monster')">
+            <div class="entity-emoji">&#x1F47E;</div>
+            <div class="entity-name" style="color:var(--neon-pink);">Monster</div>
+            <div style="font-size:0.8rem;opacity:0.7;">attack()</div>
+        </div>
+        <div class="glass-card entity-box" onclick="polyAttack('dragon')">
+            <div class="entity-emoji">&#x1F432;</div>
+            <div class="entity-name" style="color:var(--neon-orange);">Dragon</div>
+            <div style="font-size:0.8rem;opacity:0.7;">attack()</div>
+        </div>
+    </div>
+    <div class="glass-card" style="margin-top:10px;padding:14px;max-width:500px;min-height:60px;text-align:center;" id="polyResult">
+        <span style="opacity:0.5;">&#x1F446; Kliknij wojownika!</span>
+    </div>
+    <div style="font-size:1rem;opacity:0.7;margin-top:6px;">Jeden interfejs, wiele zachowan &#x2728;</div>
+</div>
+
+<!-- SLIDE 10: Arena -->
+<div class="slide" data-slide="9">
+    <h2><span class="gradient-pink">&#x1F3DF;&#xFE0F; Arena — Walka!</span></h2>
+    <div class="glass-card arena-container" id="arenaCard">
+        <div class="arena-fighters">
+            <div class="arena-fighter">
+                <div class="emoji" id="arenaLeft">&#x1F9D1;&#x200D;&#x2694;&#xFE0F;</div>
+                <div class="name" id="arenaLeftName">Rycerz</div>
+                <div class="hp-bar-bg"><div class="hp-bar-fill" id="arenaLeftHp" style="width:100%"></div></div>
+                <div class="hp-text" id="arenaLeftHpText">120 / 120</div>
+            </div>
+            <div class="arena-vs">VS</div>
+            <div class="arena-fighter">
+                <div class="emoji" id="arenaRight">&#x1F432;</div>
+                <div class="name" id="arenaRightName">Dragon</div>
+                <div class="hp-bar-bg"><div class="hp-bar-fill" id="arenaRightHp" style="width:100%"></div></div>
+                <div class="hp-text" id="arenaRightHpText">200 / 200</div>
+            </div>
+        </div>
+        <div class="glass-card arena-log" id="arenaLog"></div>
+        <div class="arena-result" id="arenaResult"></div>
+        <div style="text-align:center;">
+            <button class="fight-btn" id="fightBtn" onclick="startFight()">&#x2694;&#xFE0F; Walcz!</button>
+            <button class="fight-btn" id="resetFightBtn" onclick="resetFight()" style="display:none;border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,212,255,0.1);">&#x1F504; Jeszcze raz!</button>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: @Override i toString() -->
+<div class="slide" data-slide="10">
+    <h2><span class="gradient-text">&#x1F4DD; @Override i toString()</span></h2>
+    <div class="code-block" style="max-width:620px;font-size:0.82rem;">
+<span class="ann">@Override</span>
+<span class="kw">public</span> <span class="tp">String</span> <span class="tp">toString</span>() {
+    <span class="kw">return</span> name + <span class="str">" [HP: "</span> + health + <span class="str">"/"</span> + maxHealth
+         + <span class="str">", ATK: "</span> + attackPower + <span class="str">"]"</span>;
+}
+    </div>
+    <div class="glass-card" style="margin-top:12px;padding:14px 18px;max-width:620px;">
+        <div style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;margin-bottom:8px;">Wynik:</div>
+        <div class="code-block" style="font-size:0.9rem;border-radius:10px;padding:10px 14px;">
+<span class="str">Rycerz [HP: 120/120, ATK: 20]</span>
+<span class="str">Dragon [HP: 200/200, ATK: 35]</span>
+        </div>
+    </div>
+    <div class="glass-card" style="margin-top:10px;padding:12px 16px;max-width:620px;">
+        <span style="font-size:1rem;">&#x1F4A1; <code style="color:var(--neon-yellow);">@Override</code> mowi: TAK, nadpisuje metode rodzica!</span><br>
+        <span style="font-size:0.9rem;opacity:0.7;">Java wymaga jasnosci — kompilator sprawdzi czy naprawde cos nadpisujesz.</span>
+    </div>
+</div>
+
+<!-- SLIDE 12: Python vs Java full -->
+<div class="slide" data-slide="11">
+    <h2><span class="gradient-pink">&#x1F40D; Python mial to tak...</span></h2>
+    <div class="compare-row">
+        <div class="compare-col">
+            <div class="glass-card" style="padding:14px;">
+                <div class="compare-label" style="color:var(--neon-green);">&#x1F40D; Python</div>
+                <div class="code-block" style="font-size:0.72rem;">
+<span class="kw">class</span> <span class="tp">Entity</span>:
+    <span class="kw">def</span> <span class="tp">__init__</span>(self, name, hp, atk):
+        self.name = name
+        self.hp = hp
+        self.atk = atk
+
+    <span class="kw">def</span> <span class="tp">attack</span>(self, target):
+        target.hp -= self.atk
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="padding:14px;">
+                <div class="compare-label" style="color:var(--neon-blue);">&#9749;&#xFE0F; Java</div>
+                <div class="code-block" style="font-size:0.72rem;">
+<span class="kw">public class</span> <span class="tp">Entity</span> {
+    <span class="kw">private</span> <span class="tp">String</span> name;
+    <span class="kw">private int</span> hp, atk;
+
+    <span class="kw">public</span> <span class="tp">Entity</span>(<span class="tp">String</span> n, <span class="kw">int</span> h, <span class="kw">int</span> a){
+        <span class="kw">this</span>.name=n; <span class="kw">this</span>.hp=h; <span class="kw">this</span>.atk=a;
+    }
+    <span class="kw">public void</span> <span class="tp">attack</span>(<span class="tp">Entity</span> t){
+        t.hp -= <span class="kw">this</span>.atk;
+    }
+}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="glass-card" style="margin-top:10px;padding:10px 16px;max-width:700px;">
+        <div style="font-size:0.95rem;text-align:center;">
+            &#x1F6E1;&#xFE0F; <strong>Bezpieczenstwo typow</strong> &nbsp;|&nbsp;
+            &#x1F4DC; <strong>Jasne kontrakty</strong> &nbsp;|&nbsp;
+            &#x1F680; <strong>Szybkosc JVM</strong>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 13: Boss Fight Challenge -->
+<div class="slide" data-slide="12">
+    <h2><span class="gradient-yellow">&#x2694;&#xFE0F; Boss Fight Challenge &#x1F525;</span></h2>
+    <div class="glass-card quest-card">
+        <div class="quest-title gradient-orange" style="background:linear-gradient(135deg,var(--neon-orange),var(--neon-yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">&#x1F4DC; MISJA SPECJALNA</div>
+        <div class="quest-item">&#x2694;&#xFE0F; Stworz klase <code style="color:var(--neon-green);">Healer extends Entity</code></div>
+        <div class="quest-item">&#x1F49A; Dodaj metode <code style="color:var(--neon-green);">heal(Entity target)</code></div>
+        <div class="quest-item">&#x1F3AF; Healer leczy +20 HP do target (max = maxHealth)</div>
+        <div class="quest-item">&#x1F525; Zrob walke <strong>2 vs 1</strong>: Player + Healer vs Dragon!</div>
+        <div style="margin-top:14px;text-align:center;">
+            <div style="font-size:3rem;">&#x1F9D1;&#x200D;&#x2694;&#xFE0F; + &#x1F9DD; vs &#x1F432;</div>
+            <div style="font-size:0.9rem;opacity:0.6;margin-top:6px;">Kto wygra? Napisz kod i sprawdz!</div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 14: Podsumowanie -->
+<div class="slide" data-slide="13">
+    <h2><span class="gradient-text">&#x1F3C6; Podsumowanie</span></h2>
+    <div class="glass-card" style="padding:20px 28px;max-width:500px;">
+        <ul class="checklist">
+            <li><span class="check">&#x2705;</span> Klasy i obiekty</li>
+            <li><span class="check">&#x2705;</span> Pola, konstruktor, metody</li>
+            <li><span class="check">&#x2705;</span> Dziedziczenie (<code style="color:var(--neon-blue);">extends</code>)</li>
+            <li><span class="check">&#x2705;</span> Nadpisywanie metod (<code style="color:var(--neon-yellow);">@Override</code>)</li>
+            <li><span class="check">&#x2705;</span> Polimorfizm</li>
+            <li><span class="check">&#x2705;</span> <code style="color:var(--neon-green);">toString()</code></li>
+        </ul>
+    </div>
+    <div style="font-size:1.4rem;font-family:'Baloo 2';font-weight:700;margin-top:14px;">
+        <span class="gradient-pink">Nastepna sesja: Ekwipunek Bohatera! &#x1F5E1;&#xFE0F;&#x1F6E1;&#xFE0F;</span>
+    </div>
+    <div style="font-size:3rem;margin-top:8px;" class="bounce">&#x1F389;</div>
+</div>
+
+</div><!-- end presentation -->
+
+<nav class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#x2B05;&#xFE0F;</button>
+    <span class="slide-counter" id="slideCounter">1 / 14</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#x27A1;&#xFE0F;</button>
+</nav>
+
+<script>
+// === NAVIGATION ===
+let currentSlide=0;
+const slides=document.querySelectorAll('.slide');
+const totalSlides=slides.length;
+
+function changeSlide(dir){
+    const next=currentSlide+dir;
+    if(next<0||next>=totalSlides)return;
+    slides[currentSlide].classList.remove('active');
+    currentSlide=next;
+    slides[currentSlide].classList.add('active');
+    slides[currentSlide].style.animation='none';
+    void slides[currentSlide].offsetHeight;
+    slides[currentSlide].style.animation='slideIn 0.5s ease';
+    updateNav();
+    onSlideEnter(currentSlide);
+}
+
+function updateNav(){
+    document.getElementById('prevBtn').disabled=currentSlide===0;
+    document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;
+    document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;
+    document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';
+}
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}
+});
+updateNav();
+
+// === BINARY RAIN ===
+(function(){
+    const rain=document.getElementById('rain');
+    const chars='01{}();.class extends new void int String public private';
+    for(let i=0;i<30;i++){
+        const s=document.createElement('span');
+        s.textContent=chars[Math.floor(Math.random()*chars.length)];
+        s.style.left=Math.random()*100+'vw';
+        s.style.animationDuration=(6+Math.random()*10)+'s';
+        s.style.animationDelay=Math.random()*8+'s';
+        s.style.fontSize=(0.8+Math.random()*0.6)+'rem';
+        rain.appendChild(s);
+    }
+})();
+
+// === CONFETTI ===
+function spawnConfetti(anchor){
+    const rect=anchor.getBoundingClientRect();
+    const burst=document.createElement('div');
+    burst.style.cssText='position:fixed;pointer-events:none;z-index:100;left:'+(rect.left+rect.width/2)+'px;top:'+rect.top+'px';
+    const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];
+    for(let i=0;i<30;i++){
+        const c=document.createElement('div');
+        c.style.cssText='position:absolute;width:8px;height:8px;border-radius:2px;background:'+colors[Math.floor(Math.random()*colors.length)]+';left:'+(Math.random()-0.5)*250+'px;animation:cFall '+(0.6+Math.random()*0.8)+'s ease-out '+(Math.random()*0.2)+'s forwards';
+        burst.appendChild(c);
+    }
+    document.body.appendChild(burst);
+    setTimeout(()=>burst.remove(),2500);
+}
+
+// === SFX (tiny beeps) ===
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+function sfx(freq,dur){try{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=freq;g.gain.value=0.06;o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}catch(e){}}
+
+// === SLIDE 4: Spawn entities ===
+const entityNames=['Rycerz','Mag','Lucznik','Wojownik','Smok','Goblin','Elf','Krasnolud'];
+const entityEmojis=['&#x1F9D1;&#x200D;&#x2694;&#xFE0F;','&#x1F9D9;','&#x1F3F9;','&#x1F4AA;','&#x1F432;','&#x1F47A;','&#x1F9DD;','&#x1F9D4;'];
+let spawnCount=0;
+function spawnEntity(){
+    sfx(600,0.15);
+    const area=document.getElementById('objectsArea');
+    if(spawnCount===0)area.innerHTML='';
+    if(spawnCount>=entityEmojis.length){
+        document.getElementById('spawnMsg').textContent='Swiat jest pelny! (max '+entityEmojis.length+')';
+        return;
+    }
+    const obj=document.createElement('span');
+    obj.className='spawned-obj';
+    obj.innerHTML=entityEmojis[spawnCount];
+    obj.title=entityNames[spawnCount];
+    area.appendChild(obj);
+    document.getElementById('spawnMsg').textContent='new Entity("'+entityNames[spawnCount]+'") utworzony!';
+    spawnCount++;
+}
+
+// === SLIDE 6: Attack demo ===
+const demoEntities={
+    knight:{hp:100,maxHp:100,atk:15,emoji:'knightEmoji',hpEl:'knightHp'},
+    goblin:{hp:60,maxHp:60,atk:10,emoji:'goblinEmoji',hpEl:'goblinHp'}
+};
+function demoAttack(attacker,target){
+    const a=demoEntities[attacker],t=demoEntities[target];
+    if(a.hp<=0){document.getElementById('attackMsg').textContent=attacker+' jest pokonany!';return;}
+    if(t.hp<=0){document.getElementById('attackMsg').textContent=target+' jest juz pokonany!';return;}
+    t.hp=Math.max(0,t.hp-a.atk);
+    sfx(300,0.1);
+    const tEl=document.getElementById(t.emoji);
+    tEl.style.animation='shake 0.3s ease';
+    setTimeout(()=>tEl.style.animation='',300);
+    document.getElementById(t.hpEl).textContent='HP: '+t.hp;
+    document.getElementById(t.hpEl).style.color=t.hp>0?'var(--neon-green)':'var(--neon-pink)';
+    document.getElementById('attackMsg').innerHTML=(attacker==='knight'?'&#x1F9D1;&#x200D;&#x2694;&#xFE0F;':'&#x1F47A;')+' atakuje! <span style="color:var(--neon-pink)">-'+a.atk+' HP</span>';
+    if(t.hp<=0){
+        document.getElementById('attackMsg').innerHTML+=' &#x1F480; '+target+' pokonany!';
+        spawnConfetti(document.getElementById(t.emoji));
+    }
+}
+function resetAttackDemo(){
+    demoEntities.knight.hp=100;demoEntities.goblin.hp=60;
+    document.getElementById('knightHp').textContent='HP: 100';
+    document.getElementById('knightHp').style.color='var(--neon-green)';
+    document.getElementById('goblinHp').textContent='HP: 60';
+    document.getElementById('goblinHp').style.color='var(--neon-green)';
+    document.getElementById('attackMsg').textContent='';
+}
+
+// === SLIDE 8: Dragon fire ===
+function dragonFire(el){
+    sfx(200,0.3);
+    const fires=['&#x1F525;','&#x1F525;','&#x1F525;','&#x1F4A5;','&#x2604;&#xFE0F;'];
+    for(let i=0;i<8;i++){
+        const p=document.createElement('span');
+        p.style.cssText='position:fixed;font-size:1.8rem;pointer-events:none;z-index:100;';
+        const rect=el.getBoundingClientRect();
+        p.style.left=(rect.left+rect.width/2)+'px';
+        p.style.top=(rect.top)+'px';
+        p.innerHTML=fires[Math.floor(Math.random()*fires.length)];
+        const angle=Math.random()*Math.PI*2;
+        const dist=60+Math.random()*80;
+        const dx=Math.cos(angle)*dist;
+        const dy=Math.sin(angle)*dist-40;
+        p.style.transition='all 0.8s ease-out';
+        document.body.appendChild(p);
+        requestAnimationFrame(()=>{
+            p.style.transform='translate('+dx+'px,'+dy+'px) scale(0)';
+            p.style.opacity='0';
+        });
+        setTimeout(()=>p.remove(),1000);
+    }
+    document.getElementById('dragonMsg').innerHTML='&#x1F525; ZIEJE OGNIEM! &#x1F525; Podwojne obrazenia!';
+    setTimeout(()=>document.getElementById('dragonMsg').textContent='',2000);
+}
+
+// === SLIDE 9: Polimorfizm ===
+function polyAttack(type){
+    sfx(500,0.12);
+    const result=document.getElementById('polyResult');
+    if(type==='player'){
+        result.innerHTML='&#x1F9D1;&#x200D;&#x2694;&#xFE0F; <strong>Player.attack()</strong><br><span style="color:var(--neon-green);">Atakuje mieczem! -20 HP</span><br><span style="font-size:0.85rem;opacity:0.7;">Zdobywa doswiadczenie po walce</span>';
+    }else if(type==='monster'){
+        result.innerHTML='&#x1F47E; <strong>Monster.attack()</strong><br><span style="color:var(--neon-pink);">Atakuje pazurami! -15 HP</span><br><span style="font-size:0.85rem;opacity:0.7;">Losowy bonus +5 do obrazen</span>';
+    }else{
+        result.innerHTML='&#x1F432; <strong>Dragon.attack()</strong><br><span style="color:var(--neon-orange);">&#x1F525; ZIEJE OGNIEM! -40 HP &#x1F525;</span><br><span style="font-size:0.85rem;opacity:0.7;">Podwojne obrazenia! Override metody attack()</span>';
+    }
+}
+
+// === SLIDE 10: Arena Battle ===
+const arena={
+    left:{name:'Rycerz',emoji:'&#x1F9D1;&#x200D;&#x2694;&#xFE0F;',hp:120,maxHp:120,atk:20},
+    right:{name:'Dragon',emoji:'&#x1F432;',hp:200,maxHp:200,atk:35},
+    fighting:false,round:0
+};
+
+function resetFight(){
+    arena.left.hp=120;arena.right.hp=200;arena.fighting=false;arena.round=0;
+    renderArena();
+    document.getElementById('arenaLog').innerHTML='';
+    document.getElementById('arenaResult').textContent='';
+    document.getElementById('fightBtn').style.display='';
+    document.getElementById('fightBtn').disabled=false;
+    document.getElementById('resetFightBtn').style.display='none';
+}
+
+function renderArena(){
+    const lPct=Math.max(0,arena.left.hp/arena.left.maxHp*100);
+    const rPct=Math.max(0,arena.right.hp/arena.right.maxHp*100);
+    document.getElementById('arenaLeftHp').style.width=lPct+'%';
+    document.getElementById('arenaLeftHp').className='hp-bar-fill'+(lPct<30?' low':'');
+    document.getElementById('arenaRightHp').style.width=rPct+'%';
+    document.getElementById('arenaRightHp').className='hp-bar-fill'+(rPct<30?' low':'');
+    document.getElementById('arenaLeftHpText').textContent=Math.max(0,arena.left.hp)+' / '+arena.left.maxHp;
+    document.getElementById('arenaRightHpText').textContent=Math.max(0,arena.right.hp)+' / '+arena.right.maxHp;
+}
+
+function startFight(){
+    if(arena.fighting)return;
+    arena.fighting=true;
+    document.getElementById('fightBtn').disabled=true;
+    const log=document.getElementById('arenaLog');
+    log.innerHTML='';
+    arena.round=0;
+
+    function doRound(){
+        if(arena.left.hp<=0||arena.right.hp<=0){
+            endFight();
+            return;
+        }
+        arena.round++;
+        // Left attacks right
+        const leftDmg=arena.left.atk+Math.floor(Math.random()*6);
+        arena.right.hp=Math.max(0,arena.right.hp-leftDmg);
+        sfx(400,0.08);
+        log.innerHTML+='<div style="color:var(--neon-green);">Runda '+arena.round+': '+arena.left.emoji+' '+arena.left.name+' atakuje! -'+leftDmg+' HP</div>';
+
+        const rightEl=document.getElementById('arenaRight');
+        rightEl.style.animation='shake 0.3s ease';
+        setTimeout(()=>rightEl.style.animation='',300);
+        renderArena();
+        log.scrollTop=log.scrollHeight;
+
+        if(arena.right.hp<=0){setTimeout(endFight,400);return;}
+
+        // Right attacks left after delay
+        setTimeout(()=>{
+            const rightDmg=arena.right.atk+Math.floor(Math.random()*10);
+            arena.left.hp=Math.max(0,arena.left.hp-rightDmg);
+            sfx(250,0.1);
+            log.innerHTML+='<div style="color:var(--neon-orange);">'+arena.right.emoji+' '+arena.right.name+' zieje ogniem! -'+rightDmg+' HP &#x1F525;</div>';
+
+            const leftEl=document.getElementById('arenaLeft');
+            leftEl.style.animation='shake 0.3s ease';
+            setTimeout(()=>leftEl.style.animation='',300);
+            renderArena();
+            log.scrollTop=log.scrollHeight;
+
+            if(arena.left.hp<=0){setTimeout(endFight,400);return;}
+            setTimeout(doRound,600);
+        },500);
+    }
+
+    setTimeout(doRound,300);
+}
+
+function endFight(){
+    arena.fighting=false;
+    const result=document.getElementById('arenaResult');
+    if(arena.left.hp>0){
+        result.innerHTML='<span style="color:var(--neon-green);">&#x1F3C6; '+arena.left.name+' WYGRYWA! &#x1F3C6;</span>';
+        spawnConfetti(document.getElementById('arenaLeft'));
+    }else{
+        result.innerHTML='<span style="color:var(--neon-orange);">&#x1F525; '+arena.right.name+' WYGRYWA! &#x1F525;</span>';
+        spawnConfetti(document.getElementById('arenaRight'));
+    }
+    sfx(800,0.3);
+    document.getElementById('fightBtn').style.display='none';
+    document.getElementById('resetFightBtn').style.display='';
+}
+
+// === SLIDE ENTER ===
+function onSlideEnter(idx){
+    if(idx===5)resetAttackDemo();
+    if(idx===9)resetFight();
+    if(idx===13){
+        setTimeout(()=>{
+            const el=document.querySelector('.slide[data-slide="13"] h2');
+            if(el)spawnConfetti(el);
+        },400);
+    }
+}
+</script>
+</body>
+</html>

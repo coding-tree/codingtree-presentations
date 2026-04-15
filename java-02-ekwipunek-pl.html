@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekwipunek Bohatera - Java na Luzie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:8px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.8rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.4rem;margin-bottom:8px;text-align:center}
+        h3{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.6rem;margin-bottom:4px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+        .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
+
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .kw{color:var(--neon-pink);font-weight:700}
+        .tp{color:var(--neon-blue)}
+        .str{color:var(--neon-green)}
+        .num{color:var(--neon-orange)}
+        .cm{color:rgba(255,255,255,0.35);font-style:italic}
+        .ann{color:var(--neon-yellow)}
+
+        .compare-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:900px;width:100%}
+        .compare-col{flex:1;min-width:280px}
+        .compare-col .glass-card{height:100%}
+        .compare-label{font-family:'Baloo 2';font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:8px}
+
+        .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:700px;width:100%}
+        .feature-card{text-align:center;padding:16px 12px}
+        .feature-card .emoji{font-size:2.5rem;margin-bottom:6px}
+        .feature-card .feat-title{font-family:'Baloo 2';font-weight:700;font-size:1.1rem;margin-bottom:4px}
+        .feature-card .feat-desc{font-size:0.9rem;opacity:0.7}
+
+        .checklist{list-style:none;text-align:left;font-size:1.15rem;line-height:2}
+        .checklist li{padding-left:8px}
+        .check{color:var(--neon-green);font-weight:700;margin-right:8px}
+
+        .quest-card{max-width:600px;width:100%;border:2px solid var(--neon-orange);position:relative;overflow:hidden}
+        .quest-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,107,43,0.08),rgba(255,46,170,0.05));pointer-events:none}
+        .quest-title{font-family:'Baloo 2';font-weight:800;font-size:1.6rem;text-align:center;margin-bottom:12px}
+        .quest-item{font-size:1.05rem;line-height:1.8;padding-left:4px}
+
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        .bounce{animation:bounce 1s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .pulse{animation:pulse 1.5s ease-in-out infinite}
+        @keyframes popIn{from{transform:scale(0) rotate(-180deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+        /* Rarity colors */
+        .rarity-common{color:#cccccc;text-shadow:0 0 8px rgba(204,204,204,0.5)}
+        .rarity-uncommon{color:#39ff14;text-shadow:0 0 8px rgba(57,255,20,0.5)}
+        .rarity-rare{color:#00d4ff;text-shadow:0 0 8px rgba(0,212,255,0.5)}
+        .rarity-epic{color:#bf5fff;text-shadow:0 0 8px rgba(191,95,255,0.5)}
+        .rarity-legendary{color:#ff6b2b;text-shadow:0 0 12px rgba(255,107,43,0.6)}
+
+        /* Rarity buttons */
+        .rarity-btn{font-family:'Baloo 2';font-size:1rem;font-weight:700;padding:10px 20px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.3s;background:transparent;min-width:120px}
+        .rarity-btn:hover{transform:scale(1.08)}
+        .rarity-btn.active{transform:scale(1.1)}
+        .rarity-btn[data-r="COMMON"]{border-color:#cccccc;color:#cccccc}
+        .rarity-btn[data-r="COMMON"].active{background:rgba(204,204,204,0.15);box-shadow:0 0 20px rgba(204,204,204,0.3)}
+        .rarity-btn[data-r="UNCOMMON"]{border-color:#39ff14;color:#39ff14}
+        .rarity-btn[data-r="UNCOMMON"].active{background:rgba(57,255,20,0.15);box-shadow:0 0 20px rgba(57,255,20,0.3)}
+        .rarity-btn[data-r="RARE"]{border-color:#00d4ff;color:#00d4ff}
+        .rarity-btn[data-r="RARE"].active{background:rgba(0,212,255,0.15);box-shadow:0 0 20px rgba(0,212,255,0.3)}
+        .rarity-btn[data-r="EPIC"]{border-color:#bf5fff;color:#bf5fff}
+        .rarity-btn[data-r="EPIC"].active{background:rgba(191,95,255,0.15);box-shadow:0 0 20px rgba(191,95,255,0.3)}
+        .rarity-btn[data-r="LEGENDARY"]{border-color:#ff6b2b;color:#ff6b2b}
+        .rarity-btn[data-r="LEGENDARY"].active{background:rgba(255,107,43,0.15);box-shadow:0 0 20px rgba(255,107,43,0.3)}
+
+        /* Item cards */
+        .item-card{padding:14px 18px;text-align:center;min-width:120px;transition:all 0.3s;cursor:pointer}
+        .item-card:hover{transform:translateY(-4px)}
+        .item-card .item-emoji{font-size:2.5rem;margin-bottom:4px}
+        .item-card .item-name{font-family:'Baloo 2';font-weight:700;font-size:1rem}
+        .item-card .item-stats{font-size:0.8rem;opacity:0.7;margin-top:2px}
+
+        /* Inheritance diagram */
+        .tree-container{display:flex;flex-direction:column;align-items:center;gap:4px}
+        .tree-node{padding:10px 20px;border-radius:14px;font-family:'Baloo 2';font-weight:700;font-size:1.1rem;text-align:center;cursor:pointer;transition:all 0.3s}
+        .tree-node:hover{transform:scale(1.05)}
+        .tree-arrow{font-size:1.5rem;color:var(--neon-blue);opacity:0.6}
+        .tree-row{display:flex;gap:20px;align-items:start;justify-content:center}
+
+        /* Generics boxes */
+        .gen-box{border:3px dashed;border-radius:20px;padding:16px;min-width:180px;min-height:120px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all 0.3s;position:relative}
+        .gen-box .box-label{font-family:'Baloo 2';font-weight:700;font-size:0.95rem;position:absolute;top:-14px;background:var(--bg-deep);padding:0 8px}
+        .gen-box .box-items{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:40px;align-items:center}
+        .drag-item{font-size:2rem;cursor:grab;transition:all 0.2s;user-select:none}
+        .drag-item:active{cursor:grabbing;transform:scale(1.2)}
+        .drag-item.bounce-back{animation:bounceBack 0.4s ease}
+        @keyframes bounceBack{0%{transform:scale(1.3) rotate(15deg)}50%{transform:scale(0.8) rotate(-10deg)}100%{transform:scale(1) rotate(0)}}
+
+        /* Inventory grid */
+        .inv-grid{display:grid;grid-template-columns:repeat(4,60px);gap:6px}
+        .inv-slot{width:60px;height:60px;border:1px solid var(--glass-border);border-radius:10px;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:all 0.3s}
+        .inv-slot.filled{border-color:var(--neon-green);background:rgba(57,255,20,0.05)}
+        .inv-slot.adding{animation:slotPop 0.4s ease}
+        @keyframes slotPop{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+
+        /* Composition diagrams */
+        .comp-diagram{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;max-width:800px;width:100%}
+        .comp-col{flex:1;min-width:280px}
+        .comp-node{padding:12px;text-align:center;margin-bottom:8px;font-family:'Baloo 2';font-weight:700}
+        .comp-arrow{text-align:center;font-size:1.3rem;margin:4px 0;opacity:0.6}
+
+        /* Crafting */
+        .craft-area{max-width:700px;width:100%}
+        .craft-ingredients{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center}
+        .craft-slot{width:70px;height:70px;border:2px solid var(--glass-border);border-radius:14px;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:2rem;transition:all 0.3s}
+        .craft-slot.consumed{opacity:0.2;transform:scale(0.8)}
+        .craft-plus{font-size:1.5rem;color:var(--neon-yellow);font-weight:700}
+        .craft-arrow{font-size:2rem;color:var(--neon-green);margin:12px 0}
+        .craft-result{text-align:center;min-height:80px}
+        .craft-result .result-item{font-size:3rem;animation:craftPop 0.6s ease}
+        @keyframes craftPop{0%{transform:scale(0) rotate(-180deg);opacity:0;filter:brightness(3)}60%{transform:scale(1.3) rotate(10deg);filter:brightness(2)}100%{transform:scale(1) rotate(0);opacity:1;filter:brightness(1)}}
+        .craft-btn{font-family:'Baloo 2';font-size:1.2rem;font-weight:700;padding:12px 36px;border-radius:16px;border:2px solid var(--neon-green);background:rgba(57,255,20,0.15);color:var(--neon-green);cursor:pointer;transition:all 0.2s;margin-top:8px}
+        .craft-btn:hover{background:rgba(57,255,20,0.3);transform:scale(1.05)}
+        .craft-btn:disabled{opacity:0.4;cursor:default;transform:none}
+        .craft-msg{font-family:'Baloo 2';font-size:1.1rem;min-height:30px;text-align:center;margin-top:8px}
+        .craft-inv{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+        .craft-inv-item{width:55px;height:55px;border:1px solid var(--glass-border);border-radius:10px;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;transition:all 0.2s}
+        .craft-inv-item:hover{border-color:var(--neon-yellow);transform:scale(1.1)}
+        .craft-inv-item.selected{border-color:var(--neon-green);background:rgba(57,255,20,0.1)}
+
+        /* Equals visual */
+        .eq-swords{display:flex;gap:40px;justify-content:center;align-items:center}
+        .eq-sword{font-size:4rem;padding:16px;text-align:center}
+        .eq-vs{font-family:'Baloo 2';font-size:1.5rem;font-weight:700}
+        .eq-result{font-family:'Baloo 2';font-size:1.2rem;text-align:center;min-height:40px;margin-top:8px;padding:10px;border-radius:14px}
+
+        /* Flow diagram */
+        .flow-container{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;max-width:800px}
+        .flow-step{padding:12px 16px;text-align:center;min-width:100px;transition:all 0.5s;opacity:0.3;transform:scale(0.9)}
+        .flow-step.active{opacity:1;transform:scale(1);border-color:var(--neon-green)}
+        .flow-step .flow-emoji{font-size:2rem;margin-bottom:4px}
+        .flow-step .flow-label{font-family:'Baloo 2';font-weight:700;font-size:0.85rem}
+        .flow-arrow{font-size:1.2rem;color:var(--neon-blue);opacity:0.4;transition:opacity 0.5s}
+        .flow-arrow.active{opacity:1}
+
+        @media(max-width:768px){
+            .slide{padding:10px 8px 100px}
+            h1{font-size:2.6rem}h2{font-size:1.8rem}
+            .code-block{font-size:0.75rem;padding:10px 12px}
+            .features-grid{grid-template-columns:1fr;gap:10px}
+            .compare-row{flex-direction:column}
+            .compare-col{min-width:auto}
+            .comp-diagram{flex-direction:column}
+            .comp-col{min-width:auto}
+            .inv-grid{grid-template-columns:repeat(4,50px)}
+            .inv-slot{width:50px;height:50px;font-size:1.4rem}
+        }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" data-slide="0">
+    <div style="font-size:5rem;" class="bounce">&#x1F6E1;&#xFE0F;&#x2694;&#xFE0F;</div>
+    <h1><span class="gradient-text">Ekwipunek Bohatera</span></h1>
+    <div style="font-size:1.6rem;font-family:'Baloo 2';font-weight:700;opacity:0.7;">Java na Luzie - Sesja 2</div>
+    <div class="subtitle" style="margin-top:12px;">Generyki, enumy, kompozycja &#x2014; tworzymy system ekwipunku! &#x1F3AE;</div>
+</div>
+
+<!-- SLIDE 2: Enum -->
+<div class="slide" data-slide="1">
+    <h2><span class="gradient-pink">&#x1F48E; Enum &#x2014; lepszy niz String</span></h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:8px">
+        <button class="rarity-btn" data-r="COMMON" onclick="showRarity(this)">COMMON</button>
+        <button class="rarity-btn" data-r="UNCOMMON" onclick="showRarity(this)">UNCOMMON</button>
+        <button class="rarity-btn" data-r="RARE" onclick="showRarity(this)">RARE</button>
+        <button class="rarity-btn" data-r="EPIC" onclick="showRarity(this)">EPIC</button>
+        <button class="rarity-btn" data-r="LEGENDARY" onclick="showRarity(this)">LEGENDARY</button>
+    </div>
+    <div id="rarityDisplay" style="font-family:'Baloo 2';font-size:1.4rem;min-height:36px;text-align:center;margin:4px 0">&#x1F447; Kliknij rzadkosc!</div>
+    <div class="compare-row" style="margin-top:4px">
+        <div class="compare-col">
+            <div class="glass-card">
+                <div class="compare-label" style="color:var(--neon-green)">&#x1F40D; Python</div>
+                <div class="code-block" style="font-size:0.8rem;">
+<span class="tp">rarity</span> = <span class="str">"rare"</span>    <span class="cm"># literowka? brak bledu!</span>
+<span class="tp">rarity</span> = <span class="str">"rrae"</span>    <span class="cm"># &#x1F4A5; ups, zla wartosc</span>
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card">
+                <div class="compare-label" style="color:var(--neon-blue)">&#9749;&#xFE0F; Java</div>
+                <div class="code-block" style="font-size:0.8rem;">
+<span class="kw">enum</span> <span class="tp">Rarity</span> {
+    COMMON, UNCOMMON, RARE,
+    EPIC, LEGENDARY
+}
+<span class="tp">Rarity</span> r = <span class="tp">Rarity</span>.RRAE; <span class="cm">// &#x274C; blad kompilacji!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: Item class -->
+<div class="slide" data-slide="2">
+    <h2><span class="gradient-text">&#x1F4E6; Item &#x2014; bazowy przedmiot</span></h2>
+    <div class="code-block" style="max-width:600px;">
+<span class="kw">public class</span> <span class="tp">Item</span> {
+    <span class="kw">private final</span> <span class="tp">String</span> name;      <span class="cm">// niezmienne!</span>
+    <span class="kw">private final double</span> weight;     <span class="cm">// waga</span>
+    <span class="kw">private final</span> <span class="tp">Rarity</span> rarity;     <span class="cm">// rzadkosc</span>
+
+    <span class="kw">public</span> <span class="tp">Item</span>(<span class="tp">String</span> name, <span class="kw">double</span> w, <span class="tp">Rarity</span> r) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.weight = w;
+        <span class="kw">this</span>.rarity = r;
+    }
+}
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+        <div class="glass-card item-card">
+            <div class="item-emoji">&#x2694;&#xFE0F;</div>
+            <div class="item-name rarity-rare">Miecz</div>
+            <div class="item-stats">3.5 kg | RARE</div>
+        </div>
+        <div class="glass-card item-card">
+            <div class="item-emoji">&#x1F6E1;&#xFE0F;</div>
+            <div class="item-name rarity-uncommon">Tarcza</div>
+            <div class="item-stats">5.0 kg | UNCOMMON</div>
+        </div>
+        <div class="glass-card item-card">
+            <div class="item-emoji">&#x1F9EA;</div>
+            <div class="item-name rarity-common">Mikstura</div>
+            <div class="item-stats">0.3 kg | COMMON</div>
+        </div>
+        <div class="glass-card item-card">
+            <div class="item-emoji">&#x1F451;</div>
+            <div class="item-name rarity-legendary">Korona</div>
+            <div class="item-stats">1.2 kg | LEGENDARY</div>
+        </div>
+    </div>
+    <div style="font-size:0.95rem;opacity:0.7;margin-top:6px"><code style="color:var(--neon-yellow)">final</code> = nie mozna zmienic po utworzeniu! Przedmiot jest niezmienny &#x1F512;</div>
+</div>
+
+<!-- SLIDE 4: Weapon i Armor -->
+<div class="slide" data-slide="3">
+    <h2><span class="gradient-yellow">&#x2694;&#xFE0F; Weapon i Armor &#x1F6E1;&#xFE0F;</span></h2>
+    <div class="tree-container" style="margin-bottom:10px">
+        <div class="tree-node glass-card" style="border-color:var(--neon-blue);color:var(--neon-blue)">&#x1F4E6; Item</div>
+        <div style="display:flex;gap:60px;margin-top:4px">
+            <div style="text-align:center">
+                <div class="tree-arrow">&#x2B07;&#xFE0F;</div>
+                <div class="tree-node glass-card" style="border-color:var(--neon-pink);color:var(--neon-pink)">&#x2694;&#xFE0F; Weapon<br><span style="font-size:0.8rem;opacity:0.7">+damage</span></div>
+            </div>
+            <div style="text-align:center">
+                <div class="tree-arrow">&#x2B07;&#xFE0F;</div>
+                <div class="tree-node glass-card" style="border-color:var(--neon-green);color:var(--neon-green)">&#x1F6E1;&#xFE0F; Armor<br><span style="font-size:0.8rem;opacity:0.7">+defense</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="code-block" style="max-width:600px;font-size:0.82rem;">
+<span class="kw">public class</span> <span class="tp">Weapon</span> <span class="kw">extends</span> <span class="tp">Item</span> {
+    <span class="kw">private final int</span> damage;
+
+    <span class="kw">public</span> <span class="tp">Weapon</span>(<span class="tp">String</span> name, <span class="kw">double</span> w, <span class="tp">Rarity</span> r, <span class="kw">int</span> dmg) {
+        <span class="kw">super</span>(name, w, r);
+        <span class="kw">this</span>.damage = dmg;
+    }
+}
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+        <button class="rarity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink);font-size:0.9rem" onclick="spawnEquip('weapon')">&#x2694;&#xFE0F; Stworz bron</button>
+        <button class="rarity-btn" style="border-color:var(--neon-green);color:var(--neon-green);font-size:0.9rem" onclick="spawnEquip('armor')">&#x1F6E1;&#xFE0F; Stworz zbroje</button>
+    </div>
+    <div id="equipArea" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px;min-height:60px"></div>
+</div>
+
+<!-- SLIDE 5: Co to generyki? -->
+<div class="slide" data-slide="4">
+    <h2><span class="gradient-text">&#x1F4E6; Co to generyki?</span></h2>
+    <div style="font-size:1.05rem;opacity:0.8;margin-bottom:8px;text-align:center">Python: lista moze miec wszystko. Java: <strong style="color:var(--neon-green)">TY decydujesz</strong>.</div>
+    <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:start">
+        <div>
+            <div class="gen-box" style="border-color:var(--neon-pink)" id="weaponBox">
+                <span class="box-label" style="color:var(--neon-pink)">Inventory&lt;Weapon&gt;</span>
+                <div class="box-items" id="weaponBoxItems"></div>
+            </div>
+            <div style="text-align:center;font-size:0.8rem;opacity:0.6;margin-top:4px">Tylko bronie!</div>
+        </div>
+        <div>
+            <div class="gen-box" style="border-color:var(--neon-blue)" id="itemBox">
+                <span class="box-label" style="color:var(--neon-blue)">Inventory&lt;Item&gt;</span>
+                <div class="box-items" id="itemBoxItems"></div>
+            </div>
+            <div style="text-align:center;font-size:0.8rem;opacity:0.6;margin-top:4px">Wszystko!</div>
+        </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+        <span class="drag-item" data-type="weapon" onclick="tryAddToBox(this,'&#x2694;&#xFE0F;','weapon')">&#x2694;&#xFE0F;</span>
+        <span class="drag-item" data-type="weapon" onclick="tryAddToBox(this,'&#x1F5E1;&#xFE0F;','weapon')">&#x1F5E1;&#xFE0F;</span>
+        <span class="drag-item" data-type="armor" onclick="tryAddToBox(this,'&#x1F6E1;&#xFE0F;','armor')">&#x1F6E1;&#xFE0F;</span>
+        <span class="drag-item" data-type="potion" onclick="tryAddToBox(this,'&#x1F9EA;','potion')">&#x1F9EA;</span>
+    </div>
+    <div id="genMsg" style="font-family:'Baloo 2';font-size:1rem;min-height:28px;text-align:center;margin-top:6px"></div>
+</div>
+
+<!-- SLIDE 6: Inventory<T extends Item> -->
+<div class="slide" data-slide="5">
+    <h2><span class="gradient-pink">&#x1F392; Inventory&lt;T extends Item&gt;</span></h2>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:start">
+        <div class="code-block" style="max-width:420px;font-size:0.82rem;">
+<span class="kw">public class</span> <span class="tp">Inventory</span>&lt;<span class="tp">T</span> <span class="kw">extends</span> <span class="tp">Item</span>&gt; {
+    <span class="kw">private</span> <span class="tp">List</span>&lt;<span class="tp">T</span>&gt; items = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="tp">add</span>(<span class="tp">T</span> item) {
+        items.add(item);
+    }
+    <span class="kw">public void</span> <span class="tp">remove</span>(<span class="tp">T</span> item) {
+        items.remove(item);
+    }
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">T</span>&gt; <span class="tp">getItems</span>() {
+        <span class="kw">return</span> Collections.unmodifiableList(items);
+    }
+}
+        </div>
+        <div>
+            <div style="font-family:'Baloo 2';font-weight:700;margin-bottom:6px;text-align:center;color:var(--neon-green)">&#x1F3AE; Ekwipunek</div>
+            <div class="inv-grid" id="invGrid">
+                <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
+                <div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div><div class="inv-slot"></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+                <button class="rarity-btn" style="font-size:0.85rem;padding:8px 14px;border-color:var(--neon-green);color:var(--neon-green)" onclick="addToInvGrid()">+ add()</button>
+                <button class="rarity-btn" style="font-size:0.85rem;padding:8px 14px;border-color:var(--neon-pink);color:var(--neon-pink)" onclick="clearInvGrid()">&#x1F5D1; clear</button>
+            </div>
+        </div>
+    </div>
+    <div style="font-size:0.95rem;opacity:0.7;margin-top:6px;text-align:center"><span class="tp">T</span> = dowolny typ dziedziczacy po <span class="tp">Item</span>. Kompilator pilnuje!</div>
+</div>
+
+<!-- SLIDE 7: Kompozycja vs Dziedziczenie -->
+<div class="slide" data-slide="6">
+    <h2><span class="gradient-yellow">&#x1F3D7;&#xFE0F; Kompozycja vs Dziedziczenie</span></h2>
+    <div class="comp-diagram">
+        <div class="comp-col">
+            <div class="glass-card" style="border-color:var(--neon-blue)">
+                <div class="compare-label" style="color:var(--neon-blue)">Dziedziczenie: "JEST" (IS-A)</div>
+                <div class="comp-node glass-card" style="border-color:var(--neon-pink);font-size:0.95rem">&#x1F432; Dragon <span style="color:var(--neon-pink)">JEST</span> Monster</div>
+                <div class="comp-arrow">&#x2B06;&#xFE0F; extends</div>
+                <div class="comp-node glass-card" style="border-color:var(--neon-blue);font-size:0.95rem">&#x1F47E; Monster <span style="color:var(--neon-pink)">JEST</span> Entity</div>
+                <div style="font-size:0.85rem;opacity:0.7;text-align:center;margin-top:6px">Silna relacja &#x2014; na zawsze!</div>
+            </div>
+        </div>
+        <div class="comp-col">
+            <div class="glass-card" style="border-color:var(--neon-green)">
+                <div class="compare-label" style="color:var(--neon-green)">Kompozycja: "MA" (HAS-A)</div>
+                <div class="comp-node glass-card" style="border-color:var(--neon-yellow);font-size:0.95rem">&#x1F9D1;&#x200D;&#x2694;&#xFE0F; Player <span style="color:var(--neon-green)">MA</span> Inventory</div>
+                <div class="comp-node glass-card" style="border-color:var(--neon-orange);font-size:0.95rem;margin-top:6px">&#x1F4DC; Recipe <span style="color:var(--neon-green)">MA</span> List&lt;Item&gt;</div>
+                <div style="font-size:0.85rem;opacity:0.7;text-align:center;margin-top:6px">Elastyczna &#x2014; mozna wymienic!</div>
+            </div>
+        </div>
+    </div>
+    <div class="glass-card" style="max-width:600px;text-align:center;margin-top:8px;padding:14px;border-color:var(--neon-yellow)">
+        <div style="font-family:'Baloo 2';font-size:1.1rem;font-weight:700;color:var(--neon-yellow)">&#x1F4A1; Zlota zasada</div>
+        <div style="font-size:1rem">"Nie wszystko musi dziedziczyc! Czasem lepiej <strong style="color:var(--neon-green)">MIEC</strong> niz <strong style="color:var(--neon-pink)">BYC</strong>."</div>
+        <div style="font-size:0.85rem;opacity:0.6;margin-top:4px">Python: duck typing &#x2014; wszystko pasuje. Java: TY wybierasz relacje.</div>
+    </div>
+</div>
+
+<!-- SLIDE 8: Recipe -->
+<div class="slide" data-slide="7">
+    <h2><span class="gradient-text">&#x1F4DC; Recipe &#x2014; przepis na crafting</span></h2>
+    <div class="code-block" style="max-width:550px;font-size:0.82rem;">
+<span class="kw">public class</span> <span class="tp">Recipe</span> {
+    <span class="kw">private final</span> <span class="tp">List</span>&lt;<span class="tp">Item</span>&gt; ingredients;
+    <span class="kw">private final</span> <span class="tp">Item</span> result;
+
+    <span class="kw">public boolean</span> <span class="tp">canCraft</span>(<span class="tp">Inventory</span>&lt;?&gt; inv) {
+        <span class="kw">return</span> inv.getItems()
+            .containsAll(ingredients);
+    }
+}
+    </div>
+    <div class="glass-card" style="max-width:500px;margin-top:10px;text-align:center;border-color:var(--neon-orange)">
+        <div style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-orange);margin-bottom:8px">&#x1F4DC; Przepis: Smoczomiecz</div>
+        <div id="recipeFlow" style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
+            <div class="craft-slot" id="recIng1">&#x1FAB5;</div>
+            <span class="craft-plus">+</span>
+            <div class="craft-slot" id="recIng2">&#x26CF;&#xFE0F;</div>
+            <span class="craft-plus">+</span>
+            <div class="craft-slot" id="recIng3">&#x1F5E1;&#xFE0F;</div>
+            <span style="font-size:2rem;margin:0 8px">&#x27A1;&#xFE0F;</span>
+            <div class="craft-slot" id="recResult" style="border-color:var(--neon-orange);font-size:2rem;opacity:0.3">&#x2694;&#xFE0F;</div>
+        </div>
+        <div style="font-size:0.85rem;opacity:0.6;margin-top:6px">Drewno + Zelazko + Stary Miecz = &#x2694;&#xFE0F; Smoczomiecz!</div>
+        <button class="craft-btn" style="margin-top:8px;font-size:0.95rem;padding:8px 20px" onclick="animateRecipe()">&#x2728; Pokaz crafting!</button>
+    </div>
+</div>
+
+<!-- SLIDE 9: CraftingTable -->
+<div class="slide" data-slide="8">
+    <h2><span class="gradient-pink">&#x1F3ED; CraftingTable &#x2014; craftujemy!</span></h2>
+    <div class="craft-area">
+        <div class="glass-card" style="padding:14px">
+            <div style="font-family:'Baloo 2';font-weight:700;color:var(--neon-green);margin-bottom:6px;text-align:center">&#x1F392; Twoj ekwipunek:</div>
+            <div class="craft-inv" id="craftInv"></div>
+            <div style="text-align:center;margin:8px 0">
+                <div style="font-family:'Baloo 2';font-weight:700;color:var(--neon-yellow);font-size:0.9rem;margin-bottom:4px">&#x1F4DC; Dostepne przepisy:</div>
+                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+                    <button class="rarity-btn" style="font-size:0.8rem;padding:6px 12px" id="recipe1Btn" onclick="selectRecipe(0)">&#x1FAB5;+&#x26CF;&#xFE0F;+&#x1F5E1;&#xFE0F; = &#x2694;&#xFE0F;</button>
+                    <button class="rarity-btn" style="font-size:0.8rem;padding:6px 12px" id="recipe2Btn" onclick="selectRecipe(1)">&#x1F6E1;&#xFE0F;+&#x1F48E; = &#x1F530;</button>
+                    <button class="rarity-btn" style="font-size:0.8rem;padding:6px 12px" id="recipe3Btn" onclick="selectRecipe(2)">&#x1F9EA;+&#x1F33F; = &#x2764;&#xFE0F;</button>
+                </div>
+            </div>
+            <div style="text-align:center">
+                <button class="craft-btn" id="craftBtn" onclick="doCraft()">&#x1F528; Craftuj!</button>
+                <button class="rarity-btn" style="font-size:0.85rem;padding:8px 14px;border-color:var(--neon-yellow);color:var(--neon-yellow);margin-left:8px" onclick="resetCraft()">&#x1F504; Reset</button>
+            </div>
+            <div class="craft-msg" id="craftMsg"></div>
+            <div id="craftResult" style="text-align:center;min-height:50px;margin-top:4px"></div>
+        </div>
+    </div>
+    <div class="code-block" style="max-width:500px;margin-top:6px;font-size:0.78rem;">
+<span class="kw">public class</span> <span class="tp">CraftingTable</span> {
+    <span class="kw">public</span> <span class="tp">Item</span> <span class="tp">craft</span>(<span class="tp">Recipe</span> recipe, <span class="tp">Inventory</span>&lt;?&gt; inv) {
+        <span class="kw">if</span> (!recipe.canCraft(inv)) <span class="kw">throw new</span> ...;
+        recipe.getIngredients().forEach(inv::remove);
+        <span class="kw">return</span> recipe.getResult();
+    }
+}
+    </div>
+</div>
+
+<!-- SLIDE 10: equals & hashCode -->
+<div class="slide" data-slide="9">
+    <h2><span class="gradient-yellow">&#x2696;&#xFE0F; equals() i hashCode()</span></h2>
+    <div style="font-size:1.1rem;opacity:0.8;margin-bottom:8px;text-align:center">Czy dwa miecze to ten sam miecz? &#x1F914;</div>
+    <div class="eq-swords">
+        <div class="glass-card eq-sword" id="eqSword1">&#x2694;&#xFE0F;<div style="font-size:0.7rem;margin-top:4px">Miecz A</div></div>
+        <div class="eq-vs"><span class="pulse" id="eqOp">==</span></div>
+        <div class="glass-card eq-sword" id="eqSword2">&#x2694;&#xFE0F;<div style="font-size:0.7rem;margin-top:4px">Miecz B</div></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;margin:8px 0">
+        <button class="rarity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink);font-size:0.9rem" onclick="showEquals('ref')">== (referencja)</button>
+        <button class="rarity-btn" style="border-color:var(--neon-green);color:var(--neon-green);font-size:0.9rem" onclick="showEquals('val')">.equals() (wartosc)</button>
+    </div>
+    <div class="glass-card eq-result" id="eqResult" style="max-width:550px"></div>
+    <div class="compare-row" style="margin-top:8px">
+        <div class="compare-col">
+            <div class="glass-card" style="padding:12px">
+                <div class="compare-label" style="color:var(--neon-green);font-size:1.1rem">&#x1F40D; Python</div>
+                <div style="font-size:0.9rem"><code style="color:var(--neon-yellow)">==</code> porownuje wartosci</div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="padding:12px">
+                <div class="compare-label" style="color:var(--neon-blue);font-size:1.1rem">&#9749;&#xFE0F; Java</div>
+                <div style="font-size:0.9rem">Musisz powiedziec <strong style="color:var(--neon-yellow)">CO</strong> porownywac!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: Caly system razem -->
+<div class="slide" data-slide="10">
+    <h2><span class="gradient-text">&#x1F3AE; Caly system razem</span></h2>
+    <div class="flow-container" id="flowContainer">
+        <div class="glass-card flow-step" id="flow0">
+            <div class="flow-emoji">&#x1F9D1;&#x200D;&#x2694;&#xFE0F;</div>
+            <div class="flow-label">Player walczy</div>
+        </div>
+        <div class="flow-arrow" id="flowA0">&#x27A1;&#xFE0F;</div>
+        <div class="glass-card flow-step" id="flow1">
+            <div class="flow-emoji">&#x1F432;</div>
+            <div class="flow-label">Dragon pokonany!</div>
+        </div>
+        <div class="flow-arrow" id="flowA1">&#x27A1;&#xFE0F;</div>
+        <div class="glass-card flow-step" id="flow2">
+            <div class="flow-emoji">&#x1F4B0;</div>
+            <div class="flow-label">Loot spada</div>
+        </div>
+        <div class="flow-arrow" id="flowA2">&#x27A1;&#xFE0F;</div>
+        <div class="glass-card flow-step" id="flow3">
+            <div class="flow-emoji">&#x1F392;</div>
+            <div class="flow-label">Dodaje do Inventory</div>
+        </div>
+        <div class="flow-arrow" id="flowA3">&#x27A1;&#xFE0F;</div>
+        <div class="glass-card flow-step" id="flow4">
+            <div class="flow-emoji">&#x1F3ED;</div>
+            <div class="flow-label">CraftingTable</div>
+        </div>
+        <div class="flow-arrow" id="flowA4">&#x27A1;&#xFE0F;</div>
+        <div class="glass-card flow-step" id="flow5">
+            <div class="flow-emoji">&#x2694;&#xFE0F;</div>
+            <div class="flow-label">Epicki item!</div>
+        </div>
+    </div>
+    <button class="craft-btn" style="margin-top:16px" id="flowBtn" onclick="startFlow()">&#x25B6;&#xFE0F; Pokaz przeplyw!</button>
+    <div style="font-size:0.9rem;opacity:0.6;margin-top:6px;text-align:center">Enumy + Klasy + Generyki + Kompozycja = pelny system!</div>
+</div>
+
+<!-- SLIDE 12: Boss Fight Challenge -->
+<div class="slide" data-slide="11">
+    <h2><span class="gradient-pink">&#x1F525; Boss Fight Challenge</span></h2>
+    <div class="glass-card quest-card">
+        <div class="quest-title"><span class="gradient-yellow">&#x1F3AF; Quest: StackableItem</span></div>
+        <div class="quest-item">1. &#x2694;&#xFE0F; Stworz klase <code style="color:var(--neon-blue)">StackableItem extends Item</code></div>
+        <div class="quest-item">2. &#x1F522; Dodaj pole <code style="color:var(--neon-green)">int quantity</code></div>
+        <div class="quest-item">3. &#x1F392; Zaktualizuj <code style="color:var(--neon-yellow)">Inventory</code> zeby stackowal zamiast dodawac duplikaty</div>
+        <div class="quest-item">4. &#x1F4A1; Pomysl: 64 cobblestone jak w Minecraft!</div>
+        <div style="margin-top:12px;text-align:center">
+            <div class="code-block" style="font-size:0.8rem;text-align:left;display:inline-block">
+<span class="kw">public class</span> <span class="tp">StackableItem</span> <span class="kw">extends</span> <span class="tp">Item</span> {
+    <span class="kw">private int</span> quantity;
+    <span class="kw">private final int</span> maxStack = <span class="num">64</span>;
+    <span class="cm">// Twoj kod tutaj!</span>
+}
+            </div>
+        </div>
+    </div>
+    <div style="font-size:1rem;opacity:0.7;margin-top:10px;text-align:center">&#x1F4AA; Bonus: nadpisz <code style="color:var(--neon-yellow)">equals()</code> i <code style="color:var(--neon-yellow)">hashCode()</code>!</div>
+</div>
+
+<!-- SLIDE 13: Podsumowanie -->
+<div class="slide" data-slide="12">
+    <h2><span class="gradient-text">&#x1F3C6; Podsumowanie</span></h2>
+    <div class="glass-card" style="max-width:500px">
+        <ul class="checklist">
+            <li><span class="check">&#x2705;</span> <strong>Enumy</strong> &#x2014; bezpieczne stale (Rarity)</li>
+            <li><span class="check">&#x2705;</span> <strong>Dziedziczenie</strong> &#x2014; Weapon/Armor extends Item</li>
+            <li><span class="check">&#x2705;</span> <strong>Generyki</strong> &#x2014; Inventory&lt;T extends Item&gt;</li>
+            <li><span class="check">&#x2705;</span> <strong>Kompozycja</strong> &#x2014; "MA" vs "JEST"</li>
+            <li><span class="check">&#x2705;</span> <strong>Recipe &amp; CraftingTable</strong> &#x2014; system craftingu</li>
+            <li><span class="check">&#x2705;</span> <strong>equals() &amp; hashCode()</strong> &#x2014; porownywanie obiektow</li>
+        </ul>
+    </div>
+    <div style="font-size:1.4rem;font-family:'Baloo 2';font-weight:700;margin-top:14px;">
+        <span class="gradient-pink">Nastepna sesja: Silnik Gry! &#x1F3AE;&#x1F680;</span>
+    </div>
+    <div style="font-size:3rem;margin-top:8px;" class="bounce">&#x1F389;</div>
+</div>
+
+</div><!-- end presentation -->
+
+<nav class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#x2B05;&#xFE0F;</button>
+    <span class="slide-counter" id="slideCounter">1 / 13</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#x27A1;&#xFE0F;</button>
+</nav>
+
+<script>
+// === NAVIGATION ===
+let currentSlide=0;
+const slides=document.querySelectorAll('.slide');
+const totalSlides=slides.length;
+
+function changeSlide(dir){
+    const next=currentSlide+dir;
+    if(next<0||next>=totalSlides)return;
+    slides[currentSlide].classList.remove('active');
+    currentSlide=next;
+    slides[currentSlide].classList.add('active');
+    slides[currentSlide].style.animation='none';
+    void slides[currentSlide].offsetHeight;
+    slides[currentSlide].style.animation='slideIn 0.5s ease';
+    updateNav();
+    onSlideEnter(currentSlide);
+}
+
+function updateNav(){
+    document.getElementById('prevBtn').disabled=currentSlide===0;
+    document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;
+    document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;
+    document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';
+}
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}
+});
+updateNav();
+
+function onSlideEnter(idx){
+    if(idx===8) initCraft();
+    if(idx===10) resetFlow();
+}
+
+// === BINARY RAIN ===
+(function(){
+    const rain=document.getElementById('rain');
+    const chars='01{}();.class extends new void int String Inventory<T> enum';
+    for(let i=0;i<30;i++){
+        const s=document.createElement('span');
+        s.textContent=chars[Math.floor(Math.random()*chars.length)];
+        s.style.left=Math.random()*100+'vw';
+        s.style.animationDuration=(6+Math.random()*10)+'s';
+        s.style.animationDelay=Math.random()*8+'s';
+        s.style.fontSize=(0.8+Math.random()*0.6)+'rem';
+        rain.appendChild(s);
+    }
+})();
+
+// === SFX ===
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+function sfx(freq,dur){try{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=freq;g.gain.value=0.06;o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}catch(e){}}
+
+// === CONFETTI ===
+function spawnConfetti(el){
+    const rect=el.getBoundingClientRect();
+    const burst=document.createElement('div');
+    burst.style.cssText='position:fixed;pointer-events:none;z-index:100;left:'+(rect.left+rect.width/2)+'px;top:'+rect.top+'px';
+    const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];
+    for(let i=0;i<30;i++){
+        const c=document.createElement('div');
+        const fy=-50-Math.random()*150;
+        const fx=(Math.random()-0.5)*250;
+        c.style.cssText='position:absolute;width:8px;height:8px;border-radius:2px;background:'+colors[Math.floor(Math.random()*colors.length)]+';transition:all '+(0.6+Math.random()*0.8)+'s ease-out;opacity:1;left:0;top:0';
+        burst.appendChild(c);
+        requestAnimationFrame(()=>{c.style.transform='translate('+fx+'px,'+fy+'px)';c.style.opacity='0';});
+    }
+    document.body.appendChild(burst);
+    setTimeout(()=>burst.remove(),2500);
+}
+
+// === SLIDE 2: Rarity Enum ===
+function showRarity(btn){
+    sfx(500,0.12);
+    document.querySelectorAll('.rarity-btn[data-r]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const r=btn.dataset.r;
+    const names={COMMON:'Zwykly (bialy)',UNCOMMON:'Niezwykly (zielony)',RARE:'Rzadki (niebieski)',EPIC:'Epicki (fioletowy)',LEGENDARY:'Legendarny (pomaranczowy)'};
+    const cls={COMMON:'rarity-common',UNCOMMON:'rarity-uncommon',RARE:'rarity-rare',EPIC:'rarity-epic',LEGENDARY:'rarity-legendary'};
+    const disp=document.getElementById('rarityDisplay');
+    disp.className=cls[r];
+    disp.innerHTML='Rarity.'+r+' = '+names[r]+' &#x2728;';
+}
+
+// === SLIDE 4: Spawn equipment ===
+const weaponData=[
+    {name:'Miecz',emoji:'&#x2694;&#xFE0F;',dmg:15,rarity:'RARE',rcls:'rarity-rare'},
+    {name:'Topor',emoji:'&#x1FA93;',dmg:20,rarity:'EPIC',rcls:'rarity-epic'},
+    {name:'Luk',emoji:'&#x1F3F9;',dmg:12,rarity:'UNCOMMON',rcls:'rarity-uncommon'},
+    {name:'Rozdzka',emoji:'&#x1FA84;',dmg:25,rarity:'LEGENDARY',rcls:'rarity-legendary'}
+];
+const armorData=[
+    {name:'Tarcza',emoji:'&#x1F6E1;&#xFE0F;',def:10,rarity:'UNCOMMON',rcls:'rarity-uncommon'},
+    {name:'Helm',emoji:'&#x1FA96;',def:8,rarity:'RARE',rcls:'rarity-rare'},
+    {name:'Zbroja',emoji:'&#x1F9E5;',def:18,rarity:'EPIC',rcls:'rarity-epic'},
+    {name:'Peleryna',emoji:'&#x1F9E3;',def:5,rarity:'COMMON',rcls:'rarity-common'}
+];
+let equipIdx={weapon:0,armor:0};
+
+function spawnEquip(type){
+    sfx(600,0.15);
+    const area=document.getElementById('equipArea');
+    const data=type==='weapon'?weaponData:armorData;
+    const idx=equipIdx[type]%data.length;
+    const item=data[idx];
+    equipIdx[type]++;
+    const card=document.createElement('div');
+    card.className='glass-card item-card';
+    card.style.animation='popIn 0.4s ease';
+    const stat=type==='weapon'?'DMG: '+item.dmg:'DEF: '+item.def;
+    card.innerHTML='<div class="item-emoji">'+item.emoji+'</div><div class="item-name '+item.rcls+'">'+item.name+'</div><div class="item-stats">'+item.rarity+' | '+stat+'</div>';
+    area.appendChild(card);
+    if(area.children.length>6)area.removeChild(area.firstChild);
+}
+
+// === SLIDE 5: Generics boxes ===
+function tryAddToBox(el,emoji,type){
+    sfx(400,0.1);
+    // Try weapon box first
+    const wBox=document.getElementById('weaponBoxItems');
+    const iBox=document.getElementById('itemBoxItems');
+    const msg=document.getElementById('genMsg');
+
+    if(type==='weapon'){
+        // Goes into both
+        const s1=document.createElement('span');s1.style.fontSize='1.8rem';s1.style.animation='popIn 0.4s ease';s1.innerHTML=emoji;
+        wBox.appendChild(s1);
+        const s2=document.createElement('span');s2.style.fontSize='1.8rem';s2.style.animation='popIn 0.4s ease';s2.innerHTML=emoji;
+        iBox.appendChild(s2);
+        msg.innerHTML='<span style="color:var(--neon-green)">&#x2705; '+emoji+' pasuje do obu!</span>';
+    } else {
+        // Only item box
+        el.classList.add('bounce-back');
+        setTimeout(()=>el.classList.remove('bounce-back'),400);
+        const s=document.createElement('span');s.style.fontSize='1.8rem';s.style.animation='popIn 0.4s ease';s.innerHTML=emoji;
+        iBox.appendChild(s);
+        msg.innerHTML='<span style="color:var(--neon-pink)">&#x274C; '+emoji+' NIE pasuje do Inventory&lt;Weapon&gt;!</span> <span style="color:var(--neon-green)">&#x2705; ale do Inventory&lt;Item&gt; tak!</span>';
+        // Flash weapon box red
+        document.getElementById('weaponBox').style.borderColor='var(--neon-pink)';
+        setTimeout(()=>document.getElementById('weaponBox').style.borderColor='var(--neon-pink)',0);
+        setTimeout(()=>document.getElementById('weaponBox').style.borderColor='',500);
+    }
+}
+
+// === SLIDE 6: Inventory grid ===
+const invItems=['&#x2694;&#xFE0F;','&#x1F6E1;&#xFE0F;','&#x1F9EA;','&#x1FA93;','&#x1F3F9;','&#x1FA84;','&#x1F451;','&#x1F48E;'];
+let invCount=0;
+function addToInvGrid(){
+    if(invCount>=8)return;
+    sfx(550,0.12);
+    const slots=document.querySelectorAll('#invGrid .inv-slot');
+    const slot=slots[invCount];
+    slot.innerHTML=invItems[invCount];
+    slot.classList.add('filled','adding');
+    setTimeout(()=>slot.classList.remove('adding'),400);
+    invCount++;
+}
+function clearInvGrid(){
+    sfx(300,0.1);
+    document.querySelectorAll('#invGrid .inv-slot').forEach(s=>{s.innerHTML='';s.classList.remove('filled');});
+    invCount=0;
+}
+
+// === SLIDE 8: Recipe animation ===
+function animateRecipe(){
+    sfx(400,0.15);
+    const ings=['recIng1','recIng2','recIng3'];
+    ings.forEach((id,i)=>{
+        setTimeout(()=>{
+            const el=document.getElementById(id);
+            el.style.transition='all 0.4s ease';
+            el.style.opacity='0.2';
+            el.style.transform='scale(0.8) rotate(20deg)';
+            sfx(300+i*100,0.1);
+        },i*400);
+    });
+    setTimeout(()=>{
+        const res=document.getElementById('recResult');
+        res.style.transition='all 0.5s ease';
+        res.style.opacity='1';
+        res.style.borderColor='var(--neon-orange)';
+        res.style.boxShadow='0 0 30px rgba(255,107,43,0.4)';
+        res.style.transform='scale(1.1)';
+        sfx(800,0.3);
+        spawnConfetti(res);
+        // Reset after delay
+        setTimeout(()=>{
+            ings.forEach(id=>{
+                const el=document.getElementById(id);
+                el.style.opacity='1';el.style.transform='';
+            });
+            res.style.opacity='0.3';res.style.borderColor='';res.style.boxShadow='';res.style.transform='';
+        },2500);
+    },1400);
+}
+
+// === SLIDE 9: Interactive Crafting ===
+const craftRecipes=[
+    {ingredients:['&#x1FAB5;','&#x26CF;&#xFE0F;','&#x1F5E1;&#xFE0F;'],result:'&#x2694;&#xFE0F;',name:'Smoczomiecz',rclass:'rarity-legendary'},
+    {ingredients:['&#x1F6E1;&#xFE0F;','&#x1F48E;'],result:'&#x1F530;',name:'Tarcza Diamentowa',rclass:'rarity-epic'},
+    {ingredients:['&#x1F9EA;','&#x1F33F;'],result:'&#x2764;&#xFE0F;',name:'Mikstura Zdrowia',rclass:'rarity-uncommon'}
+];
+let craftInventory=['&#x1FAB5;','&#x26CF;&#xFE0F;','&#x1F5E1;&#xFE0F;','&#x1F6E1;&#xFE0F;','&#x1F48E;','&#x1F9EA;','&#x1F33F;','&#x1FAB5;'];
+let selectedRecipe=-1;
+let craftInited=false;
+
+function initCraft(){
+    if(craftInited) return;
+    craftInited=true;
+    renderCraftInv();
+}
+
+function renderCraftInv(){
+    const area=document.getElementById('craftInv');
+    area.innerHTML='';
+    craftInventory.forEach((item,i)=>{
+        const d=document.createElement('div');
+        d.className='craft-inv-item';
+        d.innerHTML=item;
+        d.title='Item #'+(i+1);
+        area.appendChild(d);
+    });
+}
+
+function selectRecipe(idx){
+    sfx(450,0.1);
+    selectedRecipe=idx;
+    document.querySelectorAll('[id^="recipe"]').forEach(b=>b.style.borderColor='');
+    const btn=document.getElementById('recipe'+(idx+1)+'Btn');
+    btn.style.borderColor='var(--neon-green)';
+    btn.style.color='var(--neon-green)';
+    document.getElementById('craftMsg').innerHTML='<span style="color:var(--neon-yellow)">Wybrany przepis: '+craftRecipes[idx].name+'</span>';
+}
+
+function doCraft(){
+    if(selectedRecipe<0){
+        document.getElementById('craftMsg').innerHTML='<span style="color:var(--neon-pink)">&#x274C; Najpierw wybierz przepis!</span>';
+        return;
+    }
+    const recipe=craftRecipes[selectedRecipe];
+    // Check ingredients
+    let tempInv=[...craftInventory];
+    let missing=[];
+    for(const ing of recipe.ingredients){
+        const idx=tempInv.indexOf(ing);
+        if(idx>=0){
+            tempInv.splice(idx,1);
+        } else {
+            missing.push(ing);
+        }
+    }
+    if(missing.length>0){
+        sfx(200,0.2);
+        document.getElementById('craftMsg').innerHTML='<span style="color:var(--neon-pink)">&#x274C; Brakuje: '+missing.join(' ')+'</span>';
+        // Flash red
+        const area=document.getElementById('craftInv');
+        area.style.outline='2px solid var(--neon-pink)';
+        area.style.borderRadius='14px';
+        setTimeout(()=>{area.style.outline='';},600);
+        return;
+    }
+    // Consume ingredients
+    sfx(600,0.15);
+    craftInventory=tempInv;
+    renderCraftInv();
+    // Animate
+    document.getElementById('craftMsg').innerHTML='<span style="color:var(--neon-yellow)">&#x2728; Craftowanie...</span>';
+    setTimeout(()=>{
+        sfx(800,0.3);
+        document.getElementById('craftResult').innerHTML='<div class="result-item">'+recipe.result+'</div><div style="font-family:\'Baloo 2\';font-weight:700;font-size:1.2rem" class="'+recipe.rclass+'">'+recipe.name+'!</div>';
+        document.getElementById('craftMsg').innerHTML='<span style="color:var(--neon-green)">&#x2705; Stworzono: '+recipe.name+'!</span>';
+        spawnConfetti(document.getElementById('craftResult'));
+        // Add result to inventory
+        craftInventory.push(recipe.result);
+        renderCraftInv();
+    },800);
+}
+
+function resetCraft(){
+    sfx(300,0.1);
+    craftInventory=['&#x1FAB5;','&#x26CF;&#xFE0F;','&#x1F5E1;&#xFE0F;','&#x1F6E1;&#xFE0F;','&#x1F48E;','&#x1F9EA;','&#x1F33F;','&#x1FAB5;'];
+    selectedRecipe=-1;
+    renderCraftInv();
+    document.getElementById('craftMsg').innerHTML='';
+    document.getElementById('craftResult').innerHTML='';
+    document.querySelectorAll('[id^="recipe"]').forEach(b=>{b.style.borderColor='';b.style.color='';});
+}
+
+// Init craft on first visit
+setTimeout(()=>{if(currentSlide===8)initCraft();},100);
+
+// === SLIDE 10: equals ===
+function showEquals(mode){
+    sfx(450,0.12);
+    const res=document.getElementById('eqResult');
+    const op=document.getElementById('eqOp');
+    if(mode==='ref'){
+        op.textContent='==';
+        res.style.borderColor='var(--neon-pink)';
+        res.innerHTML='<div style="color:var(--neon-pink);font-family:\'Baloo 2\';font-size:1.2rem;font-weight:700">&#x274C; false!</div><div style="font-size:0.9rem;margin-top:4px"><code>==</code> sprawdza adres w pamieci (czy to TEN SAM obiekt?)<br>Dwa rozne <code>new Weapon(...)</code> = dwa rozne adresy!</div>';
+    } else {
+        op.textContent='.equals()';
+        res.style.borderColor='var(--neon-green)';
+        res.innerHTML='<div style="color:var(--neon-green);font-family:\'Baloo 2\';font-size:1.2rem;font-weight:700">&#x2705; true!</div><div style="font-size:0.9rem;margin-top:4px"><code>.equals()</code> sprawdza zawartosc (te same staty?)<br>Ale musisz sam napisac metode <code>equals()</code> i <code>hashCode()</code>!</div>';
+    }
+}
+
+// === SLIDE 11: Flow animation ===
+let flowRunning=false;
+function resetFlow(){
+    flowRunning=false;
+    for(let i=0;i<6;i++){
+        document.getElementById('flow'+i).classList.remove('active');
+        if(i<5) document.getElementById('flowA'+i).classList.remove('active');
+    }
+    const btn=document.getElementById('flowBtn');
+    if(btn){btn.disabled=false;btn.textContent='\u25B6\uFE0F Pokaz przeplyw!';}
+}
+
+function startFlow(){
+    if(flowRunning)return;
+    flowRunning=true;
+    document.getElementById('flowBtn').disabled=true;
+    document.getElementById('flowBtn').textContent='&#x23F3; Trwa...';
+    resetFlow();
+    flowRunning=true;
+    document.getElementById('flowBtn').disabled=true;
+
+    for(let i=0;i<6;i++){
+        setTimeout(()=>{
+            sfx(400+i*80,0.12);
+            document.getElementById('flow'+i).classList.add('active');
+            if(i>0) document.getElementById('flowA'+(i-1)).classList.add('active');
+            if(i===5){
+                spawnConfetti(document.getElementById('flow5'));
+                document.getElementById('flowBtn').textContent='\u25B6\uFE0F Pokaz ponownie!';
+                document.getElementById('flowBtn').disabled=false;
+                flowRunning=false;
+            }
+        },i*700);
+    }
+}
+</script>
+</body>
+</html>

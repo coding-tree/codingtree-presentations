@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silnik Gry - Java na Luzie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:8px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.8rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.4rem;margin-bottom:8px;text-align:center}
+        h3{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.6rem;margin-bottom:4px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+        .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .kw{color:var(--neon-pink);font-weight:700}
+        .tp{color:var(--neon-blue)}
+        .str{color:var(--neon-green)}
+        .num{color:var(--neon-orange)}
+        .cm{color:rgba(255,255,255,0.35);font-style:italic}
+        .ann{color:var(--neon-yellow)}
+        .compare-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:900px;width:100%}
+        .compare-col{flex:1;min-width:280px}
+        .compare-col .glass-card{height:100%}
+        .compare-label{font-family:'Baloo 2';font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:8px}
+        .features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:700px;width:100%}
+        .feature-card{text-align:center;padding:16px 12px}
+        .feature-card .emoji{font-size:2.5rem;margin-bottom:6px}
+        .feature-card .feat-title{font-family:'Baloo 2';font-weight:700;font-size:1.1rem;margin-bottom:4px}
+        .feature-card .feat-desc{font-size:0.9rem;opacity:0.7}
+        .checklist{list-style:none;text-align:left;font-size:1.15rem;line-height:2}
+        .checklist li{padding-left:8px}
+        .check{color:var(--neon-green);font-weight:700;margin-right:8px}
+        .quest-card{max-width:600px;width:100%;border:2px solid var(--neon-orange);position:relative;overflow:hidden}
+        .quest-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,107,43,0.08),rgba(255,46,170,0.05));pointer-events:none}
+        .quest-title{font-family:'Baloo 2';font-weight:800;font-size:1.6rem;text-align:center;margin-bottom:12px}
+        .quest-item{font-size:1.05rem;line-height:1.8;padding-left:4px}
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        .bounce{animation:bounce 1s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .pulse{animation:pulse 1.5s ease-in-out infinite}
+        @keyframes popIn{from{transform:scale(0) rotate(-180deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+        /* Slide 2: USB analogy */
+        .usb-port{width:120px;height:160px;border:3px solid var(--neon-blue);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:rgba(0,212,255,0.05);transition:all 0.3s}
+        .usb-port .port-label{font-family:'Baloo 2';font-weight:700;font-size:0.9rem;color:var(--neon-blue);position:absolute;bottom:-28px}
+        .usb-port.plugged{border-color:var(--neon-green);box-shadow:0 0 25px rgba(57,255,20,0.3);background:rgba(57,255,20,0.08)}
+        .usb-devices{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+        .usb-device{padding:10px 16px;border:2px solid var(--glass-border);border-radius:14px;font-size:1.5rem;cursor:pointer;transition:all 0.2s;text-align:center;background:var(--glass)}
+        .usb-device:hover{transform:scale(1.1);border-color:var(--neon-yellow)}
+        .usb-device.active{border-color:var(--neon-green);background:rgba(57,255,20,0.1)}
+        .usb-device .dev-name{font-size:0.75rem;font-family:'Baloo 2';font-weight:700;display:block;margin-top:2px}
+
+        /* Slide 4: Plug interface */
+        .plug-diagram{display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap}
+        .plug-box{padding:14px 22px;border-radius:18px;font-family:'Baloo 2';font-weight:700;font-size:1.1rem;text-align:center;transition:all 0.4s;cursor:pointer}
+        .plug-wire{width:60px;height:4px;background:var(--glass-border);border-radius:2px;transition:all 0.4s;position:relative}
+        .plug-wire.connected{background:var(--neon-green);box-shadow:0 0 12px rgba(57,255,20,0.5)}
+        .plug-wire::after{content:'';position:absolute;right:-8px;top:-6px;width:16px;height:16px;border-radius:50%;border:2px solid var(--glass-border);transition:all 0.4s}
+        .plug-wire.connected::after{border-color:var(--neon-green);background:rgba(57,255,20,0.3);box-shadow:0 0 8px rgba(57,255,20,0.5)}
+
+        /* Slide 5: GameWorld */
+        .game-world-box{width:90%;max-width:600px;min-height:200px;border:3px solid var(--neon-blue);border-radius:24px;padding:20px;position:relative;background:rgba(0,212,255,0.03);display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;transition:all 0.3s}
+        .game-world-box .world-label{position:absolute;top:-16px;left:24px;background:var(--bg-deep);padding:0 12px;font-family:'Baloo 2';font-weight:800;font-size:1.1rem;color:var(--neon-blue)}
+        .entity-sprite{font-size:2.5rem;padding:8px;border:1px solid var(--glass-border);border-radius:12px;background:var(--glass);animation:popIn 0.4s ease;cursor:pointer;transition:all 0.2s}
+        .entity-sprite:hover{transform:scale(1.15)}
+        .entity-sprite .ent-name{font-size:0.65rem;font-family:'Baloo 2';font-weight:700;display:block;text-align:center;margin-top:2px}
+        .add-entity-btn{font-family:'Baloo 2';font-size:1rem;font-weight:700;padding:10px 20px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.3s;background:transparent}
+        .add-entity-btn:hover{transform:scale(1.08)}
+
+        /* Slide 6: Game Loop */
+        .loop-container{position:relative;width:340px;height:340px}
+        .loop-step{position:absolute;width:140px;padding:14px 8px;border-radius:18px;text-align:center;font-family:'Baloo 2';font-weight:700;font-size:1rem;transition:all 0.3s;border:2px solid}
+        .loop-step.active-step{transform:scale(1.12);z-index:2}
+        .loop-step.s-input{top:0;left:50%;transform:translateX(-50%);border-color:var(--neon-yellow);color:var(--neon-yellow);background:rgba(255,230,0,0.08)}
+        .loop-step.s-input.active-step{background:rgba(255,230,0,0.2);box-shadow:0 0 30px rgba(255,230,0,0.3);transform:translateX(-50%) scale(1.12)}
+        .loop-step.s-update{bottom:30px;left:0;border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,212,255,0.08)}
+        .loop-step.s-update.active-step{background:rgba(0,212,255,0.2);box-shadow:0 0 30px rgba(0,212,255,0.3);transform:scale(1.12)}
+        .loop-step.s-render{bottom:30px;right:0;border-color:var(--neon-green);color:var(--neon-green);background:rgba(57,255,20,0.08)}
+        .loop-step.s-render.active-step{background:rgba(57,255,20,0.2);box-shadow:0 0 30px rgba(57,255,20,0.3);transform:scale(1.12)}
+        .loop-arrow{position:absolute;font-size:1.8rem;opacity:0.5;transition:all 0.3s}
+        .loop-arrow.active-arrow{opacity:1}
+        .loop-arrow.a1{top:70px;right:30px;transform:rotate(60deg)}
+        .loop-arrow.a2{bottom:10px;left:50%;transform:translateX(-50%)}
+        .loop-arrow.a3{top:70px;left:30px;transform:rotate(-60deg)}
+        .loop-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem}
+        .fps-counter{font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-green);min-height:30px}
+
+        /* Slide 7: deltaTime */
+        .dt-demo{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;max-width:700px;width:100%}
+        .dt-lane{flex:1;min-width:260px;position:relative;height:120px;border:1px solid var(--glass-border);border-radius:16px;background:rgba(0,0,0,0.2);overflow:hidden}
+        .dt-lane .lane-label{position:absolute;top:8px;left:12px;font-family:'Baloo 2';font-weight:700;font-size:0.85rem}
+        .dt-char{position:absolute;top:50%;transform:translateY(-50%);font-size:2rem;transition:none}
+
+        /* Slide 8: InputHandler */
+        .keyboard-vis{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+        .key-cap{width:56px;height:56px;border:2px solid var(--glass-border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2';font-weight:700;font-size:1.2rem;background:var(--glass);transition:all 0.15s;cursor:pointer}
+        .key-cap:hover{border-color:var(--neon-blue)}
+        .key-cap.pressed{border-color:var(--neon-green);background:rgba(57,255,20,0.15);box-shadow:0 0 15px rgba(57,255,20,0.3);transform:scale(0.92)}
+        .key-output{font-family:'Courier New',monospace;font-size:0.95rem;min-height:40px;padding:8px 16px;border-radius:10px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);text-align:center;max-width:500px;width:100%;transition:all 0.3s}
+
+        /* Slide 9: Record */
+        .record-demo{max-width:500px;width:100%}
+        .record-fields{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+        .record-field{padding:8px 16px;border-radius:12px;border:1px solid var(--neon-blue);background:rgba(0,212,255,0.06);font-family:'Baloo 2';font-weight:700;text-align:center}
+        .record-field .field-name{font-size:0.8rem;color:var(--neon-blue)}
+        .record-field .field-val{font-size:1.1rem}
+        .immutable-btn{font-family:'Baloo 2';font-size:1rem;font-weight:700;padding:10px 24px;border-radius:14px;border:2px solid var(--neon-pink);background:rgba(255,46,170,0.1);color:var(--neon-pink);cursor:pointer;transition:all 0.2s}
+        .immutable-btn:hover{background:rgba(255,46,170,0.2);transform:scale(1.05)}
+        .immutable-result{min-height:40px;font-family:'Baloo 2';font-weight:700;text-align:center;font-size:1rem}
+
+        /* Slide 10: Flow */
+        .flow-container{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;max-width:800px}
+        .flow-node{padding:10px 16px;border-radius:14px;font-family:'Baloo 2';font-weight:700;font-size:0.95rem;text-align:center;border:2px solid var(--glass-border);background:var(--glass);opacity:0.4;transition:all 0.5s}
+        .flow-node.flow-active{opacity:1;transform:scale(1.05)}
+        .flow-arrow-h{font-size:1.3rem;opacity:0.3;transition:all 0.5s}
+        .flow-arrow-h.flow-active{opacity:1;color:var(--neon-green)}
+        .tick-counter{font-family:'Courier New',monospace;font-size:1.1rem;color:var(--neon-green);min-height:30px;text-align:center}
+
+        /* Slide 11: Timeline */
+        .timeline{display:flex;flex-direction:column;gap:0;max-width:600px;width:100%;position:relative}
+        .timeline::before{content:'';position:absolute;left:30px;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--neon-green),var(--neon-blue),var(--neon-pink));border-radius:3px}
+        .tl-item{display:flex;gap:16px;align-items:center;padding:14px 0;position:relative}
+        .tl-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-left:21px;z-index:1;transition:all 0.3s}
+        .tl-content{font-family:'Baloo 2';font-weight:700;font-size:1.1rem}
+        .tl-sub{font-family:'Nunito';font-weight:400;font-size:0.85rem;opacity:0.6}
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" id="slide0">
+    <div style="font-size:4rem;margin-bottom:8px" class="bounce">&#x2699;&#xFE0F;&#x1F3AE;</div>
+    <h1><span class="gradient-text">Silnik Gry</span></h1>
+    <p class="subtitle" style="font-size:1.6rem;color:var(--neon-blue);font-family:'Baloo 2';font-weight:700">Java na Luzie &#x2014; Sesja 3</p>
+    <p class="subtitle" style="margin-top:8px">Interfejsy, Game Loop i architektura silnika!</p>
+    <div style="margin-top:20px;display:flex;gap:16px;font-size:2rem" class="pulse">&#x1F527; &#x1F4BB; &#x1F680;</div>
+</div>
+
+<!-- SLIDE 2: Co to interfejs? -->
+<div class="slide" id="slide1">
+    <h2><span class="gradient-text">Co to interfejs?</span></h2>
+    <p class="subtitle" style="margin-bottom:12px">Port USB &#x1F50C; = interfejs!</p>
+
+    <div style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;justify-content:center;margin:10px 0">
+        <div class="usb-port" id="usbPort">
+            <div style="font-size:2.5rem">&#x1F50C;</div>
+            <div id="usbPlugged" style="font-size:1.5rem;margin-top:4px"></div>
+            <div class="port-label">interface</div>
+        </div>
+        <div class="usb-devices">
+            <div class="usb-device" onclick="plugDevice(this,'&#x1F5A8;&#xFE0F;','Drukarka')">&#x1F5A8;&#xFE0F;<span class="dev-name">Drukarka</span></div>
+            <div class="usb-device" onclick="plugDevice(this,'&#x1F5B1;&#xFE0F;','Myszka')">&#x1F5B1;&#xFE0F;<span class="dev-name">Myszka</span></div>
+            <div class="usb-device" onclick="plugDevice(this,'&#x1F3AE;','Gamepad')">&#x1F3AE;<span class="dev-name">Gamepad</span></div>
+            <div class="usb-device" onclick="plugDevice(this,'&#x1F4F7;','Kamera')">&#x1F4F7;<span class="dev-name">Kamera</span></div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:600px;text-align:center;margin:8px 0">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.15rem;color:var(--neon-yellow)">Interfejs = kontrakt. Obiecujesz ze cos umiesz.</p>
+    </div>
+
+    <div class="code-block" style="max-width:500px">
+        <span class="kw">public interface</span> <span class="tp">Renderable</span> {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">void</span> <span class="str">render</span>();<br>
+        }
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;margin-top:6px;padding:12px 16px">
+        <p style="font-size:0.9rem;opacity:0.7">&#x1F40D; Python nie ma interfejsow &#x2014; po prostu masz nadzieje ze metoda istnieje (duck typing)</p>
+    </div>
+</div>
+
+<!-- SLIDE 3: Renderable i Updatable -->
+<div class="slide" id="slide2">
+    <h2><span class="gradient-pink">Renderable i Updatable</span></h2>
+
+    <div class="compare-row" style="margin:10px 0">
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-green)">
+                <div class="compare-label" style="color:var(--neon-green)">&#x1F441;&#xFE0F; Renderable</div>
+                <p style="text-align:center;margin-bottom:10px;font-style:italic;opacity:0.8">"Umiem sie narysowac"</p>
+                <div class="code-block" style="max-width:100%;font-size:0.85rem">
+                    <span class="kw">public interface</span> <span class="tp">Renderable</span> {<br>
+                    &nbsp;&nbsp;<span class="kw">void</span> <span class="str">render</span>();<br>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-blue)">
+                <div class="compare-label" style="color:var(--neon-blue)">&#x1F504; Updatable</div>
+                <p style="text-align:center;margin-bottom:10px;font-style:italic;opacity:0.8">"Umiem sie zaktualizowac"</p>
+                <div class="code-block" style="max-width:100%;font-size:0.85rem">
+                    <span class="kw">public interface</span> <span class="tp">Updatable</span> {<br>
+                    &nbsp;&nbsp;<span class="kw">void</span> <span class="str">update</span>(<span class="kw">double</span> <span class="num">dt</span>);<br>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:14px 20px;border-color:var(--neon-yellow)">
+        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.3rem">Proste? <span style="color:var(--neon-green)">TAK.</span> Potezne? <span class="gradient-pink" style="font-size:1.5rem">MEGA.</span></p>
+    </div>
+</div>
+
+<!-- SLIDE 4: Entity implements oba! -->
+<div class="slide" id="slide3">
+    <h2><span class="gradient-yellow">Entity implements oba!</span></h2>
+
+    <div class="plug-diagram" style="margin:16px 0">
+        <div class="plug-box" style="border-color:var(--neon-green);color:var(--neon-green);background:rgba(57,255,20,0.05)" id="plugR" onclick="plugInterface('R')">
+            &#x1F441;&#xFE0F; Renderable
+        </div>
+        <div class="plug-wire" id="wireR"></div>
+        <div class="plug-box" style="border-color:var(--neon-yellow);color:var(--neon-yellow);background:rgba(255,230,0,0.08);font-size:1.3rem" id="entityBox">
+            &#x1F9D1;&#x200D;&#x1F4BB; Entity
+        </div>
+        <div class="plug-wire" id="wireU"></div>
+        <div class="plug-box" style="border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,212,255,0.05)" id="plugU" onclick="plugInterface('U')">
+            &#x1F504; Updatable
+        </div>
+    </div>
+
+    <p style="font-size:0.95rem;opacity:0.7;margin-bottom:8px">&#x1F446; Kliknij interfejsy, zeby je podlaczyc!</p>
+
+    <div class="code-block" id="entityCode" style="max-width:600px;transition:all 0.3s">
+        <span class="kw">public class</span> <span class="tp">Entity</span> {<br>
+        &nbsp;&nbsp;<span class="cm">// czeka na interfejsy...</span><br>
+        }
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;margin-top:8px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.05rem">Jedna klasa moze implementowac <span style="color:var(--neon-pink)">WIELE</span> interfejsow!</p>
+    </div>
+</div>
+
+<!-- SLIDE 5: GameWorld -->
+<div class="slide" id="slide4">
+    <h2><span class="gradient-text">GameWorld &#x2014; twoj swiat</span></h2>
+
+    <div class="game-world-box" id="gameWorld">
+        <div class="world-label">&#x1F30D; GameWorld</div>
+        <div id="worldEntities" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;min-height:100px"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0">
+        <button class="add-entity-btn" style="border-color:var(--neon-green);color:var(--neon-green)" onclick="spawnEntity('&#x1F9DD;','Gracz')">+ &#x1F9DD; Gracz</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-pink);color:var(--neon-pink)" onclick="spawnEntity('&#x1F47A;','Goblin')">+ &#x1F47A; Goblin</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-orange);color:var(--neon-orange)" onclick="spawnEntity('&#x1F432;','Smok')">+ &#x1F432; Smok</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="spawnEntity('&#x1FA99;','Moneta')">+ &#x1FA99; Moneta</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="clearWorld()">&#x1F5D1;&#xFE0F; Wyczysc</button>
+    </div>
+
+    <div class="code-block" style="max-width:550px;font-size:0.85rem">
+        <span class="kw">public class</span> <span class="tp">GameWorld</span> {<br>
+        &nbsp;&nbsp;<span class="kw">private</span> List&lt;<span class="tp">Entity</span>&gt; entities = <span class="kw">new</span> ArrayList&lt;&gt;();<br><br>
+        &nbsp;&nbsp;<span class="kw">void</span> <span class="str">addEntity</span>(<span class="tp">Entity</span> e) { entities.add(e); }<br>
+        &nbsp;&nbsp;<span class="kw">void</span> <span class="str">removeEntity</span>(<span class="tp">Entity</span> e) { entities.remove(e); }<br>
+        &nbsp;&nbsp;List&lt;<span class="tp">Entity</span>&gt; <span class="str">getEntities</span>() { <span class="kw">return</span> entities; }<br>
+        }
+    </div>
+    <p id="entityCount" style="font-family:'Baloo 2';font-weight:700;font-size:1rem;color:var(--neon-green);margin-top:4px">Entities: 0</p>
+</div>
+
+<!-- SLIDE 6: Game Loop - HIGHLIGHT -->
+<div class="slide" id="slide5">
+    <h2><span class="gradient-pink">Game Loop &#x2014; serce kazdej gry &#x2764;&#xFE0F;</span></h2>
+
+    <div style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;justify-content:center;margin:8px 0">
+        <div class="loop-container" id="loopVis">
+            <div class="loop-step s-input" id="loopInput">&#x2328;&#xFE0F;<br>processInput()</div>
+            <div class="loop-arrow a1" id="loopA1">&#x27A1;&#xFE0F;</div>
+            <div class="loop-step s-update" id="loopUpdate">&#x2699;&#xFE0F;<br>update(dt)</div>
+            <div class="loop-arrow a2" id="loopA2">&#x27A1;&#xFE0F;</div>
+            <div class="loop-step s-render" id="loopRender">&#x1F3A8;<br>render()</div>
+            <div class="loop-arrow a3" id="loopA3">&#x27A1;&#xFE0F;</div>
+            <div class="loop-center" id="loopCenter">&#x1F504;</div>
+        </div>
+
+        <div class="code-block" style="max-width:340px;font-size:0.85rem">
+            <span class="kw">while</span> (running) {<br>
+            &nbsp;&nbsp;<span class="str">processInput</span>(); <span class="cm">// klawiatura</span><br>
+            &nbsp;&nbsp;<span class="str">update</span>(dt);      <span class="cm">// fizyka, AI</span><br>
+            &nbsp;&nbsp;<span class="str">render</span>();        <span class="cm">// rysowanie</span><br>
+            }
+        </div>
+    </div>
+
+    <div style="display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap">
+        <button class="add-entity-btn" style="border-color:var(--neon-green);color:var(--neon-green)" id="loopBtn" onclick="toggleGameLoop()">&#x25B6;&#xFE0F; Start!</button>
+        <div class="fps-counter" id="fpsDisplay">FPS: --</div>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;margin-top:8px;padding:12px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem">Ta petla kreci sie <span style="color:var(--neon-green)">60 razy na sekunde</span> w Minecraft! &#x26CF;&#xFE0F;</p>
+    </div>
+</div>
+
+<!-- SLIDE 7: deltaTime -->
+<div class="slide" id="slide6">
+    <h2><span class="gradient-yellow">deltaTime &#x2014; plynny ruch &#x1F3C3;</span></h2>
+
+    <div class="dt-demo">
+        <div class="dt-lane" style="border-color:var(--neon-pink)">
+            <div class="lane-label" style="color:var(--neon-pink)">&#x274C; Bez deltaTime</div>
+            <div class="dt-char" id="dtCharBad" style="left:10px">&#x1F9DD;</div>
+        </div>
+        <div class="dt-lane" style="border-color:var(--neon-green)">
+            <div class="lane-label" style="color:var(--neon-green)">&#x2705; Z deltaTime</div>
+            <div class="dt-char" id="dtCharGood" style="left:10px">&#x1F9DD;</div>
+        </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin:12px 0;justify-content:center">
+        <button class="add-entity-btn" style="border-color:var(--neon-green);color:var(--neon-green)" id="dtBtn" onclick="startDtDemo()">&#x25B6;&#xFE0F; Porownaj!</button>
+        <button class="add-entity-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="resetDtDemo()">&#x1F504; Reset</button>
+    </div>
+
+    <div class="code-block" style="max-width:500px;font-size:0.9rem">
+        <span class="cm">// Zawsze uzywaj deltaTime!</span><br>
+        position += speed * <span class="ann">deltaTime</span>;<br><br>
+        <span class="cm">// deltaTime = czas miedzy klatkami (w sekundach)</span><br>
+        <span class="cm">// Szybki PC: dt = 0.004s, Wolny PC: dt = 0.033s</span><br>
+        <span class="cm">// Efekt: ta sama predkosc na obu!</span>
+    </div>
+</div>
+
+<!-- SLIDE 8: InputHandler -->
+<div class="slide" id="slide7">
+    <h2><span class="gradient-text">InputHandler &#x2328;&#xFE0F;</span></h2>
+
+    <div class="code-block" style="max-width:500px;margin-bottom:12px;font-size:0.85rem">
+        <span class="kw">public interface</span> <span class="tp">InputHandler</span> {<br>
+        &nbsp;&nbsp;<span class="kw">void</span> <span class="str">onKey</span>(<span class="tp">String</span> key);<br>
+        }
+    </div>
+
+    <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">&#x1F447; Kliknij klawisze albo uzyj klawiatury (W/A/S/D)!</p>
+
+    <div class="keyboard-vis" style="margin-bottom:6px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div class="key-cap" id="keyW" onclick="pressKey('W')">W</div>
+            <div style="display:flex;gap:6px">
+                <div class="key-cap" id="keyA" onclick="pressKey('A')">A</div>
+                <div class="key-cap" id="keyS" onclick="pressKey('S')">S</div>
+                <div class="key-cap" id="keyD" onclick="pressKey('D')">D</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-output" id="keyOutput">Nacisnij klawisz...</div>
+
+    <div class="compare-row" style="margin-top:12px;max-width:700px">
+        <div class="compare-col">
+            <div class="glass-card" style="padding:14px;border-color:var(--neon-yellow)">
+                <div class="compare-label" style="color:var(--neon-yellow);font-size:1rem">&#x1F4BB; Teraz (konsola)</div>
+                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                    Scanner sc = <span class="kw">new</span> Scanner(...);<br>
+                    String key = sc.nextLine();
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="padding:14px;border-color:var(--neon-green)">
+                <div class="compare-label" style="color:var(--neon-green);font-size:1rem">&#x1F3AE; Pozniej (LWJGL)</div>
+                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                    <span class="kw">if</span> (glfwGetKey(window,<br>
+                    &nbsp;&nbsp;GLFW_KEY_W) == PRESS)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: Java Record - GameConfig -->
+<div class="slide" id="slide8">
+    <h2><span class="gradient-pink">Java Record &#x2014; GameConfig &#x1F4CB;</span></h2>
+
+    <div class="code-block" style="max-width:600px;margin-bottom:10px">
+        <span class="kw">record</span> <span class="tp">GameConfig</span>(<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">int</span> worldWidth,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">int</span> worldHeight,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">boolean</span> debugMode<br>
+        ) {}
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:12px;border-color:var(--neon-yellow);margin-bottom:10px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-yellow)">Zamiast 50 linii boilerplate &#x2014; jedna linia!</p>
+        <p style="font-size:0.85rem;opacity:0.7;margin-top:4px">Automatycznie dostajesz: constructor, getters, equals(), hashCode(), toString()</p>
+    </div>
+
+    <div class="record-demo">
+        <div class="record-fields" id="recordFields">
+            <div class="record-field"><div class="field-name">worldWidth</div><div class="field-val">800</div></div>
+            <div class="record-field"><div class="field-name">worldHeight</div><div class="field-val">600</div></div>
+            <div class="record-field" style="border-color:var(--neon-green)"><div class="field-name">debugMode</div><div class="field-val" style="color:var(--neon-green)">true</div></div>
+        </div>
+
+        <div style="text-align:center;margin:10px 0">
+            <button class="immutable-btn" onclick="tryMutateRecord()">&#x270F;&#xFE0F; Zmien worldWidth na 1024!</button>
+        </div>
+        <div class="immutable-result" id="immutableResult"></div>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:12px;margin-top:6px">
+        <p style="font-size:0.9rem;opacity:0.7">&#x1F40D; Python: <code>@dataclass(frozen=True)</code> lub <code>namedtuple</code> &#x2014; ten sam pomysl!</p>
+    </div>
+</div>
+
+<!-- SLIDE 10: Wszystko razem -->
+<div class="slide" id="slide9">
+    <h2><span class="gradient-text">Wszystko razem! &#x1F3D7;&#xFE0F;</span></h2>
+
+    <div class="flow-container" id="flowContainer">
+        <div class="flow-node" id="fn0" style="border-color:var(--neon-yellow)">&#x1F4CB; GameConfig</div>
+        <div class="flow-arrow-h" id="fa0">&#x27A1;&#xFE0F;</div>
+        <div class="flow-node" id="fn1" style="border-color:var(--neon-blue)">&#x1F30D; GameWorld</div>
+        <div class="flow-arrow-h" id="fa1">&#x27A1;&#xFE0F;</div>
+        <div class="flow-node" id="fn2" style="border-color:var(--neon-green)">&#x1F9DD; Entities</div>
+        <div class="flow-arrow-h" id="fa2">&#x27A1;&#xFE0F;</div>
+        <div class="flow-node" id="fn3" style="border-color:var(--neon-pink)">&#x1F504; GameLoop</div>
+        <div class="flow-arrow-h" id="fa3">&#x27A1;&#xFE0F;</div>
+        <div class="flow-node" id="fn4" style="border-color:var(--neon-orange)">&#x2699;&#xFE0F; update + render</div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin:12px 0;justify-content:center">
+        <button class="add-entity-btn" style="border-color:var(--neon-green);color:var(--neon-green)" id="flowStartBtn" onclick="startEngineFlow()">&#x25B6;&#xFE0F; Uruchom silnik!</button>
+    </div>
+
+    <div class="tick-counter" id="tickCounter"></div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:12px;margin-top:6px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.05rem">Masz silnik gry! <span style="color:var(--neon-green)">Minecraft zaczal tak samo.</span> &#x26CF;&#xFE0F;</p>
+    </div>
+</div>
+
+<!-- SLIDE 11: Droga do LWJGL -->
+<div class="slide" id="slide10">
+    <h2><span class="gradient-yellow">Droga do LWJGL &#x1F6E4;&#xFE0F;</span></h2>
+
+    <div class="timeline">
+        <div class="tl-item">
+            <div class="tl-dot" style="background:var(--neon-green);box-shadow:0 0 12px var(--neon-green)"></div>
+            <div>
+                <div class="tl-content" style="color:var(--neon-green)">&#x1F4BB; TERAZ: Console rendering</div>
+                <div class="tl-sub">System.out.println("&#x1F9DD; Gracz na pozycji X")</div>
+            </div>
+        </div>
+        <div class="tl-item">
+            <div class="tl-dot" style="background:var(--neon-blue);box-shadow:0 0 12px var(--neon-blue)"></div>
+            <div>
+                <div class="tl-content" style="color:var(--neon-blue)">&#x1F5BC;&#xFE0F; NASTEPNE: LWJGL + OpenGL</div>
+                <div class="tl-sub">Okno, piksele, tekstury, duszki 2D</div>
+            </div>
+        </div>
+        <div class="tl-item">
+            <div class="tl-dot" style="background:var(--neon-pink);box-shadow:0 0 12px var(--neon-pink)"></div>
+            <div>
+                <div class="tl-content" style="color:var(--neon-pink)">&#x1F30D; POZNIEJ: Swiat 3D</div>
+                <div class="tl-sub">Klon Minecrafta! Voxele, kamery, oswietlenie</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:600px;text-align:center;padding:16px;margin-top:12px;border-color:var(--neon-green)">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-green);margin-bottom:8px">Te same interfejsy! Zmienisz tylko implementacje render().</p>
+        <div class="compare-row" style="max-width:100%">
+            <div class="compare-col" style="min-width:200px">
+                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                    <span class="cm">// Teraz</span><br>
+                    <span class="kw">class</span> <span class="tp">ConsoleRenderer</span><br>
+                    &nbsp;&nbsp;<span class="kw">implements</span> <span class="tp">Renderable</span> {<br>
+                    &nbsp;&nbsp;System.out.println(...);<br>
+                    }
+                </div>
+            </div>
+            <div class="compare-col" style="min-width:200px">
+                <div class="code-block" style="max-width:100%;font-size:0.8rem;padding:10px">
+                    <span class="cm">// Pozniej</span><br>
+                    <span class="kw">class</span> <span class="tp">OpenGLRenderer</span><br>
+                    &nbsp;&nbsp;<span class="kw">implements</span> <span class="tp">Renderable</span> {<br>
+                    &nbsp;&nbsp;glDrawArrays(...);<br>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 12: Boss Fight Challenge -->
+<div class="slide" id="slide11">
+    <h2><span class="gradient-pink">&#x1F47E; Boss Fight Challenge!</span></h2>
+
+    <div class="glass-card quest-card" style="margin-top:10px">
+        <div class="quest-title gradient-yellow">&#x2694;&#xFE0F; Stworz interfejs Collidable!</div>
+
+        <div class="quest-item">&#x1F4CC; <b>1.</b> Stworz <code style="color:var(--neon-blue)">public interface Collidable</code></div>
+        <div class="quest-item">&#x1F4CC; <b>2.</b> Dodaj metody:<br>
+            <div class="code-block" style="max-width:100%;margin:8px 0;font-size:0.82rem">
+                <span class="kw">int</span> <span class="str">getX</span>();<br>
+                <span class="kw">int</span> <span class="str">getY</span>();<br>
+                <span class="kw">int</span> <span class="str">getWidth</span>();<br>
+                <span class="kw">int</span> <span class="str">getHeight</span>();
+            </div>
+        </div>
+        <div class="quest-item">&#x1F4CC; <b>3.</b> Napisz metode default:<br>
+            <div class="code-block" style="max-width:100%;margin:8px 0;font-size:0.82rem">
+                <span class="kw">default boolean</span> <span class="str">collidesWith</span>(<span class="tp">Collidable</span> other) {<br>
+                &nbsp;&nbsp;<span class="kw">return</span> getX() &lt; other.getX() + other.getWidth()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; getX() + getWidth() &gt; other.getX()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; getY() &lt; other.getY() + other.getHeight()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&amp;&amp; getY() + getHeight() &gt; other.getY();<br>
+                }
+            </div>
+        </div>
+        <div class="quest-item" style="margin-top:8px">&#x1F3AE; <b>AABB collision detection &#x2014; jak w prawdziwych grach!</b></div>
+    </div>
+</div>
+
+<!-- SLIDE 13: Podsumowanie -->
+<div class="slide" id="slide12">
+    <h2><span class="gradient-text">&#x1F3C6; Podsumowanie</span></h2>
+
+    <div class="glass-card" style="max-width:550px;padding:20px 28px">
+        <ul class="checklist">
+            <li><span class="check">&#x2705;</span> <b>Interfejsy</b> &#x2014; kontrakt, nie implementacja</li>
+            <li><span class="check">&#x2705;</span> <b>implements</b> &#x2014; klasa spelnia obietnice</li>
+            <li><span class="check">&#x2705;</span> <b>Game Loop</b> &#x2014; input &#x2192; update &#x2192; render</li>
+            <li><span class="check">&#x2705;</span> <b>deltaTime</b> &#x2014; plynny ruch niezaleznie od FPS</li>
+            <li><span class="check">&#x2705;</span> <b>GameWorld</b> &#x2014; kontener na encje (scene graph)</li>
+            <li><span class="check">&#x2705;</span> <b>InputHandler</b> &#x2014; abstrakcja nad klawiatura</li>
+            <li><span class="check">&#x2705;</span> <b>Record</b> &#x2014; dane bez boilerplate</li>
+            <li><span class="check">&#x2705;</span> <b>final</b> &#x2014; niemutowalnosc = bezpieczenstwo</li>
+        </ul>
+    </div>
+
+    <div style="margin-top:16px;text-align:center">
+        <div style="font-size:3rem;margin-bottom:8px">&#x1F680;</div>
+        <h3><span class="gradient-pink">Nastepna sesja: Supermoc Javy!</span></h3>
+        <p style="opacity:0.7;font-size:1rem">Generics, kolekcje, Optional i wiecej...</p>
+    </div>
+</div>
+
+</div><!-- /presentation -->
+
+<!-- Navigation -->
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#x25C0;</button>
+    <span class="slide-counter" id="slideCounter">1 / 13</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#x25B6;</button>
+</div>
+
+<script>
+// === NAVIGATION ===
+const totalSlides=13;
+let currentSlide=0;
+
+function changeSlide(d){
+    const slides=document.querySelectorAll('.slide');
+    slides[currentSlide].classList.remove('active');
+    currentSlide=Math.max(0,Math.min(totalSlides-1,currentSlide+d));
+    slides[currentSlide].classList.add('active');
+    updateNav();
+    onSlideEnter(currentSlide);
+}
+
+function updateNav(){
+    document.getElementById('prevBtn').disabled=currentSlide===0;
+    document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;
+    document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;
+    document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';
+}
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}
+    // InputHandler slide keys
+    if(currentSlide===7){
+        const k=e.key.toUpperCase();
+        if(['W','A','S','D'].includes(k)){pressKey(k);}
+    }
+});
+updateNav();
+
+function onSlideEnter(idx){
+    if(idx===5) startGameLoopAnim();
+    if(idx!==5) stopGameLoopAnim();
+    if(idx===6) resetDtDemo();
+}
+
+// === BINARY RAIN ===
+(function(){
+    const rain=document.getElementById('rain');
+    const chars='01{}();.interface implements void update render loop dt GameWorld Entity';
+    const words=chars.split(' ');
+    for(let i=0;i<30;i++){
+        const s=document.createElement('span');
+        s.textContent=words[Math.floor(Math.random()*words.length)];
+        s.style.left=Math.random()*100+'vw';
+        s.style.animationDuration=(6+Math.random()*10)+'s';
+        s.style.animationDelay=Math.random()*8+'s';
+        s.style.fontSize=(0.8+Math.random()*0.6)+'rem';
+        rain.appendChild(s);
+    }
+})();
+
+// === SFX ===
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+function sfx(freq,dur){try{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=freq;g.gain.value=0.06;o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}catch(e){}}
+
+// === CONFETTI ===
+function spawnConfetti(el){
+    const rect=el.getBoundingClientRect();
+    const burst=document.createElement('div');
+    burst.style.cssText='position:fixed;pointer-events:none;z-index:100;left:'+(rect.left+rect.width/2)+'px;top:'+rect.top+'px';
+    const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];
+    for(let i=0;i<30;i++){
+        const c=document.createElement('div');
+        const fy=-50-Math.random()*150;
+        const fx=(Math.random()-0.5)*250;
+        c.style.cssText='position:absolute;width:8px;height:8px;border-radius:2px;background:'+colors[Math.floor(Math.random()*colors.length)]+';transition:all '+(0.6+Math.random()*0.8)+'s ease-out;opacity:1;left:0;top:0';
+        burst.appendChild(c);
+        requestAnimationFrame(()=>{c.style.transform='translate('+fx+'px,'+fy+'px)';c.style.opacity='0';});
+    }
+    document.body.appendChild(burst);
+    setTimeout(()=>burst.remove(),2500);
+}
+
+// === SLIDE 2: USB Interface ===
+function plugDevice(btn,emoji,name){
+    sfx(600,0.15);
+    document.querySelectorAll('.usb-device').forEach(d=>d.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('usbPort').classList.add('plugged');
+    document.getElementById('usbPlugged').textContent=emoji;
+    document.getElementById('usbPlugged').style.animation='popIn 0.4s ease';
+    setTimeout(()=>{document.getElementById('usbPlugged').style.animation='';},400);
+}
+
+// === SLIDE 4: Plug interfaces ===
+let pluggedR=false,pluggedU=false;
+function plugInterface(which){
+    sfx(500,0.15);
+    if(which==='R'){
+        pluggedR=!pluggedR;
+        document.getElementById('wireR').classList.toggle('connected',pluggedR);
+        document.getElementById('plugR').style.background=pluggedR?'rgba(57,255,20,0.15)':'rgba(57,255,20,0.05)';
+    } else {
+        pluggedU=!pluggedU;
+        document.getElementById('wireU').classList.toggle('connected',pluggedU);
+        document.getElementById('plugU').style.background=pluggedU?'rgba(0,212,255,0.15)':'rgba(0,212,255,0.05)';
+    }
+    updateEntityCode();
+}
+
+function updateEntityCode(){
+    const el=document.getElementById('entityCode');
+    let impl=[];
+    if(pluggedR) impl.push('<span class="tp">Renderable</span>');
+    if(pluggedU) impl.push('<span class="tp">Updatable</span>');
+    let implStr=impl.length?' <span class="kw">implements</span> '+impl.join(', '):'';
+    let body='';
+    if(pluggedR) body+='&nbsp;&nbsp;<span class="ann">@Override</span><br>&nbsp;&nbsp;<span class="kw">public void</span> <span class="str">render</span>() {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="str">"Rysuje!"</span>);<br>&nbsp;&nbsp;}<br>';
+    if(pluggedU) body+='&nbsp;&nbsp;<span class="ann">@Override</span><br>&nbsp;&nbsp;<span class="kw">public void</span> <span class="str">update</span>(<span class="kw">double</span> <span class="num">dt</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// aktualizuj logike</span><br>&nbsp;&nbsp;}<br>';
+    if(!body) body='&nbsp;&nbsp;<span class="cm">// czeka na interfejsy...</span><br>';
+    el.innerHTML='<span class="kw">public class</span> <span class="tp">Entity</span>'+implStr+' {<br>'+body+'}';
+    if(pluggedR&&pluggedU){
+        spawnConfetti(document.getElementById('entityBox'));
+        document.getElementById('entityBox').style.boxShadow='0 0 30px rgba(255,230,0,0.4)';
+    } else {
+        document.getElementById('entityBox').style.boxShadow='';
+    }
+}
+
+// === SLIDE 5: GameWorld ===
+let worldEntities=[];
+function spawnEntity(emoji,name){
+    sfx(700,0.12);
+    worldEntities.push({emoji,name});
+    renderWorld();
+}
+function clearWorld(){
+    sfx(300,0.1);
+    worldEntities=[];
+    renderWorld();
+}
+function renderWorld(){
+    const el=document.getElementById('worldEntities');
+    el.innerHTML='';
+    worldEntities.forEach((e,i)=>{
+        const div=document.createElement('div');
+        div.className='entity-sprite';
+        div.innerHTML=e.emoji+'<span class="ent-name">'+e.name+'</span>';
+        div.style.animationDelay=(i*0.05)+'s';
+        div.onclick=()=>{sfx(400,0.1);worldEntities.splice(i,1);renderWorld();};
+        el.appendChild(div);
+    });
+    document.getElementById('entityCount').textContent='Entities: '+worldEntities.length;
+    if(worldEntities.length>0) document.getElementById('entityCount').style.color='var(--neon-green)';
+}
+
+// === SLIDE 6: Game Loop Animation ===
+let loopAnimId=null;
+let loopRunning=false;
+let loopStep=0;
+let loopFps=0;
+let loopLastTime=0;
+let loopFrameCount=0;
+
+function toggleGameLoop(){
+    if(loopRunning){
+        stopGameLoopAnim();
+        document.getElementById('loopBtn').innerHTML='&#x25B6;&#xFE0F; Start!';
+    } else {
+        startGameLoopAnim();
+        document.getElementById('loopBtn').innerHTML='&#x23F8;&#xFE0F; Stop';
+    }
+}
+
+function startGameLoopAnim(){
+    if(loopRunning) return;
+    loopRunning=true;
+    loopLastTime=performance.now();
+    loopFrameCount=0;
+    animateLoop();
+}
+
+function stopGameLoopAnim(){
+    loopRunning=false;
+    if(loopAnimId) cancelAnimationFrame(loopAnimId);
+    loopAnimId=null;
+    document.getElementById('fpsDisplay').textContent='FPS: --';
+    document.querySelectorAll('.loop-step').forEach(s=>s.classList.remove('active-step'));
+    document.querySelectorAll('.loop-arrow').forEach(a=>a.classList.remove('active-arrow'));
+    const btn=document.getElementById('loopBtn');
+    if(btn) btn.innerHTML='&#x25B6;&#xFE0F; Start!';
+}
+
+function animateLoop(){
+    if(!loopRunning) return;
+    const now=performance.now();
+    loopFrameCount++;
+    if(now-loopLastTime>=1000){
+        loopFps=loopFrameCount;
+        loopFrameCount=0;
+        loopLastTime=now;
+        document.getElementById('fpsDisplay').textContent='FPS: '+loopFps;
+    }
+
+    const cycle=Math.floor(now/600)%3;
+    const steps=document.querySelectorAll('.loop-step');
+    const arrows=document.querySelectorAll('.loop-arrow');
+    steps.forEach(s=>s.classList.remove('active-step'));
+    arrows.forEach(a=>a.classList.remove('active-arrow'));
+
+    if(cycle===0){
+        document.getElementById('loopInput').classList.add('active-step');
+        document.getElementById('loopA3').classList.add('active-arrow');
+    } else if(cycle===1){
+        document.getElementById('loopUpdate').classList.add('active-step');
+        document.getElementById('loopA1').classList.add('active-arrow');
+    } else {
+        document.getElementById('loopRender').classList.add('active-step');
+        document.getElementById('loopA2').classList.add('active-arrow');
+    }
+
+    document.getElementById('loopCenter').style.transform='translate(-50%,-50%) rotate('+(now/10%360)+'deg)';
+    loopAnimId=requestAnimationFrame(animateLoop);
+}
+
+// === SLIDE 7: deltaTime demo ===
+let dtAnimId=null;
+let dtRunning=false;
+
+function startDtDemo(){
+    if(dtRunning) return;
+    dtRunning=true;
+    document.getElementById('dtBtn').innerHTML='&#x23F3; Trwa...';
+    document.getElementById('dtBtn').disabled=true;
+
+    let badPos=10, goodPos=10;
+    let lastTime=performance.now();
+    let badSpeed=2; // pixels per "frame" - no dt
+    let goodSpeed=150; // pixels per second - with dt
+    let badJitter=0;
+
+    function step(now){
+        if(!dtRunning) return;
+        const dt=(now-lastTime)/1000;
+        lastTime=now;
+
+        // Bad: inconsistent movement (simulate frame drops)
+        badJitter++;
+        if(badJitter%3===0) badPos+=badSpeed*3; // skip frames
+        else if(badJitter%7===0) badPos+=badSpeed*0.3; // lag
+        else badPos+=badSpeed;
+
+        // Good: consistent with dt
+        goodPos+=goodSpeed*dt;
+
+        const lane=document.querySelector('.dt-lane');
+        const maxX=lane?lane.offsetWidth-40:300;
+
+        document.getElementById('dtCharBad').style.left=Math.min(badPos,maxX)+'px';
+        document.getElementById('dtCharGood').style.left=Math.min(goodPos,maxX)+'px';
+
+        if(goodPos<maxX){
+            dtAnimId=requestAnimationFrame(step);
+        } else {
+            dtRunning=false;
+            document.getElementById('dtBtn').innerHTML='&#x25B6;&#xFE0F; Porownaj!';
+            document.getElementById('dtBtn').disabled=false;
+        }
+    }
+    dtAnimId=requestAnimationFrame(step);
+}
+
+function resetDtDemo(){
+    dtRunning=false;
+    if(dtAnimId) cancelAnimationFrame(dtAnimId);
+    document.getElementById('dtCharBad').style.left='10px';
+    document.getElementById('dtCharGood').style.left='10px';
+    document.getElementById('dtBtn').innerHTML='&#x25B6;&#xFE0F; Porownaj!';
+    document.getElementById('dtBtn').disabled=false;
+}
+
+// === SLIDE 8: InputHandler ===
+function pressKey(key){
+    sfx(400+['W','A','S','D'].indexOf(key)*100,0.1);
+    const el=document.getElementById('key'+key);
+    el.classList.add('pressed');
+    setTimeout(()=>el.classList.remove('pressed'),200);
+
+    const dirs={W:'GORA &#x2B06;&#xFE0F;',A:'LEWO &#x2B05;&#xFE0F;',S:'DOL &#x2B07;&#xFE0F;',D:'PRAWO &#x27A1;&#xFE0F;'};
+    const output=document.getElementById('keyOutput');
+    output.innerHTML='<span style="color:var(--neon-green)">onKey("'+key+'")  &#x2192;  '+dirs[key]+'</span>';
+    output.style.borderColor='var(--neon-green)';
+    setTimeout(()=>{output.style.borderColor='var(--glass-border)';},800);
+}
+
+// === SLIDE 9: Record immutability ===
+let mutateAttempts=0;
+function tryMutateRecord(){
+    sfx(200,0.2);
+    mutateAttempts++;
+    const el=document.getElementById('immutableResult');
+    const msgs=[
+        '<span style="color:var(--neon-pink)">&#x274C; BLAD! Record jest immutable (niemutowalny)!</span>',
+        '<span style="color:var(--neon-pink)">&#x274C; Nie da sie! Pola w record sa final!</span>',
+        '<span style="color:var(--neon-pink)">&#x274C; Serio nie mozna! Stworz nowy record zamiast tego.</span>',
+        '<span style="color:var(--neon-orange)">&#x1F605; Daj spokoj, records sa IMMUTABLE na zawsze!</span>'
+    ];
+    el.innerHTML=msgs[Math.min(mutateAttempts-1,msgs.length-1)];
+    el.style.animation='shake 0.4s ease';
+    setTimeout(()=>{el.style.animation='';},400);
+
+    // Shake the fields
+    document.getElementById('recordFields').style.animation='shake 0.3s ease';
+    setTimeout(()=>{document.getElementById('recordFields').style.animation='';},300);
+}
+
+// === SLIDE 10: Engine flow ===
+let flowRunning=false;
+let flowAnimId=null;
+let tickCount=0;
+
+function startEngineFlow(){
+    if(flowRunning){
+        flowRunning=false;
+        if(flowAnimId) cancelAnimationFrame(flowAnimId);
+        document.getElementById('flowStartBtn').innerHTML='&#x25B6;&#xFE0F; Uruchom silnik!';
+        resetFlowNodes();
+        return;
+    }
+
+    flowRunning=true;
+    tickCount=0;
+    document.getElementById('flowStartBtn').innerHTML='&#x23F8;&#xFE0F; Zatrzymaj';
+    resetFlowNodes();
+
+    let step=0;
+    function animStep(){
+        if(!flowRunning) return;
+        if(step<=4){
+            sfx(400+step*80,0.12);
+            document.getElementById('fn'+step).classList.add('flow-active');
+            document.getElementById('fn'+step).style.borderColor=['var(--neon-yellow)','var(--neon-blue)','var(--neon-green)','var(--neon-pink)','var(--neon-orange)'][step];
+            if(step>0) document.getElementById('fa'+(step-1)).classList.add('flow-active');
+            step++;
+            setTimeout(animStep,500);
+        } else {
+            // Start ticking
+            spawnConfetti(document.getElementById('fn4'));
+            tickLoop();
+        }
+    }
+    animStep();
+}
+
+function tickLoop(){
+    if(!flowRunning) return;
+    tickCount++;
+    document.getElementById('tickCounter').innerHTML='Tick #'+tickCount+' &#x2014; <span style="color:var(--neon-blue)">update()</span> &#x2192; <span style="color:var(--neon-green)">render()</span>';
+
+    // Pulse the last two nodes
+    const updateNode=document.getElementById('fn3');
+    const renderNode=document.getElementById('fn4');
+    updateNode.style.boxShadow='0 0 20px rgba(255,46,170,0.4)';
+    renderNode.style.boxShadow='0 0 20px rgba(255,107,43,0.4)';
+    setTimeout(()=>{
+        if(!flowRunning) return;
+        updateNode.style.boxShadow='';
+        renderNode.style.boxShadow='';
+    },300);
+
+    setTimeout(()=>tickLoop(),600);
+}
+
+function resetFlowNodes(){
+    tickCount=0;
+    document.getElementById('tickCounter').textContent='';
+    for(let i=0;i<5;i++){
+        document.getElementById('fn'+i).classList.remove('flow-active');
+        document.getElementById('fn'+i).style.boxShadow='';
+        if(i<4) document.getElementById('fa'+i).classList.remove('flow-active');
+    }
+}
+</script>
+</body>
+</html>

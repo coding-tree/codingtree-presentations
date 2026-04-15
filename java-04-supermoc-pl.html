@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermoc Javy - Java na Luzie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#0b0e2d;--bg-mid:#131847;--neon-green:#39ff14;--neon-blue:#00d4ff;--neon-pink:#ff2eaa;--neon-yellow:#ffe600;--neon-orange:#ff6b2b;--soft-white:#e8eaff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12)}
+        body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--soft-white);min-height:100vh;overflow:hidden}
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(57,255,20,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,20,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none}
+        .bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;filter:blur(120px);opacity:0.15;pointer-events:none;z-index:0}
+        .bg-glow.g1{background:var(--neon-blue);top:-200px;left:-100px}
+        .bg-glow.g2{background:var(--neon-pink);bottom:-200px;right:-100px}
+        .bg-glow.g3{background:var(--neon-green);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07}
+        .binary-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+        .binary-rain span{position:absolute;top:-40px;font-family:'Baloo 2',monospace;font-size:1.1rem;color:var(--neon-green);opacity:0.08;animation:rain linear infinite}
+        @keyframes rain{to{transform:translateY(110vh)}}
+        .presentation{width:100vw;height:100vh;position:relative;z-index:1}
+        .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:30px 20px 110px;animation:slideIn 0.5s ease;overflow-y:auto;gap:8px}
+        .slide.active{display:flex}
+        @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+        h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.8rem;text-align:center;line-height:1.15;margin-bottom:8px}
+        h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:2.4rem;margin-bottom:8px;text-align:center}
+        h3{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.6rem;margin-bottom:4px;text-align:center}
+        .gradient-text{background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-pink{background:linear-gradient(135deg,var(--neon-pink),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .gradient-yellow{background:linear-gradient(135deg,var(--neon-yellow),var(--neon-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .glass-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;padding:20px;backdrop-filter:blur(10px)}
+        .subtitle{font-size:1.4rem;opacity:0.8;text-align:center;max-width:700px}
+        .code-block{background:rgba(0,0,0,0.4);border:1px solid var(--glass-border);border-radius:16px;padding:16px 20px;font-family:'Courier New',monospace;font-size:0.9rem;line-height:1.6;text-align:left;overflow-x:auto;max-width:700px;width:100%}
+        .kw{color:var(--neon-pink);font-weight:700}
+        .tp{color:var(--neon-blue)}
+        .str{color:var(--neon-green)}
+        .num{color:var(--neon-orange)}
+        .cm{color:rgba(255,255,255,0.35);font-style:italic}
+        .ann{color:var(--neon-yellow)}
+        .compare-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:900px;width:100%}
+        .compare-col{flex:1;min-width:280px}
+        .compare-col .glass-card{height:100%}
+        .compare-label{font-family:'Baloo 2';font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:8px}
+        .checklist{list-style:none;text-align:left;font-size:1.15rem;line-height:2}
+        .checklist li{padding-left:8px}
+        .check{color:var(--neon-green);font-weight:700;margin-right:8px}
+        .quest-card{max-width:600px;width:100%;border:2px solid var(--neon-orange);position:relative;overflow:hidden}
+        .quest-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,107,43,0.08),rgba(255,46,170,0.05));pointer-events:none}
+        .quest-title{font-family:'Baloo 2';font-weight:800;font-size:1.6rem;text-align:center;margin-bottom:12px}
+        .quest-item{font-size:1.05rem;line-height:1.8;padding-left:4px}
+        .nav{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:16px;align-items:center;z-index:50;background:rgba(11,14,45,0.85);backdrop-filter:blur(12px);padding:12px 24px;border-radius:20px;border:1px solid var(--glass-border)}
+        .nav-btn{width:56px;height:56px;border-radius:16px;border:2px solid var(--glass-border);background:var(--glass);color:var(--soft-white);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .nav-btn:hover:not(:disabled){border-color:var(--neon-blue);background:rgba(0,212,255,0.1)}
+        .nav-btn:disabled{opacity:0.3;cursor:default}
+        .slide-counter{font-family:'Baloo 2',monospace;font-size:1.1rem;font-weight:700;opacity:0.6;min-width:60px;text-align:center}
+        .progress-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));transition:width 0.4s ease;z-index:50;border-radius:0 2px 2px 0}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        .bounce{animation:bounce 1s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .pulse{animation:pulse 1.5s ease-in-out infinite}
+        @keyframes popIn{from{transform:scale(0) rotate(-180deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+        /* Slide 2: println vs logger */
+        .crossed-out{position:relative}
+        .crossed-out::after{content:'';position:absolute;left:-5px;right:-5px;top:50%;height:4px;background:var(--neon-pink);border-radius:2px;transform:rotate(-3deg)}
+
+        /* Slide 3: Log levels */
+        .log-level-card{padding:14px 20px;border-radius:16px;cursor:pointer;transition:all 0.3s;border:2px solid;text-align:left;max-width:600px;width:100%}
+        .log-level-card:hover{transform:scale(1.02)}
+        .log-level-card.active-level{transform:scale(1.03)}
+        .log-level-name{font-family:'Baloo 2';font-weight:800;font-size:1.2rem}
+        .log-level-example{font-family:'Courier New',monospace;font-size:0.85rem;margin-top:6px;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.3);display:none;animation:slideIn 0.3s ease}
+        .log-level-card.active-level .log-level-example{display:block}
+
+        /* Slide 4: logback toggle */
+        .config-toggle{display:flex;gap:8px;justify-content:center;margin:8px 0}
+        .config-btn{font-family:'Baloo 2';font-size:1rem;font-weight:700;padding:8px 20px;border-radius:14px;border:2px solid;cursor:pointer;transition:all 0.3s;background:transparent}
+        .config-btn:hover{transform:scale(1.05)}
+        .config-btn.active-cfg{box-shadow:0 0 15px}
+
+        /* Slide 5: Lambda transform */
+        .transform-btn{font-family:'Baloo 2';font-size:1.1rem;font-weight:700;padding:12px 28px;border-radius:16px;border:2px solid var(--neon-green);background:rgba(57,255,20,0.1);color:var(--neon-green);cursor:pointer;transition:all 0.3s}
+        .transform-btn:hover{background:rgba(57,255,20,0.2);transform:scale(1.05);box-shadow:0 0 20px rgba(57,255,20,0.3)}
+
+        /* Slide 6: forEach upgrade */
+        .upgrade-btn{font-family:'Baloo 2';font-size:1.1rem;font-weight:700;padding:12px 28px;border-radius:16px;border:2px solid var(--neon-blue);background:rgba(0,212,255,0.1);color:var(--neon-blue);cursor:pointer;transition:all 0.3s}
+        .upgrade-btn:hover{background:rgba(0,212,255,0.2);transform:scale(1.05);box-shadow:0 0 20px rgba(0,212,255,0.3)}
+
+        /* Slide 7: Stream pipeline */
+        .pipeline-container{display:flex;align-items:center;gap:0;justify-content:center;flex-wrap:wrap;max-width:900px;width:100%;margin:10px 0}
+        .pipe-stage{padding:12px 16px;border-radius:18px;text-align:center;font-family:'Baloo 2';font-weight:700;font-size:0.95rem;transition:all 0.4s;border:2px solid;min-width:100px;position:relative}
+        .pipe-arrow{font-size:1.5rem;color:var(--neon-green);opacity:0.4;transition:all 0.3s;margin:0 4px}
+        .pipe-arrow.active-pipe{opacity:1;animation:pulse 0.8s ease-in-out infinite}
+        .pipe-items{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:40px;padding:8px;border-radius:12px;background:rgba(0,0,0,0.2);border:1px solid var(--glass-border);max-width:700px;width:100%;transition:all 0.5s}
+        .pipe-item{padding:4px 10px;border-radius:8px;font-family:'Baloo 2';font-weight:700;font-size:0.85rem;transition:all 0.4s;border:1px solid}
+        .pipe-item.filtered-out{opacity:0.15;transform:scale(0.8);text-decoration:line-through}
+        .pipe-item.mapped{border-color:var(--neon-blue);background:rgba(0,212,255,0.15)}
+
+        /* Slide 8: Stream action filter buttons */
+        .filter-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+        .filter-btn{font-family:'Baloo 2';font-size:0.95rem;font-weight:700;padding:8px 16px;border-radius:12px;border:2px solid;cursor:pointer;transition:all 0.3s;background:transparent}
+        .filter-btn:hover{transform:scale(1.05)}
+        .filter-btn.active-filter{box-shadow:0 0 15px}
+        .stream-result-item{padding:4px 12px;border-radius:8px;font-family:'Courier New',monospace;font-size:0.9rem;transition:all 0.4s;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border)}
+
+        /* Slide 9: Optional paths */
+        .optional-input{font-family:'Courier New',monospace;font-size:1rem;padding:10px 16px;border-radius:12px;border:2px solid var(--neon-blue);background:rgba(0,0,0,0.4);color:var(--soft-white);outline:none;width:200px;text-align:center;transition:all 0.3s}
+        .optional-input:focus{border-color:var(--neon-green);box-shadow:0 0 15px rgba(57,255,20,0.2)}
+        .optional-result{padding:12px 20px;border-radius:14px;font-family:'Baloo 2';font-weight:700;font-size:1.1rem;text-align:center;transition:all 0.4s;min-height:50px;max-width:500px;width:100%}
+
+        /* Slide 10: Method ref swap */
+        .ref-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;max-width:700px;width:100%;margin:4px 0}
+        .ref-card{padding:10px 18px;border-radius:14px;border:2px solid var(--glass-border);background:var(--glass);cursor:pointer;transition:all 0.3s;text-align:center}
+        .ref-card:hover{transform:scale(1.03)}
+        .ref-card .ref-lambda{font-family:'Courier New',monospace;font-size:0.85rem;color:var(--neon-yellow)}
+        .ref-card .ref-method{font-family:'Courier New',monospace;font-size:0.85rem;color:var(--neon-green);display:none}
+        .ref-card.swapped .ref-lambda{display:none}
+        .ref-card.swapped .ref-method{display:block}
+        .ref-card .ref-arrow{font-size:1.2rem;margin:4px 0;transition:all 0.3s}
+        .ref-card.swapped{border-color:var(--neon-green);background:rgba(57,255,20,0.08)}
+
+        /* Slide 11: Functional interfaces */
+        .fi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:700px;width:100%}
+        .fi-card{text-align:center;padding:16px 12px;transition:all 0.3s;cursor:pointer}
+        .fi-card:hover{transform:scale(1.03)}
+        .fi-card .fi-emoji{font-size:2.2rem;margin-bottom:4px}
+        .fi-card .fi-name{font-family:'Baloo 2';font-weight:800;font-size:1.1rem}
+        .fi-card .fi-desc{font-size:0.85rem;opacity:0.7;margin:4px 0}
+        .fi-card .fi-code{font-family:'Courier New',monospace;font-size:0.8rem;color:var(--neon-green);margin-top:6px}
+
+        /* Slide 12: Before/After */
+        .line-count{font-family:'Baloo 2';font-weight:800;font-size:2rem;text-align:center;margin-top:6px}
+        .line-bar{height:12px;border-radius:6px;transition:width 1s ease;margin:4px 0}
+
+        /* Slide 14: celebration */
+        .pixel-block{width:24px;height:24px;border-radius:4px;display:inline-block;margin:1px}
+        .celebration-checklist{list-style:none;text-align:left;font-size:1.15rem;line-height:2.2}
+        .celebration-checklist li{padding-left:8px;transition:all 0.3s}
+
+        @media(max-width:600px){
+            h1{font-size:2.5rem}
+            h2{font-size:1.8rem}
+            .fi-grid{grid-template-columns:1fr}
+            .pipeline-container{flex-direction:column}
+            .pipe-arrow{transform:rotate(90deg)}
+        }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="bg-glow g3"></div>
+<div class="binary-rain" id="rain"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="presentation">
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" id="slide0">
+    <div style="font-size:4rem;margin-bottom:8px" class="bounce">&#x26A1;&#x1F680;</div>
+    <h1><span class="gradient-text">Supermoc Javy</span></h1>
+    <p class="subtitle" style="font-size:1.6rem;color:var(--neon-blue);font-family:'Baloo 2';font-weight:700">Java na Luzie &#x2014; Sesja 4</p>
+    <p class="subtitle" style="margin-top:8px">Loggery, lambdy, streamy &#x2014; nowoczesna Java!</p>
+    <div style="margin-top:20px;display:flex;gap:16px;font-size:2rem" class="pulse">&#x1F4DD; &#x1F9E9; &#x1F300;</div>
+</div>
+
+<!-- SLIDE 2: Koniec z println! -->
+<div class="slide" id="slide1">
+    <h2><span class="gradient-pink">Koniec z println!</span></h2>
+
+    <div class="compare-row" style="margin:10px 0">
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-pink)">
+                <div class="compare-label" style="color:var(--neon-pink)">&#x274C; Stary sposob</div>
+                <div class="code-block crossed-out" style="max-width:100%;font-size:0.85rem">
+                    System.out.<span class="str">println</span>(<span class="str">"cos tam"</span>);
+                </div>
+                <p style="text-align:center;margin-top:8px;font-size:0.85rem;opacity:0.6">Brak poziomow, brak formatu, brak kontroli</p>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.1)">
+                <div class="compare-label" style="color:var(--neon-green)">&#x2705; Nowy sposob</div>
+                <div class="code-block" style="max-width:100%;font-size:0.85rem;border-color:var(--neon-green)">
+                    logger.<span class="str">info</span>(<span class="str">"cos tam: {}"</span>, value);
+                </div>
+                <p style="text-align:center;margin-top:8px;font-size:0.85rem;color:var(--neon-green)">Poziomy, formatowanie, kontrola wyjscia!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:600px;text-align:center;padding:14px 20px;border-color:var(--neon-yellow)">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.15rem;color:var(--neon-yellow)">&#x1F3AF; Kazdy powazny projekt Java uzywa loggerow!</p>
+        <p style="font-size:0.9rem;opacity:0.7;margin-top:4px">SLF4J + Logback = standardowa para w swiecie Java</p>
+    </div>
+
+    <div class="code-block" style="max-width:550px;font-size:0.85rem">
+        <span class="kw">private static final</span> <span class="tp">Logger</span> logger =<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="tp">LoggerFactory</span>.<span class="str">getLogger</span>(Game.<span class="kw">class</span>);
+    </div>
+</div>
+
+<!-- SLIDE 3: Poziomy logowania -->
+<div class="slide" id="slide2">
+    <h2><span class="gradient-text">Poziomy logowania</span> &#x1F4CA;</h2>
+    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Kliknij poziom, zeby zobaczyc przyklad!</p>
+
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:600px;width:100%">
+        <div class="log-level-card" style="border-color:#888;color:#aaa" onclick="toggleLogLevel(this,0)">
+            <div class="log-level-name">&#x1F50D; DEBUG <span style="font-size:0.8rem;opacity:0.6">— szczegoly dla programisty</span></div>
+            <div class="log-level-example">
+                <span style="color:#888">DEBUG</span> Obliczam obrazenia: atak=15, obrona=8, wynik=<span class="num">7</span>
+            </div>
+        </div>
+        <div class="log-level-card" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="toggleLogLevel(this,1)">
+            <div class="log-level-name">&#x2139;&#xFE0F; INFO <span style="font-size:0.8rem;opacity:0.6">— zdarzenia w grze</span></div>
+            <div class="log-level-example">
+                <span style="color:var(--neon-blue)">INFO</span> Gracz wszedl do lokacji: <span class="str">Ciemna Jaskinia</span>
+            </div>
+        </div>
+        <div class="log-level-card" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="toggleLogLevel(this,2)">
+            <div class="log-level-name">&#x26A0;&#xFE0F; WARN <span style="font-size:0.8rem;opacity:0.6">— uwaga, cos nie tak</span></div>
+            <div class="log-level-example">
+                <span style="color:var(--neon-yellow)">WARN</span> Zdrowie gracza niskie: <span class="num">12</span>/<span class="num">100</span> HP!
+            </div>
+        </div>
+        <div class="log-level-card" style="border-color:var(--neon-pink);color:var(--neon-pink)" onclick="toggleLogLevel(this,3)">
+            <div class="log-level-name">&#x1F4A5; ERROR <span style="font-size:0.8rem;opacity:0.6">— cos sie zepsulo!</span></div>
+            <div class="log-level-example">
+                <span style="color:var(--neon-pink)">ERROR</span> Nie mozna zaladowac mapy: <span class="str">FileNotFoundException</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:12px 16px;margin-top:6px">
+        <p style="font-size:0.9rem;opacity:0.8">&#x1F4A1; DEBUG &lt; INFO &lt; WARN &lt; ERROR &#x2014; ustawiasz minimalny poziom, reszta jest filtrowana!</p>
+    </div>
+</div>
+
+<!-- SLIDE 4: logback.xml -->
+<div class="slide" id="slide3">
+    <h2><span class="gradient-yellow">logback.xml</span> &#x2699;&#xFE0F;</h2>
+    <p class="subtitle" style="font-size:1rem;margin-bottom:6px">Konfiguracja loggera &#x2014; jeden plik rządzi wszystkim!</p>
+
+    <div class="config-toggle">
+        <button class="config-btn active-cfg" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="setLogLevel('DEBUG')" id="cfgDebug">DEBUG</button>
+        <button class="config-btn" style="border-color:var(--neon-green);color:var(--neon-green)" onclick="setLogLevel('INFO')" id="cfgInfo">INFO</button>
+        <button class="config-btn" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="setLogLevel('WARN')" id="cfgWarn">WARN</button>
+    </div>
+
+    <div class="code-block" style="max-width:620px;font-size:0.8rem" id="logbackCode">
+        <span class="cm">&lt;!-- logback.xml --&gt;</span><br>
+        <span class="kw">&lt;configuration&gt;</span><br>
+        &nbsp;&nbsp;<span class="kw">&lt;appender</span> name=<span class="str">"CONSOLE"</span> class=<span class="str">"...ConsoleAppender"</span><span class="kw">&gt;</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">&lt;encoder&gt;</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">&lt;pattern&gt;</span><span class="ann">%d{HH:mm:ss}</span> <span class="tp">%highlight(%-5level)</span> <span class="str">%msg%n</span><span class="kw">&lt;/pattern&gt;</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">&lt;/encoder&gt;</span><br>
+        &nbsp;&nbsp;<span class="kw">&lt;/appender&gt;</span><br><br>
+        &nbsp;&nbsp;<span class="kw">&lt;root</span> level=<span class="str" id="logLevelAttr">"DEBUG"</span><span class="kw">&gt;</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">&lt;appender-ref</span> ref=<span class="str">"CONSOLE"</span> <span class="kw">/&gt;</span><br>
+        &nbsp;&nbsp;<span class="kw">&lt;/root&gt;</span><br>
+        <span class="kw">&lt;/configuration&gt;</span>
+    </div>
+
+    <div style="max-width:620px;width:100%;margin-top:6px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.95rem;margin-bottom:4px">Wyjscie konsoli:</p>
+        <div class="code-block" style="max-width:100%;font-size:0.8rem;min-height:90px" id="logOutput">
+            <span style="color:#888">14:23:01 DEBUG Obliczam: atak=15</span><br>
+            <span style="color:var(--neon-blue)">14:23:01 INFO  Gracz atakuje Goblina</span><br>
+            <span style="color:var(--neon-yellow)">14:23:02 WARN  Niskie HP: 12/100</span><br>
+            <span style="color:var(--neon-pink)">14:23:03 ERROR Brak pliku: mapa.json</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: Lambda -->
+<div class="slide" id="slide4">
+    <h2><span class="gradient-text">Lambda &#x2014; funkcja w jednej linii</span> &#x26A1;</h2>
+
+    <div class="compare-row" style="margin:8px 0">
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-yellow)">
+                <div class="compare-label" style="color:var(--neon-yellow)">&#x1F40D; Python</div>
+                <div class="code-block" style="max-width:100%;font-size:0.9rem">
+                    <span class="kw">lambda</span> x: x + <span class="num">1</span>
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-green)">
+                <div class="compare-label" style="color:var(--neon-green)">&#x2615; Java</div>
+                <div class="code-block" style="max-width:100%;font-size:0.9rem">
+                    x <span class="kw">-&gt;</span> x + <span class="num">1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p style="font-family:'Baloo 2';font-weight:700;font-size:1.1rem;color:var(--neon-green);text-align:center">Prawie to samo! Java jest nowoczesna. &#x1F60E;</p>
+
+    <div class="glass-card" style="max-width:650px;text-align:center;padding:14px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">Kliknij, zeby zobaczyc transformacje!</p>
+        <div class="code-block" style="max-width:100%;font-size:0.82rem;transition:all 0.5s" id="lambdaCode">
+            <span class="cm">// Stara Java &#x2014; anonymous class &#x1F634;</span><br>
+            <span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt; comp =<br>
+            &nbsp;&nbsp;<span class="kw">new</span> <span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt;() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="ann">@Override</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">public int</span> <span class="str">compare</span>(<span class="tp">Monster</span> a, <span class="tp">Monster</span> b) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> a.getHp() - b.getHp();<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;};<br>
+            <span class="cm">// 8 linii kodu... &#x1F62B;</span>
+        </div>
+        <button class="transform-btn" style="margin-top:10px" id="lambdaBtn" onclick="transformLambda()">&#x26A1; Zamien na lambde!</button>
+    </div>
+</div>
+
+<!-- SLIDE 6: forEach -->
+<div class="slide" id="slide5">
+    <h2><span class="gradient-pink">forEach &#x2014; koniec petli for</span> &#x1F44B;</h2>
+
+    <div class="glass-card" style="max-width:650px;text-align:center;padding:16px">
+        <div class="code-block" style="max-width:100%;font-size:0.88rem;transition:all 0.5s" id="forEachCode">
+            <span class="cm">// Stary sposob &#x1F634;</span><br>
+            <span class="kw">for</span> (<span class="tp">Monster</span> m : monsters) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;System.out.<span class="str">println</span>(m);<br>
+            }
+        </div>
+        <button class="upgrade-btn" style="margin-top:12px" id="forEachBtn" onclick="upgradeForEach()">&#x1F680; Upgrade!</button>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;margin-top:8px;padding:12px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem">&#x1F4A1; forEach = wywolaj funkcje na kazdym elemencie</p>
+        <p style="font-size:0.85rem;opacity:0.7;margin-top:4px">Czytelniej, krocej, nowoczesniej!</p>
+    </div>
+</div>
+
+<!-- SLIDE 7: Streams (HIGHLIGHT) -->
+<div class="slide" id="slide6">
+    <h2><span class="gradient-text">Streams &#x2014; potok danych</span> &#x1F300;</h2>
+
+    <div class="pipeline-container">
+        <div class="pipe-stage" style="border-color:var(--neon-yellow);color:var(--neon-yellow);background:rgba(255,230,0,0.08)" id="pipeSource">
+            &#x1F4E6; Source<br><span style="font-size:0.75rem;opacity:0.7">lista przedmiotow</span>
+        </div>
+        <div class="pipe-arrow" id="pa0">&#x27A1;&#xFE0F;</div>
+        <div class="pipe-stage" style="border-color:var(--neon-pink);color:var(--neon-pink);background:rgba(255,46,170,0.08)" id="pipeFilter">
+            &#x1F6A7; .filter()<br><span style="font-size:0.75rem;opacity:0.7">przepuszcza tylko pasujace</span>
+        </div>
+        <div class="pipe-arrow" id="pa1">&#x27A1;&#xFE0F;</div>
+        <div class="pipe-stage" style="border-color:var(--neon-blue);color:var(--neon-blue);background:rgba(0,212,255,0.08)" id="pipeMap">
+            &#x1F504; .map()<br><span style="font-size:0.75rem;opacity:0.7">przeksztalca kazdy element</span>
+        </div>
+        <div class="pipe-arrow" id="pa2">&#x27A1;&#xFE0F;</div>
+        <div class="pipe-stage" style="border-color:var(--neon-green);color:var(--neon-green);background:rgba(57,255,20,0.08)" id="pipeCollect">
+            &#x1F3AF; .collect()<br><span style="font-size:0.75rem;opacity:0.7">zbiera wyniki</span>
+        </div>
+    </div>
+
+    <div style="max-width:700px;width:100%">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.9rem;text-align:center;margin-bottom:4px" id="pipelineLabel">Kliknij Start, zeby zobaczyc potok w akcji!</p>
+        <div class="pipe-items" id="pipelineItems">
+            <!-- Items will be populated by JS -->
+        </div>
+    </div>
+
+    <button class="transform-btn" style="margin-top:6px" id="pipelineBtn" onclick="startPipeline()">&#x25B6;&#xFE0F; Start potoku!</button>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:10px 16px;margin-top:4px">
+        <p style="font-size:0.9rem;opacity:0.8">&#x1F3ED; Jak tasma produkcyjna &#x2014; kazdy krok robi jedna rzecz!</p>
+    </div>
+</div>
+
+<!-- SLIDE 8: Stream w akcji -->
+<div class="slide" id="slide7">
+    <h2><span class="gradient-yellow">Stream w akcji</span> &#x1F3AE;</h2>
+
+    <div class="code-block" style="max-width:600px;font-size:0.82rem">
+        inventory.<span class="str">getItems</span>().<span class="str">stream</span>()<br>
+        &nbsp;&nbsp;.<span class="str">filter</span>(i <span class="kw">-&gt;</span> i.<span class="str">getRarity</span>() == Rarity.<span class="ann" id="filterRarity">LEGENDARY</span>)<br>
+        &nbsp;&nbsp;.<span class="str">map</span>(<span class="tp">Item</span>::<span class="str">getName</span>)<br>
+        &nbsp;&nbsp;.<span class="str">sorted</span>()<br>
+        &nbsp;&nbsp;.<span class="str">forEach</span>(logger::<span class="str">info</span>);
+    </div>
+
+    <div class="filter-btns" style="margin:8px 0">
+        <button class="filter-btn active-filter" style="border-color:var(--neon-yellow);color:var(--neon-yellow)" onclick="filterInventory('LEGENDARY')">&#x1F31F; LEGENDARY</button>
+        <button class="filter-btn" style="border-color:var(--neon-pink);color:var(--neon-pink)" onclick="filterInventory('RARE')">&#x1F48E; RARE</button>
+        <button class="filter-btn" style="border-color:var(--neon-blue);color:var(--neon-blue)" onclick="filterInventory('COMMON')">&#x1F7E2; COMMON</button>
+    </div>
+
+    <div style="max-width:600px;width:100%">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.9rem;margin-bottom:4px">Ekwipunek:</p>
+        <div class="pipe-items" id="inventoryItems" style="min-height:45px"></div>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:0.9rem;margin:6px 0 4px;color:var(--neon-green)">&#x2192; Wynik streama (posortowane nazwy):</p>
+        <div class="pipe-items" id="streamResult" style="min-height:35px;border-color:var(--neon-green)"></div>
+    </div>
+</div>
+
+<!-- SLIDE 9: Optional -->
+<div class="slide" id="slide8">
+    <h2><span class="gradient-text">Optional &#x2014; zero nulli!</span> &#x1F6E1;&#xFE0F;</h2>
+
+    <div class="compare-row" style="margin:8px 0">
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-pink)">
+                <div class="compare-label" style="color:var(--neon-pink)">&#x1F40D; Python &#x274C;</div>
+                <div class="code-block" style="max-width:100%;font-size:0.82rem">
+                    result = find_monster(<span class="str">"Smaug"</span>)<br>
+                    <span class="cm"># moze byc None... CRASH! &#x1F4A5;</span><br>
+                    result.attack() <span class="cm"># &#x1F480; NoneType!</span>
+                </div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-green)">
+                <div class="compare-label" style="color:var(--neon-green)">&#x2615; Java &#x2705;</div>
+                <div class="code-block" style="max-width:100%;font-size:0.82rem">
+                    <span class="tp">Optional</span>&lt;<span class="tp">Monster</span>&gt; found =<br>
+                    &nbsp;&nbsp;<span class="str">findMonster</span>(<span class="str">"Smaug"</span>);<br>
+                    found.<span class="str">ifPresent</span>(m <span class="kw">-&gt;</span><br>
+                    &nbsp;&nbsp;logger.<span class="str">info</span>(<span class="str">"Znaleziono: {}"</span>, m));
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:14px">
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1rem;margin-bottom:8px">&#x1F50E; Szukaj potwora:</p>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">
+            <input type="text" class="optional-input" id="monsterSearch" placeholder='np. "Smaug"' onkeyup="searchMonster(event)">
+            <button class="config-btn" style="border-color:var(--neon-green);color:var(--neon-green);padding:10px 16px" onclick="searchMonster()">&#x1F50D; Szukaj</button>
+        </div>
+        <div class="optional-result" id="optionalResult" style="margin-top:10px"></div>
+    </div>
+</div>
+
+<!-- SLIDE 10: Referencje do metod -->
+<div class="slide" id="slide9">
+    <h2><span class="gradient-pink">Referencje do metod</span> &#x1F3AF;</h2>
+    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Skrot zamiast lambdy! Kliknij, zeby zamienic.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:650px;width:100%">
+        <div class="ref-card glass-card" onclick="swapRef(this)" style="padding:12px 20px">
+            <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap">
+                <span style="font-size:1.3rem">&#x1F9EA;</span>
+                <span style="font-family:'Baloo 2';font-weight:700;font-size:1rem;color:var(--neon-blue)">metoda instancji</span>
+            </div>
+            <div class="ref-lambda" style="margin-top:6px">m <span class="kw">-&gt;</span> m.<span class="str">isAlive</span>()</div>
+            <div class="ref-arrow">&#x2B07;&#xFE0F;</div>
+            <div class="ref-method"><span class="tp">Entity</span>::<span class="str">isAlive</span></div>
+        </div>
+        <div class="ref-card glass-card" onclick="swapRef(this)" style="padding:12px 20px">
+            <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap">
+                <span style="font-size:1.3rem">&#x1F520;</span>
+                <span style="font-family:'Baloo 2';font-weight:700;font-size:1rem;color:var(--neon-blue)">metoda klasy</span>
+            </div>
+            <div class="ref-lambda" style="margin-top:6px">s <span class="kw">-&gt;</span> s.<span class="str">toUpperCase</span>()</div>
+            <div class="ref-arrow">&#x2B07;&#xFE0F;</div>
+            <div class="ref-method"><span class="tp">String</span>::<span class="str">toUpperCase</span></div>
+        </div>
+        <div class="ref-card glass-card" onclick="swapRef(this)" style="padding:12px 20px">
+            <div style="display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap">
+                <span style="font-size:1.3rem">&#x1F4E2;</span>
+                <span style="font-family:'Baloo 2';font-weight:700;font-size:1rem;color:var(--neon-blue)">metoda obiektu</span>
+            </div>
+            <div class="ref-lambda" style="margin-top:6px">msg <span class="kw">-&gt;</span> logger.<span class="str">info</span>(msg)</div>
+            <div class="ref-arrow">&#x2B07;&#xFE0F;</div>
+            <div class="ref-method">logger::<span class="str">info</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: Interfejsy funkcyjne -->
+<div class="slide" id="slide10">
+    <h2><span class="gradient-yellow">Interfejsy funkcyjne</span> &#x1F9E9;</h2>
+    <p class="subtitle" style="font-size:1rem;margin-bottom:8px">Java daje gotowe interfejsy na lambdy!</p>
+
+    <div class="fi-grid">
+        <div class="fi-card glass-card" style="border-color:var(--neon-green)" onclick="highlightFI(this)">
+            <div class="fi-emoji">&#x2705;</div>
+            <div class="fi-name" style="color:var(--neon-green)">Predicate&lt;T&gt;</div>
+            <div class="fi-desc">"sprawdza prawde"</div>
+            <div class="fi-code">Entity::isAlive</div>
+            <div style="font-size:0.75rem;opacity:0.5;margin-top:4px">T &#x2192; boolean</div>
+        </div>
+        <div class="fi-card glass-card" style="border-color:var(--neon-pink)" onclick="highlightFI(this)">
+            <div class="fi-emoji">&#x1F37D;&#xFE0F;</div>
+            <div class="fi-name" style="color:var(--neon-pink)">Consumer&lt;T&gt;</div>
+            <div class="fi-desc">"zjada wartosc"</div>
+            <div class="fi-code">logger::info</div>
+            <div style="font-size:0.75rem;opacity:0.5;margin-top:4px">T &#x2192; void</div>
+        </div>
+        <div class="fi-card glass-card" style="border-color:var(--neon-blue)" onclick="highlightFI(this)">
+            <div class="fi-emoji">&#x1F504;</div>
+            <div class="fi-name" style="color:var(--neon-blue)">Function&lt;T,R&gt;</div>
+            <div class="fi-desc">"przeksztalca"</div>
+            <div class="fi-code">Item::getName</div>
+            <div style="font-size:0.75rem;opacity:0.5;margin-top:4px">T &#x2192; R</div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:550px;text-align:center;padding:12px 16px;margin-top:8px">
+        <p style="font-size:0.9rem;opacity:0.8">&#x1F4A1; filter() potrzebuje Predicate, forEach() potrzebuje Consumer, map() potrzebuje Function</p>
+    </div>
+
+    <div class="code-block" style="max-width:600px;font-size:0.82rem;margin-top:6px">
+        <span class="cm">// Wszystko sie laczy!</span><br>
+        monsters.stream()<br>
+        &nbsp;&nbsp;.<span class="str">filter</span>(<span class="tp">Entity</span>::<span class="str">isAlive</span>)&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Predicate</span><br>
+        &nbsp;&nbsp;.<span class="str">map</span>(<span class="tp">Entity</span>::<span class="str">getName</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Function</span><br>
+        &nbsp;&nbsp;.<span class="str">forEach</span>(logger::<span class="str">info</span>); <span class="cm">// Consumer</span>
+    </div>
+</div>
+
+<!-- SLIDE 12: Przed i Po -->
+<div class="slide" id="slide11">
+    <h2><span class="gradient-text">Przed i Po</span> &#x1F4CA;</h2>
+
+    <div class="compare-row" style="margin:8px 0">
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-pink)">
+                <div class="compare-label" style="color:var(--neon-pink)">&#x1F634; Stary styl</div>
+                <div class="code-block" style="max-width:100%;font-size:0.78rem">
+                    List&lt;<span class="tp">String</span>&gt; names = <span class="kw">new</span> ArrayList&lt;&gt;();<br>
+                    <span class="kw">for</span> (<span class="tp">Item</span> item : inventory) {<br>
+                    &nbsp;&nbsp;<span class="kw">if</span> (item != <span class="kw">null</span>) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> (item.getRarity() == LEGENDARY) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;names.add(item.getName());<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br>
+                    Collections.<span class="str">sort</span>(names);<br>
+                    <span class="kw">for</span> (<span class="tp">String</span> n : names) {<br>
+                    &nbsp;&nbsp;System.out.<span class="str">println</span>(n);<br>
+                    }
+                </div>
+                <div class="line-count" style="color:var(--neon-pink)">12 linii</div>
+                <div class="line-bar" style="width:100%;background:var(--neon-pink)"></div>
+            </div>
+        </div>
+        <div class="compare-col">
+            <div class="glass-card" style="border-color:var(--neon-green);box-shadow:0 0 20px rgba(57,255,20,0.1)">
+                <div class="compare-label" style="color:var(--neon-green)">&#x1F60E; Nowy styl</div>
+                <div class="code-block" style="max-width:100%;font-size:0.78rem">
+                    inventory.stream()<br>
+                    &nbsp;&nbsp;.<span class="str">filter</span>(Objects::<span class="str">nonNull</span>)<br>
+                    &nbsp;&nbsp;.<span class="str">filter</span>(i <span class="kw">-&gt;</span> i.getRarity() == LEGENDARY)<br>
+                    &nbsp;&nbsp;.<span class="str">map</span>(<span class="tp">Item</span>::<span class="str">getName</span>)<br>
+                    &nbsp;&nbsp;.<span class="str">sorted</span>()<br>
+                    &nbsp;&nbsp;.<span class="str">forEach</span>(logger::<span class="str">info</span>);
+                </div>
+                <div class="line-count" style="color:var(--neon-green)">6 linii</div>
+                <div class="line-bar" style="width:50%;background:var(--neon-green)"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:14px 20px;border-color:var(--neon-yellow)">
+        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.4rem">Mniej kodu = mniej bugow! &#x1F41B;&#x274C;</p>
+    </div>
+</div>
+
+<!-- SLIDE 13: Boss Fight Challenge -->
+<div class="slide" id="slide12">
+    <h2><span class="gradient-pink">Boss Fight Challenge</span> &#x1F47E;</h2>
+
+    <div class="quest-card glass-card">
+        <div class="quest-title" style="color:var(--neon-orange)">&#x2694;&#xFE0F; QUEST: Klasa Statistics</div>
+        <div class="quest-item">
+            <p>&#x1F4E6; <b>Stworz klase <span style="color:var(--neon-blue)">Statistics</span></b></p>
+            <p style="opacity:0.7;font-size:0.9rem;margin-left:24px">Podsumowanie po walce!</p>
+        </div>
+        <div class="quest-item" style="margin-top:8px">
+            <p>&#x1F300; <b>Uzyj streams do:</b></p>
+            <ul style="margin-left:32px;font-size:0.95rem;line-height:1.8">
+                <li>&#x1F4A5; Total damage dealt</li>
+                <li>&#x1F432; Najsilniejszy potwor (max HP)</li>
+                <li>&#x1F48E; Przedmioty pogrupowane wg rzadkosci</li>
+                <li>&#x1F4CA; Srednie obrazenia na runde</li>
+            </ul>
+        </div>
+        <div class="quest-item" style="margin-top:8px">
+            <p>&#x1F4DD; <b>Loguj wyniki przez SLF4J</b></p>
+            <p style="opacity:0.7;font-size:0.9rem;margin-left:24px">logger.info(), nie println()!</p>
+        </div>
+    </div>
+
+    <div class="code-block" style="max-width:600px;font-size:0.8rem;margin-top:8px">
+        <span class="cm">// Przyklad:</span><br>
+        <span class="kw">int</span> totalDmg = rounds.stream()<br>
+        &nbsp;&nbsp;.<span class="str">mapToInt</span>(<span class="tp">Round</span>::<span class="str">getDamage</span>)<br>
+        &nbsp;&nbsp;.<span class="str">sum</span>();<br>
+        logger.<span class="str">info</span>(<span class="str">"Laczne obrazenia: {}"</span>, totalDmg);
+    </div>
+</div>
+
+<!-- SLIDE 14: Co dalej? LWJGL! -->
+<div class="slide" id="slide13">
+    <h2><span class="gradient-text">Co dalej? LWJGL!</span> &#x1F3AE;</h2>
+
+    <div style="font-size:2.5rem;margin-bottom:6px">&#x1F389;&#x1F38A;&#x1F680;</div>
+
+    <div class="glass-card" style="max-width:550px;text-align:center;padding:16px 20px;border-color:var(--neon-green)">
+        <p style="font-family:'Baloo 2';font-weight:800;font-size:1.3rem;color:var(--neon-green);margin-bottom:8px">Masz wszystkie narzedzia!</p>
+        <ul class="celebration-checklist" id="celebrationList">
+            <li><span class="check">&#x2705;</span> <b>OOP</b> &#x2014; klasy, dziedziczenie, polimorfizm</li>
+            <li><span class="check">&#x2705;</span> <b>Generyki</b> &#x2014; typowane kolekcje</li>
+            <li><span class="check">&#x2705;</span> <b>Interfejsy</b> &#x2014; kontrakty i abstrakcja</li>
+            <li><span class="check">&#x2705;</span> <b>Game Loop</b> &#x2014; input, update, render</li>
+            <li><span class="check">&#x2705;</span> <b>Loggery</b> &#x2014; SLF4J + Logback</li>
+            <li><span class="check">&#x2705;</span> <b>Streamy</b> &#x2014; filter, map, collect</li>
+        </ul>
+    </div>
+
+    <!-- Pixel art teaser -->
+    <div style="margin:10px 0;text-align:center" id="pixelArt">
+        <!-- Pixel blocks generated by JS -->
+    </div>
+
+    <div class="glass-card" style="max-width:500px;text-align:center;padding:14px 20px;border-color:var(--neon-pink)">
+        <h3><span class="gradient-pink">Nastepny krok:</span></h3>
+        <p style="font-family:'Baloo 2';font-weight:700;font-size:1.2rem;margin-top:4px">Otwieramy okno z LWJGL i rysujemy pierwszy trojkat! &#x1F4D0;</p>
+    </div>
+</div>
+
+</div><!-- /presentation -->
+
+<!-- Navigation -->
+<div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#x25C0;</button>
+    <span class="slide-counter" id="slideCounter">1 / 14</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#x25B6;</button>
+</div>
+
+<script>
+// === NAVIGATION ===
+const totalSlides=14;
+let currentSlide=0;
+
+function changeSlide(d){
+    const slides=document.querySelectorAll('.slide');
+    slides[currentSlide].classList.remove('active');
+    currentSlide=Math.max(0,Math.min(totalSlides-1,currentSlide+d));
+    slides[currentSlide].classList.add('active');
+    updateNav();
+    onSlideEnter(currentSlide);
+}
+
+function updateNav(){
+    document.getElementById('prevBtn').disabled=currentSlide===0;
+    document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;
+    document.getElementById('slideCounter').textContent=(currentSlide+1)+' / '+totalSlides;
+    document.getElementById('progressBar').style.width=((currentSlide+1)/totalSlides*100)+'%';
+}
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);}
+    if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);}
+    // Optional slide: Enter to search
+    if(currentSlide===8 && e.key==='Enter'){searchMonster();}
+});
+updateNav();
+
+function onSlideEnter(idx){
+    if(idx===6) resetPipeline();
+    if(idx===7) filterInventory('LEGENDARY');
+    if(idx===13) startCelebration();
+}
+
+// === BINARY RAIN ===
+(function(){
+    const rain=document.getElementById('rain');
+    const words=['01','{}','();','.stream()','filter','map','collect','lambda','->','Optional','logger','info','debug','forEach','sorted'];
+    for(let i=0;i<30;i++){
+        const s=document.createElement('span');
+        s.textContent=words[Math.floor(Math.random()*words.length)];
+        s.style.left=Math.random()*100+'vw';
+        s.style.animationDuration=(6+Math.random()*10)+'s';
+        s.style.animationDelay=Math.random()*8+'s';
+        s.style.fontSize=(0.8+Math.random()*0.6)+'rem';
+        rain.appendChild(s);
+    }
+})();
+
+// === SFX ===
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+function sfx(freq,dur){try{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=freq;g.gain.value=0.06;o.start();g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur);}catch(e){}}
+
+// === CONFETTI ===
+function spawnConfetti(el){
+    const rect=el?el.getBoundingClientRect():{left:window.innerWidth/2,top:window.innerHeight/2,width:0};
+    const burst=document.createElement('div');
+    burst.style.cssText='position:fixed;pointer-events:none;z-index:100;left:'+(rect.left+rect.width/2)+'px;top:'+(rect.top||rect.y||200)+'px';
+    const colors=['#39ff14','#00d4ff','#ff2eaa','#ffe600','#ff6b2b'];
+    for(let i=0;i<30;i++){
+        const c=document.createElement('div');
+        const fy=-50-Math.random()*150;
+        const fx=(Math.random()-0.5)*250;
+        c.style.cssText='position:absolute;width:8px;height:8px;border-radius:2px;background:'+colors[Math.floor(Math.random()*colors.length)]+';transition:all '+(0.6+Math.random()*0.8)+'s ease-out;opacity:1;left:0;top:0';
+        burst.appendChild(c);
+        requestAnimationFrame(()=>{c.style.transform='translate('+fx+'px,'+fy+'px)';c.style.opacity='0';});
+    }
+    document.body.appendChild(burst);
+    setTimeout(()=>burst.remove(),2500);
+}
+
+// === SLIDE 3: Log levels toggle ===
+function toggleLogLevel(card, level){
+    sfx(400+level*100,0.12);
+    const wasActive=card.classList.contains('active-level');
+    document.querySelectorAll('.log-level-card').forEach(c=>c.classList.remove('active-level'));
+    if(!wasActive) card.classList.add('active-level');
+}
+
+// === SLIDE 4: Logback config toggle ===
+function setLogLevel(level){
+    sfx(500,0.15);
+    document.querySelectorAll('.config-btn').forEach(b=>b.classList.remove('active-cfg'));
+    document.getElementById('cfg'+level.charAt(0)+level.slice(1).toLowerCase()).classList.add('active-cfg');
+    document.getElementById('logLevelAttr').textContent='"'+level+'"';
+
+    const output=document.getElementById('logOutput');
+    const lines=[
+        {level:'DEBUG',html:'<span style="color:#888">14:23:01 DEBUG Obliczam: atak=15</span>'},
+        {level:'INFO',html:'<span style="color:var(--neon-blue)">14:23:01 INFO  Gracz atakuje Goblina</span>'},
+        {level:'WARN',html:'<span style="color:var(--neon-yellow)">14:23:02 WARN  Niskie HP: 12/100</span>'},
+        {level:'ERROR',html:'<span style="color:var(--neon-pink)">14:23:03 ERROR Brak pliku: mapa.json</span>'}
+    ];
+    const levels=['DEBUG','INFO','WARN','ERROR'];
+    const minIdx=levels.indexOf(level);
+    const visible=lines.filter((_,i)=>i>=minIdx);
+    output.innerHTML=visible.map(l=>l.html).join('<br>');
+    if(visible.length===0) output.innerHTML='<span style="opacity:0.4">(brak wiadomosci)</span>';
+}
+
+// === SLIDE 5: Lambda transformation ===
+let lambdaTransformed=false;
+function transformLambda(){
+    sfx(700,0.2);
+    lambdaTransformed=!lambdaTransformed;
+    const code=document.getElementById('lambdaCode');
+    const btn=document.getElementById('lambdaBtn');
+
+    if(lambdaTransformed){
+        code.innerHTML='<span class="cm">// Nowoczesna Java &#x2014; lambda! &#x1F60E;</span><br>'+
+            '<span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt; comp =<br>'+
+            '&nbsp;&nbsp;(a, b) <span class="kw">-&gt;</span> a.<span class="str">getHp</span>() - b.<span class="str">getHp</span>();<br>'+
+            '<span class="cm">// 2 linie! &#x1F525;</span>';
+        code.style.borderColor='var(--neon-green)';
+        code.style.boxShadow='0 0 20px rgba(57,255,20,0.15)';
+        btn.textContent='&#x1F504; Pokaz stary kod';
+        btn.style.borderColor='var(--neon-pink)';
+        btn.style.color='var(--neon-pink)';
+        spawnConfetti(code);
+    } else {
+        code.innerHTML='<span class="cm">// Stara Java &#x2014; anonymous class &#x1F634;</span><br>'+
+            '<span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt; comp =<br>'+
+            '&nbsp;&nbsp;<span class="kw">new</span> <span class="tp">Comparator</span>&lt;<span class="tp">Monster</span>&gt;() {<br>'+
+            '&nbsp;&nbsp;&nbsp;&nbsp;<span class="ann">@Override</span><br>'+
+            '&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">public int</span> <span class="str">compare</span>(<span class="tp">Monster</span> a, <span class="tp">Monster</span> b) {<br>'+
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> a.getHp() - b.getHp();<br>'+
+            '&nbsp;&nbsp;&nbsp;&nbsp;}<br>'+
+            '&nbsp;&nbsp;};<br>'+
+            '<span class="cm">// 8 linii kodu... &#x1F62B;</span>';
+        code.style.borderColor='var(--glass-border)';
+        code.style.boxShadow='';
+        btn.innerHTML='&#x26A1; Zamien na lambde!';
+        btn.style.borderColor='var(--neon-green)';
+        btn.style.color='var(--neon-green)';
+    }
+}
+
+// === SLIDE 6: forEach upgrade ===
+let forEachUpgraded=false;
+function upgradeForEach(){
+    sfx(700,0.2);
+    forEachUpgraded=!forEachUpgraded;
+    const code=document.getElementById('forEachCode');
+    const btn=document.getElementById('forEachBtn');
+
+    if(forEachUpgraded){
+        code.innerHTML='<span class="cm">// Nowy sposob &#x1F60E;</span><br>'+
+            'monsters.<span class="str">forEach</span>(m <span class="kw">-&gt;</span> logger.<span class="str">info</span>(<span class="str">"{}"</span>, m));';
+        code.style.borderColor='var(--neon-green)';
+        code.style.boxShadow='0 0 20px rgba(57,255,20,0.15)';
+        btn.innerHTML='&#x1F504; Pokaz stary kod';
+        btn.style.borderColor='var(--neon-pink)';
+        btn.style.color='var(--neon-pink)';
+        spawnConfetti(code);
+    } else {
+        code.innerHTML='<span class="cm">// Stary sposob &#x1F634;</span><br>'+
+            '<span class="kw">for</span> (<span class="tp">Monster</span> m : monsters) {<br>'+
+            '&nbsp;&nbsp;&nbsp;&nbsp;System.out.<span class="str">println</span>(m);<br>'+
+            '}';
+        code.style.borderColor='var(--glass-border)';
+        code.style.boxShadow='';
+        btn.innerHTML='&#x1F680; Upgrade!';
+        btn.style.borderColor='var(--neon-blue)';
+        btn.style.color='var(--neon-blue)';
+    }
+}
+
+// === SLIDE 7: Stream pipeline animation ===
+const pipeItems=[
+    {name:'Miecz Ognia',emoji:'&#x1F525;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
+    {name:'Drewniany Kij',emoji:'&#x1FAB5;',rarity:'COMMON',color:'#888'},
+    {name:'Tarcza Smoka',emoji:'&#x1F6E1;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
+    {name:'Skorzane Buty',emoji:'&#x1F462;',rarity:'COMMON',color:'#888'},
+    {name:'Elficki Luk',emoji:'&#x1F3F9;',rarity:'RARE',color:'var(--neon-pink)'},
+    {name:'Rozdzka Mocy',emoji:'&#x1FA84;',rarity:'LEGENDARY',color:'var(--neon-yellow)'},
+];
+
+let pipelineRunning=false;
+
+function resetPipeline(){
+    pipelineRunning=false;
+    const container=document.getElementById('pipelineItems');
+    container.innerHTML='';
+    pipeItems.forEach((item,i)=>{
+        const el=document.createElement('div');
+        el.className='pipe-item';
+        el.id='pitem'+i;
+        el.style.borderColor=item.color;
+        el.style.background=item.rarity==='LEGENDARY'?'rgba(255,230,0,0.1)':item.rarity==='RARE'?'rgba(255,46,170,0.08)':'rgba(255,255,255,0.04)';
+        el.innerHTML=item.emoji+' '+item.name;
+        container.appendChild(el);
+    });
+    document.querySelectorAll('.pipe-arrow').forEach(a=>a.classList.remove('active-pipe'));
+    document.querySelectorAll('.pipe-stage').forEach(s=>{s.style.boxShadow='';s.style.transform='';});
+    document.getElementById('pipelineLabel').textContent='Kliknij Start, zeby zobaczyc potok w akcji!';
+    const btn=document.getElementById('pipelineBtn');
+    btn.innerHTML='&#x25B6;&#xFE0F; Start potoku!';
+    btn.disabled=false;
+}
+
+function startPipeline(){
+    if(pipelineRunning) {resetPipeline();return;}
+    pipelineRunning=true;
+    const btn=document.getElementById('pipelineBtn');
+    btn.innerHTML='&#x1F504; Reset';
+
+    // Step 1: Highlight source
+    setTimeout(()=>{
+        if(!pipelineRunning) return;
+        sfx(400,0.1);
+        document.getElementById('pipeSource').style.boxShadow='0 0 25px rgba(255,230,0,0.4)';
+        document.getElementById('pipelineLabel').textContent='&#x1F4E6; Zrodlo: 6 przedmiotow w ekwipunku';
+        document.getElementById('pa0').classList.add('active-pipe');
+    },300);
+
+    // Step 2: Filter
+    setTimeout(()=>{
+        if(!pipelineRunning) return;
+        sfx(500,0.15);
+        document.getElementById('pipeFilter').style.boxShadow='0 0 25px rgba(255,46,170,0.4)';
+        document.getElementById('pipelineLabel').textContent='&#x1F6A7; .filter() &#x2014; przepuszczam tylko LEGENDARY!';
+        document.getElementById('pa1').classList.add('active-pipe');
+        pipeItems.forEach((item,i)=>{
+            const el=document.getElementById('pitem'+i);
+            if(item.rarity!=='LEGENDARY'){
+                el.classList.add('filtered-out');
+            }
+        });
+    },1500);
+
+    // Step 3: Map
+    setTimeout(()=>{
+        if(!pipelineRunning) return;
+        sfx(600,0.15);
+        document.getElementById('pipeMap').style.boxShadow='0 0 25px rgba(0,212,255,0.4)';
+        document.getElementById('pipelineLabel').textContent='&#x1F504; .map() &#x2014; wyciagam nazwy przedmiotow!';
+        document.getElementById('pa2').classList.add('active-pipe');
+        pipeItems.forEach((item,i)=>{
+            const el=document.getElementById('pitem'+i);
+            if(item.rarity==='LEGENDARY'){
+                el.classList.add('mapped');
+                el.innerHTML='&#x1F4DD; "'+item.name+'"';
+            }
+        });
+    },3000);
+
+    // Step 4: Collect
+    setTimeout(()=>{
+        if(!pipelineRunning) return;
+        sfx(800,0.2);
+        document.getElementById('pipeCollect').style.boxShadow='0 0 25px rgba(57,255,20,0.4)';
+        document.getElementById('pipelineLabel').textContent='&#x1F3AF; .collect() &#x2014; wynik: lista nazw!';
+
+        // Remove filtered items, keep only mapped
+        const container=document.getElementById('pipelineItems');
+        container.innerHTML='';
+        const results=pipeItems.filter(i=>i.rarity==='LEGENDARY').map(i=>i.name).sort();
+        results.forEach(name=>{
+            const el=document.createElement('div');
+            el.className='pipe-item mapped';
+            el.style.borderColor='var(--neon-green)';
+            el.style.background='rgba(57,255,20,0.12)';
+            el.innerHTML='&#x2705; "'+name+'"';
+            container.appendChild(el);
+        });
+        spawnConfetti(document.getElementById('pipeCollect'));
+    },4500);
+}
+
+// === SLIDE 8: Stream filtering ===
+const inventoryData=[
+    {name:'Miecz Ognia',emoji:'&#x1F525;',rarity:'LEGENDARY'},
+    {name:'Drewniany Kij',emoji:'&#x1FAB5;',rarity:'COMMON'},
+    {name:'Tarcza Smoka',emoji:'&#x1F6E1;',rarity:'LEGENDARY'},
+    {name:'Skorzane Buty',emoji:'&#x1F462;',rarity:'COMMON'},
+    {name:'Elficki Luk',emoji:'&#x1F3F9;',rarity:'RARE'},
+    {name:'Rozdzka Mocy',emoji:'&#x1FA84;',rarity:'LEGENDARY'},
+    {name:'Srebrny Pierscien',emoji:'&#x1F48D;',rarity:'RARE'},
+    {name:'Zelazny Helm',emoji:'&#x1FA96;',rarity:'COMMON'},
+];
+
+const rarityColors={LEGENDARY:'var(--neon-yellow)',RARE:'var(--neon-pink)',COMMON:'#888'};
+
+function filterInventory(rarity){
+    sfx(500,0.15);
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active-filter'));
+    event.target.classList.add('active-filter');
+    document.getElementById('filterRarity').textContent=rarity;
+
+    const invEl=document.getElementById('inventoryItems');
+    invEl.innerHTML='';
+    inventoryData.forEach(item=>{
+        const el=document.createElement('div');
+        el.className='pipe-item'+(item.rarity!==rarity?' filtered-out':'');
+        el.style.borderColor=rarityColors[item.rarity];
+        el.style.background=item.rarity===rarity?'rgba(57,255,20,0.08)':'rgba(255,255,255,0.03)';
+        el.innerHTML=item.emoji+' '+item.name+' <span style="font-size:0.7rem;opacity:0.5">['+item.rarity+']</span>';
+        invEl.appendChild(el);
+    });
+
+    const resultEl=document.getElementById('streamResult');
+    resultEl.innerHTML='';
+    const filtered=inventoryData.filter(i=>i.rarity===rarity).map(i=>i.name).sort();
+    filtered.forEach(name=>{
+        const el=document.createElement('div');
+        el.className='stream-result-item';
+        el.style.color='var(--neon-green)';
+        el.textContent='"'+name+'"';
+        resultEl.appendChild(el);
+    });
+}
+
+// === SLIDE 9: Optional search ===
+const knownMonsters=['Smaug','Goblin','Ork','Troll','Smok','Dragon','Szkielet'];
+
+function searchMonster(e){
+    if(e && e.key && e.key!=='Enter') return;
+    const query=document.getElementById('monsterSearch').value.trim();
+    if(!query) return;
+    sfx(500,0.15);
+    const result=document.getElementById('optionalResult');
+    const found=knownMonsters.find(m=>m.toLowerCase()===query.toLowerCase());
+
+    if(found){
+        result.innerHTML='<span style="color:var(--neon-green)">&#x2705; Optional.of(<span style="color:var(--neon-blue)">Monster{"'+found+'"}</span>)</span><br><span style="font-size:0.85rem;opacity:0.8">Znaleziono potwora! ifPresent() wykona lambde.</span>';
+        result.style.background='rgba(57,255,20,0.08)';
+        result.style.border='1px solid var(--neon-green)';
+        spawnConfetti(result);
+    } else {
+        result.innerHTML='<span style="color:var(--neon-yellow)">&#x1F6E1;&#xFE0F; Optional.empty()</span><br><span style="font-size:0.85rem;opacity:0.8">Bezpiecznie! Brak crashu. ifPresent() po prostu nic nie robi.</span>';
+        result.style.background='rgba(255,230,0,0.06)';
+        result.style.border='1px solid var(--neon-yellow)';
+    }
+}
+
+// === SLIDE 10: Method reference swap ===
+function swapRef(card){
+    sfx(600,0.15);
+    card.classList.toggle('swapped');
+    if(card.classList.contains('swapped')){
+        spawnConfetti(card);
+    }
+}
+
+// === SLIDE 11: Functional interface highlight ===
+function highlightFI(card){
+    sfx(500,0.12);
+    document.querySelectorAll('.fi-card').forEach(c=>{c.style.transform='';c.style.boxShadow='';});
+    card.style.transform='scale(1.08)';
+    card.style.boxShadow='0 0 25px rgba(57,255,20,0.2)';
+    setTimeout(()=>{card.style.transform='';card.style.boxShadow='';},1200);
+}
+
+// === SLIDE 14: Celebration ===
+let celebrationStarted=false;
+function startCelebration(){
+    if(celebrationStarted) return;
+    celebrationStarted=true;
+
+    // Animate checklist items
+    const items=document.querySelectorAll('#celebrationList li');
+    items.forEach((li,i)=>{
+        li.style.opacity='0';
+        li.style.transform='translateX(-30px)';
+        setTimeout(()=>{
+            sfx(400+i*60,0.1);
+            li.style.opacity='1';
+            li.style.transform='translateX(0)';
+        },300+i*250);
+    });
+
+    // Generate pixel art (simple triangle/block shape)
+    const pixelArt=document.getElementById('pixelArt');
+    const pattern=[
+        [0,0,0,1,1,1,0,0,0],
+        [0,0,1,2,2,2,1,0,0],
+        [0,1,2,3,3,3,2,1,0],
+        [1,2,3,3,3,3,3,2,1],
+        [0,0,0,2,2,2,0,0,0],
+        [0,0,0,2,0,2,0,0,0],
+    ];
+    const blockColors=['transparent','var(--neon-green)','var(--neon-blue)','var(--neon-pink)'];
+    pixelArt.innerHTML='';
+    pattern.forEach(row=>{
+        row.forEach(c=>{
+            const b=document.createElement('div');
+            b.className='pixel-block';
+            b.style.background=blockColors[c];
+            b.style.border=c?'1px solid rgba(255,255,255,0.15)':'none';
+            pixelArt.appendChild(b);
+        });
+        pixelArt.appendChild(document.createElement('br'));
+    });
+
+    // Big confetti burst after checklist
+    setTimeout(()=>{
+        spawnConfetti(document.getElementById('pixelArt'));
+        setTimeout(()=>spawnConfetti(document.getElementById('celebrationList')),300);
+        setTimeout(()=>spawnConfetti(document.getElementById('pixelArt')),600);
+    },2200);
+}
+</script>
+</body>
+</html>
