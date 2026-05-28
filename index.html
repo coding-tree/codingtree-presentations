@@ -173,6 +173,9 @@
         <button class="tab-btn" data-tab="java" onclick="switchTab('java')">
             <span class="tab-emoji">☕</span> Java
         </button>
+        <button class="tab-btn" data-tab="liceum" onclick="switchTab('liceum')">
+            <span class="tab-emoji">🎓</span> Liceum (15-19)
+        </button>
     </div>
 
     <!-- Filters -->
@@ -343,6 +346,17 @@
                 <span class="tag tag-topic">Narzedzia</span>
             </div>
         </a>
+
+        <!-- LICEUM -->
+        <a href="jezyki-programowania-pl.html" class="card" data-tab="liceum" data-tags="Historia,Paradygmaty">
+            <h2><span class="emoji">🗺️</span> Języki Programowania</h2>
+            <p>Mapa świata, w którym kodujemy — 12 rodzin, ~50 języków, 70 lat historii. Od asemblera po Rust.</p>
+            <div class="tags">
+                <span class="tag tag-level">Liceum 15-19</span>
+                <span class="tag tag-topic">Historia</span>
+                <span class="tag tag-topic">Paradygmaty</span>
+            </div>
+        </a>
     </div>
 
     <div class="no-results" id="noResults">Brak prezentacji dla wybranych filtrow 🤔</div>
@@ -358,7 +372,8 @@
         malusi: ['Klikaj', 'Przeciagaj', 'Wzorce', 'Logika'],
         starsi: ['Binarny', 'Tekst', 'Grafika', 'Logika'],
         scratch: ['Polski', 'English'],
-        java: ['OOP', 'Silnik', 'Funkcyjne', 'Narzedzia']
+        java: ['OOP', 'Silnik', 'Funkcyjne', 'Narzedzia'],
+        liceum: ['Historia', 'Paradygmaty']
     };
 
     let activeTab = 'malusi';
